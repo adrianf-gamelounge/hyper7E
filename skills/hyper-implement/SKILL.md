@@ -1,6 +1,7 @@
 ---
 name: hyper-implement
 description: Runs the implement phase of a Hyper task. For feature-scope tasks, walks the subtask checklist in spec.md and ticks each box as work completes. For quick-scope tasks, implements directly from the approach in exploration.md. Handles rename/refactor safety checks, delete safety, and basic security patterns. Use when a Hyper task is in the 'implement' phase. Keywords: hyper, implement, code, subtasks, worker, write code.
+user-invocable: false
 ---
 
 # hyper-implement

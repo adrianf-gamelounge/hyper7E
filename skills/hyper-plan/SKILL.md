@@ -1,6 +1,7 @@
 ---
 name: hyper-plan
 description: Runs the plan phase of a feature-scope Hyper task. Turns the approved exploration.md into a spec.md with independently-testable acceptance criteria, a vertical-slice subtask checklist, out-of-scope list, and known edge cases. Sets an approval gate for the user to review before implementation starts. Use when a Hyper task is in the 'plan' phase. Runs only for feature-scope tasks (quick and research tasks skip planning). Keywords: hyper, plan, spec, acceptance criteria, subtasks, checklist, spec.md.
+user-invocable: false
 ---
 
 # hyper-plan

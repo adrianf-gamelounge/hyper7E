@@ -1,6 +1,6 @@
 # Hyper
 
-A lightweight, structured development workflow for AI coding agents. Implemented as eight [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
+A lightweight, structured development workflow for AI coding agents. Implemented as nine [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
 
 ## What it does
 
@@ -14,16 +14,28 @@ Each phase writes one markdown artifact on disk. Two phases pause for your appro
 
 ## The skills
 
+Four skills are user-facing. Five phase skills run internally — dispatched by `hyper` — and won't appear in your slash-command menu.
+
+**User-facing:**
+
 | Skill | Purpose |
 |-------|---------|
-| `hyper` | Router. Reads `.hyper/` state and dispatches the right phase. **Main entry point.** |
+| `hyper` | Starts or resumes work. Reads `.hyper/` state and dispatches the right phase. **Main entry point.** |
+| `hyper-task` | Manages tasks outside the workflow: list, create (deferred), cancel, show status. |
+| `hyper-handoff` | Writes a session handoff for resuming later. |
+| `hyper-retro` | Reflects on what worked and didn't. |
+
+**Internal (invoked by `hyper`):**
+
+| Skill | Purpose |
+|-------|---------|
 | `hyper-explore` | Clarifies goal, scans code, proposes approach. Writes `exploration.md`. |
 | `hyper-plan` | Turns approach into acceptance criteria + subtask checklist. Writes `spec.md`. |
 | `hyper-implement` | Walks the subtask checklist and does the work. |
 | `hyper-verify` | Runs tests, reviews the diff, verifies behavior. Writes `checks.md`. |
 | `hyper-docs` | Updates any affected documentation. |
-| `hyper-handoff` | (Manual) Writes a session handoff for resuming later. |
-| `hyper-retro` | (Manual) Reflects on what worked and didn't. |
+
+To rerun a phase manually, edit `phase:` in the task's `task.md` and invoke `hyper`.
 
 ## Install
 
@@ -47,7 +59,7 @@ mkdir -p .claude/skills
 cp -r /path/to/hyper7/skills/* .claude/skills/
 ```
 
-**Verify**: open Claude Code in a project and type `/hyper-` — you should see autocomplete for `hyper`, `hyper-explore`, etc.
+**Verify**: open Claude Code in a project and type `/hyper` — you should see autocomplete for `hyper`, `hyper-task`, `hyper-handoff`, `hyper-retro`. (The five phase skills are internal and don't appear in the menu.)
 
 ### Codex, Cursor, Gemini CLI, generic agents
 
@@ -76,7 +88,7 @@ Agent: [implements, verifies, updates docs]
        T1 is complete.
 ```
 
-Or invoke a skill directly with its slash command: `/hyper`, `/hyper-handoff`, `/hyper-retro`.
+Or invoke a skill directly with its slash command: `/hyper` (work), `/hyper-task` (list, create-deferred, cancel, status), `/hyper-handoff`, `/hyper-retro`. Resume a specific task with `/hyper T3`.
 
 ## What Hyper writes
 
@@ -108,12 +120,12 @@ Phases are skipped by scope, never by agent judgment. Classification happens onc
 
 ## Design philosophy
 
-Hyper is the third major iteration of an idea. Earlier versions had a CLI, a state database, and a deep skill tree — and agents struggled with all of it. Cognitive budget went to CLI syntax and JSON shapes instead of to the actual work.
+Hyper is the seventh iteration of an idea. Earlier versions had a CLI, a state database, and a deep skill tree — and agents struggled with all of it. Cognitive budget went to CLI syntax and JSON shapes instead of to the actual work.
 
 This version follows the [Agent Skills](https://agentskills.io) open standard:
 
 - **Markdown on disk, no CLI.** Agents edit markdown directly.
-- **Eight focused skills, each under 250 lines.** Progressive disclosure through bundled `templates/` and `reference/` files.
+- **Nine focused skills, each under 250 lines.** Four user-facing, five internal phase skills. Progressive disclosure through bundled `templates/` and `reference/` files.
 - **Scope triage up front.** Quick tasks stay quick. Features get the full workflow.
 - **Principles over gates.** A "should" with a reason is stronger than a "must" without one.
 

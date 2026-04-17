@@ -46,10 +46,12 @@ artifacts below say how it gets done.>
 |-------|--------|---------|
 | `id` | `T1`, `T2`, … | Sequential integer. First task is `T1`. |
 | `title` | short string | Human-readable title, used in the folder name and headings. |
-| `phase` | `explore` · `plan` · `implement` · `verify` · `docs` · `done` | Current phase. The only thing the entry skill reads to route. |
-| `scope` | `quick` · `feature` · `research` | Set during explore. Drives which phases run. |
+| `phase` | `deferred` · `explore` · `plan` · `implement` · `verify` · `docs` · `done` · `cancelled` | Current phase. The entry skill reads this to route. `done` and `cancelled` are terminal. `deferred` means the task exists but the user hasn't started it yet (created by `hyper-task`). |
+| `scope` | `quick` · `feature` · `research` · `unknown` | Set during explore. Drives which phases run. `unknown` before explore classifies it. |
 | `created` | ISO date | When the task was created. |
 | `awaiting` | `null` · `user-approval` · `user-input` · `<custom label>` | When set, the entry skill stops and asks the user instead of running the phase. Cleared when the user responds. |
+| `cancelled_at` | ISO date | Present only when `phase: cancelled`. Date the task was cancelled. |
+| `cancelled_reason` | short string | Present only when `phase: cancelled`. One-line reason. |
 
 ### Phases by scope
 
@@ -60,6 +62,14 @@ artifacts below say how it gets done.>
 | `research` | explore → done (terminal artifact is `exploration.md`; no code changes) |
 
 Phases are skipped by scope, not by agent judgment. If a feature task has no docs to update, `docs` phase still runs and writes `checks.md` recording "no docs changed, rationale: …".
+
+A task in `phase: deferred` skips straight to `explore` the first time `hyper` is invoked on it — users "start" a deferred task the same way they continue any other task.
+
+### Internal vs user-facing skills
+
+Users invoke four skills directly: `hyper`, `hyper-task`, `hyper-handoff`, `hyper-retro`. The phase skills (`hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`) are internal — invoked only by `hyper`. They are marked `user-invocable: false` so they don't clutter the slash-command menu.
+
+To manually re-run a phase on a task, edit `phase:` in the task's frontmatter and invoke `hyper`. The filesystem is the primary interface.
 
 ## `exploration.md`
 

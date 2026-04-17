@@ -15,6 +15,15 @@ skills/<name>/
 
 Every skill must be **self-contained**. No references from `skills/<name>/SKILL.md` to anything outside its own folder — because when a user installs a skill, only that folder gets copied/symlinked.
 
+## User-facing vs internal skills
+
+Hyper has two kinds of skills:
+
+- **User-facing** — `hyper`, `hyper-task`, `hyper-handoff`, `hyper-retro`. No `user-invocable` field (defaults to `true`). Show up in the slash-command menu. Triggered either by `/<name>` or by description auto-activation.
+- **Internal phase skills** — `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`. Set `user-invocable: false`. Invoked only by `hyper`. Don't appear in the `/` menu, which keeps the user's surface clean.
+
+When adding a new skill, decide which category it belongs to and set the frontmatter accordingly. Phase-style skills that only make sense as part of a larger flow go `user-invocable: false`.
+
 ## Agent Skills spec constraints
 
 When editing any `SKILL.md`, enforce:
