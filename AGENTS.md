@@ -4,6 +4,13 @@ This repo is **Hyper**: a collection of [Agent Skills](https://agentskills.io) t
 
 See `README.md` for the user-facing overview and install instructions.
 
+## Documentation
+
+- `README.md` is user-facing. It is the single place for human-readable documentation: overview, install, usage, skill list.
+- `AGENTS.md` (this file) is agent-facing. Rules, constraints, and conventions for agents editing this repo.
+- Additional human-readable docs go under `docs/`. Create the folder when a topic outgrows the README; link from the README.
+- Skill bodies (`skills/<name>/SKILL.md`) are agent-facing — do not treat them as user documentation.
+
 ## What lives where
 
 ```
