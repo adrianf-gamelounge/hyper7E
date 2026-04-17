@@ -55,7 +55,7 @@ For each subtask:
 If you get stuck:
 
 - **Blocker / unclear requirement** → set `awaiting: user-input` with a clear question in the task body or a `### Open questions` section of `spec.md`, and return to the `hyper` skill.
-- **Find something pre-existing that needs fixing but isn't in scope** → append a line to `.hyper/backlog.md`. Don't fix inline.
+- **Find something pre-existing that needs fixing but isn't in scope** → append a new entry to `.hyper/backlog.md`. Format: a `## B<N> — <short title>` heading followed by a body paragraph with the file:line reference and why it matters. Allocate `B<N>` by scanning `backlog.md` for the highest existing `^## B\d+ — ` heading and adding 1 (bootstrap the file with a `# Backlog` heading if it's missing). Don't fix inline.
 - **Realize the subtask is wrong** (missing a dependency, needs splitting, is no longer needed) → update `spec.md` (edit the checklist), note what you changed and why in the task, then continue.
 
 ## Safety checklists

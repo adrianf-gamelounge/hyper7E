@@ -59,7 +59,7 @@ Look back at recent work and capture lessons. Two places the output can go:
 
 Paths:
 
-- Task-scoped: `.hyper/tasks/T<N>-<slug>/retro.md` (append a new dated block each time).
+- Task-scoped: resolve the task folder by id. Look first in `.hyper/tasks/T<N>-*/`, then fall back to `.hyper/archive/T<N>-*/` for terminal tasks. Write `retro.md` inside whichever folder holds the task, appending a new dated block each time.
 - Project-scoped: `.hyper/retro.md` (create if missing, append new dated block).
 
 ## Rules

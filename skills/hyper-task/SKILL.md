@@ -7,7 +7,7 @@ description: Manages Hyper tasks outside the execution workflow. Lists active ta
 
 Manage tasks without running the workflow. This skill handles listing, status checks, deferred creation, and cancellation. It never writes code or advances a task through phases — that's what `hyper` is for.
 
-Tasks live at `.hyper/tasks/T<N>-<slug>/task.md`. The frontmatter shape is documented in `skills/hyper/reference/data-model.md` (bundled with the `hyper` skill). Read it if you need to verify any field.
+Active tasks live at `.hyper/tasks/T<N>-<slug>/task.md`. Terminal (`done` / `cancelled`) task folders are moved to `.hyper/archive/T<N>-<slug>/` — same shape, different location. The frontmatter is documented in `skills/hyper/reference/data-model.md` (bundled with the `hyper` skill). Read it if you need to verify any field.
 
 ## Routing
 
@@ -26,7 +26,7 @@ For intents outside this list (start work, continue, rerun a phase), tell the us
 
 Read all task folders under `.hyper/tasks/`. For each, parse the frontmatter and report a short line.
 
-Default output: all non-terminal tasks (phase not `done` and not `cancelled`), sorted by `id` ascending.
+Default output: all non-terminal tasks (phase not `done` and not `cancelled`), sorted by `id` ascending. **Archive is not scanned** in the default view — terminal tasks are history, not working set.
 
 ```
 T1  feature  plan       awaiting: user-approval   Add login page
@@ -36,23 +36,24 @@ T5  feature  deferred                             Migrate storage to Postgres
 
 Columns: `id`, `scope`, `phase`, `awaiting` (if set), `title`.
 
-If the user asks for all tasks including terminal ones, include `done` and `cancelled`. If they ask for a specific filter ("show me cancelled tasks"), apply it.
+If the user asks for all tasks including terminal ones, or applies a filter like "show me cancelled tasks", also scan `.hyper/archive/` and include those entries. Mark archived rows with `(archived)` in the phase column or a trailing note so the distinction is visible.
 
 If there are no active tasks, say so explicitly — don't return an empty report without context.
 
 ## Operation: Status
 
-Given a task id `T<N>`, read its `task.md` and report:
+Given a task id `T<N>`, look first in `.hyper/tasks/T<N>-*/`, then fall back to `.hyper/archive/T<N>-*/`. Read its `task.md` and report:
 
 - Id and title
 - `phase`, `scope`, `created`, `awaiting`
+- Location (`active` or `archived`) so the user knows where the folder is
 - Artifacts present in the folder (`exploration.md`, `spec.md`, `checks.md`, etc.)
 - For `spec.md`: how many subtasks are checked vs total (scan the file for `- [x]` and `- [ ]`)
 - For `phase: cancelled`: include `cancelled_at` and `cancelled_reason`
 
 Keep it tight — this is a status line, not a transcript. One screen.
 
-If the id doesn't exist, say so and offer to list active tasks.
+If the id doesn't exist in either location, say so and offer to list active tasks.
 
 ## Operation: Create (deferred)
 
@@ -61,9 +62,22 @@ Create a task the user doesn't want to start right now — it queues up for late
 Steps:
 
 1. Get the title from the user's request. If they said "create a task to migrate v2", the title is "Migrate to v2". Clean it up (trim filler, keep it under ~60 chars).
-2. Determine the next task id: scan `.hyper/tasks/` for the highest `T<N>` prefix, use `T<N+1>`.
-3. Derive a kebab-case slug from the title.
-4. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `../hyper/templates/task.md`, with frontmatter:
+2. **Triage: is this really a task, or an idea?** The user said "create a task", so the default is task — but if the content is a one-line hunch with no detail, offer backlog instead:
+
+   | Signal | Lean toward |
+   |--------|-------------|
+   | One line, vague wording ("we should...") | Idea → backlog |
+   | No file:line refs, no investigation done | Idea → backlog |
+   | User uses "someday", "maybe", "future" | Idea → backlog |
+   | Multiple paragraphs of specific detail | Task |
+   | Concrete file paths + proposed fix already drafted | Task |
+   | User uses committed language ("I need to ship X") | Task |
+   | User explicitly labels it ("just an idea" / "create a task") | Trust the label |
+
+   If the content clearly looks idea-shaped, ask once: *"This is a rough sketch. Park in backlog for later triage, or create the task now anyway?"* If the user opts for backlog, recommend `/hyper-backlog "add: <goal>"` and stop. Otherwise proceed. One nudge, not a loop.
+3. Determine the next task id: scan **both** `.hyper/tasks/` and `.hyper/archive/` for the highest `T<N>` prefix across the two, use `T<N+1>`. Archived ids count — they are never reused.
+4. Derive a kebab-case slug from the title.
+5. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `../hyper/templates/task.md`, with frontmatter:
    ```yaml
    ---
    id: T<N>
@@ -74,8 +88,8 @@ Steps:
    awaiting: null
    ---
    ```
-5. Body: one paragraph capturing the user's intent in their words.
-6. Report to the user: *"Created T<N> — <title> (deferred). Invoke `hyper T<N>` when you're ready to start it."*
+6. Body: one paragraph capturing the user's intent in their words.
+7. Report to the user: *"Created T<N> — <title> (deferred). Invoke `hyper T<N>` when you're ready to start it."*
 
 Do not start the workflow. `phase: deferred` signals the task exists but is unscheduled. When the user later invokes `hyper T<N>`, `hyper` sees the deferred phase, transitions it to `explore`, and begins the normal flow.
 
@@ -93,14 +107,26 @@ Steps:
    - `cancelled_at: <today's ISO date>`
    - `cancelled_reason: <user's reason>`
    - Clear `awaiting` if set (`awaiting: null`).
-5. Do **not** delete the task folder. History stays on disk.
-6. Report: *"Cancelled T<N> — <title>. Reason recorded in `task.md`."*
+5. Archive the folder — move it from `.hyper/tasks/` to `.hyper/archive/`:
+
+   ```bash
+   mkdir -p .hyper/archive
+   # refuse to overwrite an existing archive destination
+   if [ -d ".hyper/archive/T<N>-<slug>" ]; then
+     echo "ERROR: archive destination exists, aborting move"
+     exit 1
+   fi
+   mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
+   ```
+
+   The folder is preserved, not deleted — archive is a move, not a removal.
+6. Report: *"Cancelled T<N> — <title>. Reason recorded in `task.md`. Folder archived."*
 
 ## Rules
 
 - **One operation per invocation.** Don't chain list + cancel in one run. Each natural-language request maps to one thing.
 - **Never start or run phases.** If the user's request is really about doing work ("start T5", "continue T3", "add X"), tell them and recommend `hyper` or `/hyper T<N>`.
-- **Never delete files.** Cancellation is a status change, not a deletion. Terminal tasks stay on disk as history.
+- **Never delete files.** Cancellation is a status change plus an archive move, not a deletion. Terminal tasks live in `.hyper/archive/` as history.
 - **Ask for missing info.** Create without a clear title? Ask. Cancel without a reason? Ask. Don't fabricate.
 - **Task state lives in `task.md` frontmatter.** That's the source of truth. Don't read or write status from anywhere else.
 

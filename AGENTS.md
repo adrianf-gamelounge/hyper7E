@@ -19,7 +19,7 @@ Every skill must be **self-contained**. No references from `skills/<name>/SKILL.
 
 Hyper has two kinds of skills:
 
-- **User-facing** — `hyper`, `hyper-task`, `hyper-handoff`, `hyper-retro`. No `user-invocable` field (defaults to `true`). Show up in the slash-command menu. Triggered either by `/<name>` or by description auto-activation.
+- **User-facing** — `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`. No `user-invocable` field (defaults to `true`). Show up in the slash-command menu. Triggered either by `/<name>` or by description auto-activation.
 - **Internal phase skills** — `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`. Set `user-invocable: false`. Invoked only by `hyper`. Don't appear in the `/` menu, which keeps the user's surface clean.
 
 When adding a new skill, decide which category it belongs to and set the frontmatter accordingly. Phase-style skills that only make sense as part of a larger flow go `user-invocable: false`.
@@ -64,7 +64,7 @@ Hyper targets **any** agent that supports the Agent Skills spec, not just Claude
 
 ## When touching the data model
 
-`skills/hyper/reference/data-model.md` is authoritative for `.hyper/` layout, `task.md` frontmatter, and artifact filenames. Any change there needs matching updates in the skills that read/write those artifacts (`hyper-explore`, `hyper-plan`, `hyper-verify`, `hyper-docs`) and in the relevant templates.
+`skills/hyper/reference/data-model.md` is authoritative for `.hyper/` layout, `task.md` frontmatter, and artifact filenames. Any change there needs matching updates in the skills that read/write those artifacts (`hyper`, `hyper-task`, `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`, `hyper-backlog`) and in the relevant templates.
 
 ## Testing changes locally
 

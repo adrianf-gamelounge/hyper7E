@@ -15,10 +15,13 @@ If `.hyper/` does not exist in the project root, create it:
 
 ```
 .hyper/
-  tasks/
+  tasks/          # active tasks
+  archive/        # terminal tasks (done / cancelled) — created on first archive move
   memory.md       # empty file with a top-level "# Memory" heading
   backlog.md      # empty file with a top-level "# Backlog" heading
 ```
+
+`archive/` is created lazily — the first skill to archive a task runs `mkdir -p .hyper/archive` before the move. No need to pre-create.
 
 The data model — frontmatter fields, artifact filenames, phase values — is in `reference/data-model.md` next to this SKILL.md. Read it once per session; the rest of this skill assumes you know it.
 
@@ -75,20 +78,33 @@ List them with `id`, `phase`, and `title`, then ask which to continue. Stop.
 
 Given task id `T<N>`:
 
-1. Find the folder `.hyper/tasks/T<N>-*/`. If none, tell the user the id doesn't exist and suggest `/hyper-task list`. Stop.
+1. Look for the folder in `.hyper/tasks/T<N>-*/` first. If not found there, fall back to `.hyper/archive/T<N>-*/`. If neither has it, tell the user the id doesn't exist and suggest `/hyper-task list`. Stop.
 2. Read `task.md` frontmatter.
-3. If `phase: done` — report *"T<N> is already complete."* Stop.
-4. If `phase: cancelled` — report *"T<N> was cancelled (<reason>)."* Stop.
+3. If `phase: done` — report *"T<N> is already complete."* Stop. (Archived folder — don't reopen.)
+4. If `phase: cancelled` — report *"T<N> was cancelled (<reason>)."* Stop. (Archived folder — don't reopen.)
 5. If `phase: deferred` — set `phase: explore`, save, then continue to **Dispatch phase**. Announce: *"Starting T<N> — <title>."*
 6. Otherwise — continue to **Dispatch phase**.
 
 ## Create task
 
-1. Determine the next task id: scan `.hyper/tasks/` for the highest `T<N>` prefix, use `T<N+1>`.
-2. Derive a kebab-case slug from the title (lowercase, spaces → hyphens, strip punctuation, ~40 chars).
-3. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `templates/task.md`. Fill in `id`, `title`, `created` (today's ISO date), and set `phase: explore`, `scope: unknown`, `awaiting: null`.
-4. Body: one short paragraph restating the user's goal in their words.
-5. Announce: *"Created T<N> — <title>. Starting explore phase."*
+1. **Triage: is this really a task, or an idea?** If the user's goal is a thin one-liner with no investigation done, no file refs, and no concrete fix sketched, it may fit better as a `hyper-backlog` entry for later. Weigh the signals below:
+
+   | Signal | Lean toward |
+   |--------|-------------|
+   | One line, vague wording ("we should...") | Idea → backlog |
+   | No file:line refs, no investigation done | Idea → backlog |
+   | User uses "someday", "maybe", "future" | Idea → backlog |
+   | Multiple paragraphs of specific detail | Task |
+   | Concrete file paths + proposed fix already drafted | Task |
+   | User uses committed language ("I need to ship X") | Task |
+   | User explicitly labels it ("just an idea" / "create a task") | Trust the label |
+
+   If the input clearly looks idea-shaped and the user didn't explicitly say "create a task", ask once: *"This is a rough sketch. Park in backlog for later triage, or create the task now anyway?"* If the user opts for backlog, recommend `/hyper-backlog "add: <goal>"` and stop. Otherwise proceed. One nudge, not a loop — never ask twice.
+2. Determine the next task id: scan **both** `.hyper/tasks/` and `.hyper/archive/` for the highest `T<N>` prefix across both, use `T<N+1>`. Archived ids count — they are never reused.
+3. Derive a kebab-case slug from the title (lowercase, spaces → hyphens, strip punctuation, ~40 chars).
+4. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `templates/task.md`. Fill in `id`, `title`, `created` (today's ISO date), and set `phase: explore`, `scope: unknown`, `awaiting: null`.
+5. Body: one short paragraph restating the user's goal in their words.
+6. Announce: *"Created T<N> — <title>. Starting explore phase."*
 
 ## Dispatch phase
 

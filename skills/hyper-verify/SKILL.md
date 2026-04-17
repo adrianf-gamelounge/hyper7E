@@ -59,7 +59,7 @@ Include untracked files in your mental model — they're part of the change.
 
 **If tests fail because of the current change:** try to fix, up to two rounds. Before round two, re-read all files touched in round one and explicitly state what assumption was wrong. If round two fails, stop fixing — record the failures and escalate via `awaiting: user-input`.
 
-**If tests fail for reasons unrelated to the change:** append to `.hyper/backlog.md` with the test name, error, and a note that it's pre-existing. Don't fix inline. Record the pre-existing failures in `checks.md` but mark the verdict `pass` if current-change tests pass.
+**If tests fail for reasons unrelated to the change:** append a new entry to `.hyper/backlog.md`. Format: a `## B<N> — <short title>` heading (e.g. `## B<N> — Pre-existing failure in auth.test.ts`) followed by a body containing the test name, error message, and a note that it's pre-existing. Allocate `B<N>` by scanning `backlog.md` for the highest existing `^## B\d+ — ` heading and adding 1 (bootstrap with a `# Backlog` heading if missing). Don't fix inline. Record the pre-existing failures in `checks.md` but mark the verdict `pass` if current-change tests pass.
 
 ## Section 2 — Review
 
@@ -159,7 +159,23 @@ Once `checks.md` is written with verdict `pass` or `needs-changes`:
 
 - **Feature scope with any documentation implications** → `phase: docs`.
 - **Feature scope with clearly no documentation implications** → `phase: docs` anyway. Docs phase can record a no-op. This keeps the workflow honest.
-- **Quick scope** → `phase: done`. No docs phase. Done.
+- **Quick scope** → `phase: done`. No docs phase. Done. Then archive the folder (see below).
+
+### Archive the folder
+
+When you set `phase: done` for a quick-scope task, move the task folder from `.hyper/tasks/` to `.hyper/archive/` so active-task listings stay focused on live work:
+
+```bash
+mkdir -p .hyper/archive
+# refuse to overwrite an existing archive destination
+if [ -d ".hyper/archive/T<N>-<slug>" ]; then
+  echo "ERROR: archive destination exists, aborting move"
+  exit 1
+fi
+mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
+```
+
+By-id lookups (`hyper T<N>`, `hyper-task status`, `hyper-retro`) fall back to `.hyper/archive/` automatically once the folder is moved.
 
 Return to the `hyper` skill.
 

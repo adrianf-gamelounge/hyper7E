@@ -6,20 +6,25 @@ All Hyper state lives on disk under `.hyper/` in the project root. Plain markdow
 
 ```
 .hyper/
-  tasks/
-    T1-add-login-page/
+  tasks/                # active tasks only
+    T20-add-backlog-archive/
       task.md           # status + what the user asked for
       exploration.md    # what exists in the code + how we'll approach it
       spec.md           # acceptance criteria + subtask checklist
       checks.md         # test results, review findings, qa notes
       notes.md          # (optional) free-form working notes
+  archive/              # terminal tasks (phase: done or cancelled)
+    T1-add-login-page/
+      task.md           # same artifacts, just moved
+      ...
   memory.md             # durable decisions across tasks
-  backlog.md            # out-of-scope finds
+  backlog.md            # idea-triage inbox (managed via hyper-backlog)
 ```
 
 - Task folders are named `T<N>-<kebab-slug>`. `N` is a simple incrementing integer. Slug is derived from the title.
 - Artifact filenames are fixed. A skill that writes `spec.md` always writes to that path.
-- A task with `phase: done` is complete. Nothing is ever "archived" — the folder stays.
+- When a task's `phase` flips to `done` or `cancelled`, the folder is moved from `.hyper/tasks/` to `.hyper/archive/`. The skill that flips the phase owns the move. By-id lookups (`hyper T<N>`, `hyper-task status`, `hyper-retro`) fall back to `archive/` when the id isn't in `tasks/`. Normal flows (listing active tasks, default routing) ignore archive.
+- Task ids are allocated by scanning `tasks/ ∪ archive/` for the highest `T<N>` and adding 1. Ids are never reused.
 
 ## `task.md`
 
@@ -127,14 +132,41 @@ Each entry: date + category + title + one paragraph. Categories: `Decision`, `Pa
 
 ## `backlog.md`
 
-Out-of-scope things the agent notices but shouldn't fix inline. Format:
+Idea-triage inbox. Holds two kinds of items: (a) ideas the user records for future consideration, and (b) findings that phase skills notice during work and shouldn't fix inline (pre-existing test failures, stale docs, etc.). Both are entries that might become tasks later.
+
+Managed by the `hyper-backlog` skill. Entries are appended by `hyper-implement`, `hyper-verify`, and `hyper-docs` when they find out-of-scope issues.
+
+Format — each entry is a `## B<N> — <title>` heading with free-form markdown body below:
 
 ```markdown
-- [ ] Pre-existing test failure in `auth.test.ts:42` — found during T5 verify
-- [ ] README mentions deprecated CLI flag — found during T7 docs
+# Backlog
+
+<!-- Ideas that might become tasks. Manage with /hyper-backlog. -->
+
+## B1 — Resolve ownership of docs section in checks.md template
+
+From T1 audit finding I1 (Tier 2). `skills/hyper-verify/templates/checks.md`
+has four sections but `skills/hyper-verify/SKILL.md:148` tells the agent to
+write only the first three. Fix: drop section 4 or annotate docs-phase-only.
+
+## B2 — Unify slug derivation rule for task folders
+
+<paragraphs, code blocks, file:line refs as needed>
 ```
 
-Flat checklist. The user triages when they want.
+### Id rules
+
+- Each entry gets a permanent `B<N>` id.
+- Next id = highest existing `B<N>` in `backlog.md` + 1. No separate counter.
+- **Ids are never reused.** When an entry is promoted or dropped, its line just disappears. Remaining ids don't renumber. Gaps are permanent and silent.
+
+### Parsing
+
+An entry begins at `^## B\d+ — ` and ends at the next such heading (or EOF). Bodies may contain any markdown including code blocks and sub-headings (`###` or deeper — never `##`, which is reserved for entry boundaries).
+
+### Promotion
+
+`hyper-backlog promote B<N>` turns an idea into a task: it creates `.hyper/tasks/T<M>-<slug>/task.md` seeded from the backlog entry's title and body, removes the entry from `backlog.md`, and hands off to `hyper` to start the explore phase. The `B<N>` id is not reused; the new task gets a fresh `T<M>`.
 
 ## What's *not* here
 

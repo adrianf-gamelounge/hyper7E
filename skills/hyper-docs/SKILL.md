@@ -53,7 +53,7 @@ Keep updates proportional. A new CLI flag gets a short line in the README comman
 Rules of thumb:
 - Docs describe **current state**, not history. What the code does now, not how it used to work.
 - Match the tone and structure of the surrounding docs. Don't introduce a new style.
-- If you find a doc that's wrong about something *unrelated* to this task — append to `.hyper/backlog.md`. Don't fix inline.
+- If you find a doc that's wrong about something *unrelated* to this task — append a new entry to `.hyper/backlog.md`. Format: a `## B<N> — <short title>` heading followed by a body with the file path, what's wrong, and a suggested fix. Allocate `B<N>` by scanning `backlog.md` for the highest existing `^## B\d+ — ` heading and adding 1 (bootstrap with a `# Backlog` heading if missing). Don't fix inline.
 
 ## Step 4 — Record in `checks.md`
 
@@ -78,6 +78,20 @@ The rationale matters. A `no-changes-needed` without reasoning is how stale docs
 ## Step 5 — Advance the phase
 
 Update `task.md` frontmatter: `phase: done`.
+
+Then archive the task folder — move it from `.hyper/tasks/` to `.hyper/archive/` so active-task listings stay focused on live work:
+
+```bash
+mkdir -p .hyper/archive
+# refuse to overwrite an existing archive destination
+if [ -d ".hyper/archive/T<N>-<slug>" ]; then
+  echo "ERROR: archive destination exists, aborting move"
+  exit 1
+fi
+mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
+```
+
+By-id lookups (`hyper T<N>`, `hyper-task status`, `hyper-retro`) fall back to `.hyper/archive/` automatically once the folder is moved.
 
 Return to the `hyper` skill. It will announce completion.
 

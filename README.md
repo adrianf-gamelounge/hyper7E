@@ -1,6 +1,6 @@
 # Hyper
 
-A lightweight, structured development workflow for AI coding agents. Implemented as nine [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
+A lightweight, structured development workflow for AI coding agents. Implemented as ten [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
 
 ## What it does
 
@@ -14,7 +14,7 @@ Each phase writes one markdown artifact on disk. Two phases pause for your appro
 
 ## The skills
 
-Four skills are user-facing. Five phase skills run internally — dispatched by `hyper` — and won't appear in your slash-command menu.
+Five skills are user-facing. Five phase skills run internally — dispatched by `hyper` — and won't appear in your slash-command menu.
 
 **User-facing:**
 
@@ -22,6 +22,7 @@ Four skills are user-facing. Five phase skills run internally — dispatched by 
 |-------|---------|
 | `hyper` | Starts or resumes work. Reads `.hyper/` state and dispatches the right phase. **Main entry point.** |
 | `hyper-task` | Manages tasks outside the workflow: list, create (deferred), cancel, show status. |
+| `hyper-backlog` | Manages the idea-triage inbox at `.hyper/backlog.md`: add, list, promote to task, drop. |
 | `hyper-handoff` | Writes a session handoff for resuming later. |
 | `hyper-retro` | Reflects on what worked and didn't. |
 
@@ -59,7 +60,7 @@ mkdir -p .claude/skills
 cp -r /path/to/hyper7/skills/* .claude/skills/
 ```
 
-**Verify**: open Claude Code in a project and type `/hyper` — you should see autocomplete for `hyper`, `hyper-task`, `hyper-handoff`, `hyper-retro`. (The five phase skills are internal and don't appear in the menu.)
+**Verify**: open Claude Code in a project and type `/hyper` — you should see autocomplete for `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`. (The five phase skills are internal and don't appear in the menu.)
 
 ### Codex, Cursor, Gemini CLI, generic agents
 
@@ -88,7 +89,7 @@ Agent: [implements, verifies, updates docs]
        T1 is complete.
 ```
 
-Or invoke a skill directly with its slash command: `/hyper` (work), `/hyper-task` (list, create-deferred, cancel, status), `/hyper-handoff`, `/hyper-retro`. Resume a specific task with `/hyper T3`.
+Or invoke a skill directly with its slash command: `/hyper` (work), `/hyper-task` (list, create-deferred, cancel, status), `/hyper-backlog` (add, list, promote, drop ideas), `/hyper-handoff`, `/hyper-retro`. Resume a specific task with `/hyper T3`.
 
 ## What Hyper writes
 
@@ -96,14 +97,15 @@ After first use, your project has:
 
 ```
 .hyper/
-  tasks/
+  tasks/              # active tasks
     T1-add-login-page/
       task.md         # goal + current phase
       exploration.md  # findings + approach (approved)
       spec.md         # acceptance criteria + subtask checklist
       checks.md       # tests, review, qa, docs results
+  archive/            # tasks that reached done or cancelled (moved here automatically)
   memory.md           # durable decisions across tasks
-  backlog.md          # out-of-scope things noticed during work
+  backlog.md          # idea-triage inbox (manage with /hyper-backlog)
 ```
 
 Add `.hyper/` to `.gitignore` unless you want to share task history with your team.
@@ -125,7 +127,7 @@ Hyper is the seventh iteration of an idea. Earlier versions had a CLI, a state d
 This version follows the [Agent Skills](https://agentskills.io) open standard:
 
 - **Markdown on disk, no CLI.** Agents edit markdown directly.
-- **Nine focused skills, each under 250 lines.** Four user-facing, five internal phase skills. Progressive disclosure through bundled `templates/` and `reference/` files.
+- **Ten focused skills, each under 250 lines.** Five user-facing, five internal phase skills. Progressive disclosure through bundled `templates/` and `reference/` files.
 - **Scope triage up front.** Quick tasks stay quick. Features get the full workflow.
 - **Principles over gates.** A "should" with a reason is stronger than a "must" without one.
 

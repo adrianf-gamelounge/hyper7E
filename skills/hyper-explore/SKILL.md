@@ -107,9 +107,25 @@ Tell the user: *"Wrote `exploration.md`. Scope: <quick|feature|research>. Please
 
 ## When the user responds
 
-- **Approves** → clear `awaiting`, update `phase:` to the next value (`plan` for feature, `implement` for quick, `done` for research), write the approval decision into the body of `exploration.md` if useful, and return control to the `hyper` skill.
+- **Approves** → clear `awaiting`, update `phase:` to the next value (`plan` for feature, `implement` for quick, `done` for research), write the approval decision into the body of `exploration.md` if useful. For research (terminal `done`), archive the task folder (see below) before returning. For non-terminal transitions, return control to the `hyper` skill.
 - **Requests changes** → clear `awaiting`, stay in `explore`, revise `exploration.md`, then re-set `awaiting: user-approval` and stop again.
 - **Asks a question** → answer, stay in `explore`, don't clear `awaiting`.
+
+## Archive on research done
+
+When a `research`-scope exploration is approved and `phase` becomes `done`, move the task folder from `.hyper/tasks/` to `.hyper/archive/`:
+
+```bash
+mkdir -p .hyper/archive
+# refuse to overwrite an existing archive destination
+if [ -d ".hyper/archive/T<N>-<slug>" ]; then
+  echo "ERROR: archive destination exists, aborting move"
+  exit 1
+fi
+mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
+```
+
+Research tasks terminate at this phase (no plan/implement/verify/docs). By-id lookups fall back to `.hyper/archive/` automatically.
 
 ## Rules
 

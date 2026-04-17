@@ -64,6 +64,7 @@ fi
 skills=(
   hyper
   hyper-task
+  hyper-backlog
   hyper-handoff
   hyper-retro
   hyper-explore
