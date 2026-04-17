@@ -55,6 +55,8 @@ Write testable statements that define "done". Each criterion must be independent
 
 Aim for 3–7 criteria. If you have more, you probably have multiple tasks bundled together; consider splitting.
 
+**Cover error paths, not only happy paths.** Robust software passes its tests against bad input as well as good. For every criterion that asserts the happy-path behavior, write or fold in at least one that asserts the failure behavior — invalid input rejected with a specific error, partial failure surfaced not swallowed, boundary condition handled. Criteria that only describe the success case leave the implementer free to ship code that crashes or silently no-ops on anything unexpected, and verify cannot catch what the spec never asked for.
+
 ## Step 3 — Subtasks
 
 Break the work into a checklist. Each item is a vertical slice — a chunk of work that can be verified on its own and implemented in roughly one sitting.
@@ -90,7 +92,7 @@ Number subtasks as `T<N>.1`, `T<N>.2`, … where `T<N>` is the parent task id. I
 Write two more sections:
 
 - **Out of scope** — things this task explicitly will not do. Anything you noticed during exploration that's tempting to fix inline but shouldn't be.
-- **Edge cases** — known tricky scenarios the implementer needs to handle (empty input, concurrency, timezones, etc.). Not exhaustive — just the ones you already spotted.
+- **Edge cases** — known tricky scenarios the implementer needs to handle. Not exhaustive, but actively consider at least these categories and record the ones that apply: invalid or malformed input shapes; unreachable or never-taken code paths that still need defensive behavior; concurrency (races, reentrancy, ordering); partial failures (network drops, half-written state, timeouts); empty / null / boundary values (zero, max, off-by-one); timezones, locales, encodings. Name the ones you already spotted during exploration; the implementer will handle them without the spec having to enumerate every possible input.
 
 Both sections prevent scope creep and missed cases during implement.
 

@@ -122,7 +122,7 @@ Only save things that will matter to a *different* task. Details of the current 
 
 ## Rules
 
-- **Only what the subtask says.** Scope creep in implementation is the fastest way to break other subtasks and make the diff unreadable.
+- **Only what the subtask says — but deep, not shallow.** Do not widen scope by touching adjacent code, fixing pre-existing bugs, or adding features the subtask did not name. Do deepen the code you are writing: validation at boundaries, error-path handling, and edge-case guards for the subtask's change are part of the subtask, not scope creep. The fence is against widening, not against robustness.
 - **Test before ticking the box.** A ticked box with failing tests is a lie the verify phase has to unwind.
 - **Ask, don't guess.** If the spec contradicts itself or misses something critical, set `awaiting: user-input` and stop. Guessing usually costs more than a round-trip.
 - **Research before changing.** Read the files, understand the patterns, then write. Code that doesn't match existing conventions slows every future task in that area.
@@ -133,3 +133,5 @@ Only save things that will matter to a *different* task. Details of the current 
 - The spec decomposed the work; implementation respects that decomposition. If you find yourself wanting to merge subtasks together mid-flight, stop — re-read why they were split.
 - A subtask is not done when the code compiles. It's done when the acceptance criterion it serves can be verified.
 - The goal of this phase is a clean, reviewable diff. Everything you do should reduce surprise for whoever reads that diff next — including future you.
+- **Robustness before cleverness.** Handle error paths, validate at boundaries, fail loudly. Validation and error-path handling for the code you are writing are part of the work, not speculative scope — the default answer to "should I handle this edge case" is yes.
+- **Stay focused, park the drift.** Pre-existing problems go to `.hyper/backlog.md`, not inline "while I'm here" fixes. Deepen the subtask you were given; don't widen it into adjacent code the subtask didn't name.

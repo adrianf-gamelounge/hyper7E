@@ -70,6 +70,12 @@ Read the diff. Look for:
 - Off-by-one, null/undefined cases, race conditions?
 - Patterns match what's already in the codebase (not your preferred pattern)?
 
+**Robustness**
+- External input validated at the boundary (not trusted three layers in)?
+- Errors surfaced loudly — thrown, returned, or logged — never silently swallowed or turned into empty defaults?
+- Failure paths complete? No stub returns, no `// TODO handle this`, no early return that leaves the system in a half-written state?
+- Boundary and edge-case behavior present: empty input, max size, unexpected shape, unreachable-on-happy-path branch?
+
 **Architecture**
 - Layer boundaries respected? No HTTP helpers in core logic, no DB access from presentation?
 - New abstractions actually needed, or speculative?

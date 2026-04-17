@@ -81,6 +81,8 @@ Go as deep as the scope demands. For `quick`, a few targeted searches are enough
 
 If the task is a bugfix or regression, ask the user for error output, logs, or a failing test case *before* diving into the code. They have context you don't.
 
+**Framing check (after the scan, before drafting).** Once the scan is done, briefly restate the user's framing of the problem and name one plausible alternate framing the evidence suggests — a different root cause, a different surface to change, a different goal the symptom might be pointing at. If the alternate survives the evidence, raise it as a clarification before Step 4 and wait for the user to pick a direction. If the evidence does not support an alternate, record the framing check in a single sentence ("Framing check: no alternate survives the scan") and continue. The user's ask is a hypothesis, not a directive — this check exists so you do not blindly implement the first framing when the code is telling you to solve a different problem.
+
 ## Step 4 — Draft the approach
 
 For **quick** tasks: two or three sentences describing the change and the files involved.
@@ -93,7 +95,7 @@ For **feature** tasks: one or two paragraphs covering:
 
 For **research** tasks: this section becomes **Findings & Recommendation**. Structured around the actual research question, with evidence from the code and external sources where relevant. End with a clear recommendation.
 
-**YAGNI applies.** Remove scope you added for hypothetical needs. Tight > ambitious.
+**YAGNI applies — for new features, not for robustness.** Remove scope you added for hypothetical features, abstractions, or "nice to have" behaviors the user didn't ask for. Tight > ambitious. But validation at boundaries, error-path handling, and edge-case guards for the code you are actually building are never speculative — they are part of the thing being asked for, not scope widening. The focus principle fences against adding unrelated work; it does not authorize skipping the guardrails that make the asked-for change robust.
 
 ## Step 5 — Write `exploration.md`
 
@@ -113,6 +115,8 @@ Otherwise, set `task.md` frontmatter `awaiting: user-input` and work through the
 - If the user requests changes to the approach or asks a meta question instead of answering, treat it like any other "requests changes / asks a question" response: stop the loop, revise, and restart Step 6 with the updated questions.
 - Move to the next unanswered question. Repeat until none remain.
 
+**Rewrite over patch — with preservation.** If an answer or a change request reframes the problem rather than filling in a detail, rewrite `exploration.md` cleanly instead of patching it into coherence. Pivots during explore are normal; a rewrite clarifies the new framing in a way that accretive edits cannot. When you rewrite, carry forward: (a) every resolved question with its answer, (b) a short note explaining why the framing shifted. The artifact must stay the durable record of both the prior direction and the pivot.
+
 Once every question has an answer, rename the section heading from `## Open questions` to `## Resolved questions` (or delete the section entirely if the answers are already captured in the approach). Then proceed to Step 7.
 
 ## Step 7 — Set approval gate and stop
@@ -126,7 +130,7 @@ Tell the user: *"Wrote `exploration.md`. Scope: <quick|feature|research>. Please
 ## When the user responds
 
 - **Approves** → clear `awaiting`, update `phase:` to the next value (`plan` for feature, `implement` for quick, `done` for research), write the approval decision into the body of `exploration.md` if useful. For research (terminal `done`), archive the task folder (see below) before returning. For non-terminal transitions, return control to the `hyper` skill.
-- **Requests changes** → clear `awaiting`, stay in `explore`, revise `exploration.md`, then re-set `awaiting: user-approval` and stop again.
+- **Requests changes** → clear `awaiting`, stay in `explore`, revise `exploration.md`, then re-set `awaiting: user-approval` and stop again. If the change reframes the problem (not just a detail correction), rewrite the artifact cleanly rather than patching it; carry forward every resolved question with its answer and a short note on why the framing shifted, so the artifact stays the durable record of both directions.
 - **Asks a question** → answer, stay in `explore`, don't clear `awaiting`.
 
 ## Archive on research done
@@ -158,6 +162,8 @@ Research tasks terminate at this phase (no plan/implement/verify/docs). By-id lo
 - The user should be able to read `exploration.md` alone and know what's about to happen. That's the clarity Hyper promises.
 - If you catch yourself writing scope you're not sure the user asked for, stop and ask.
 - Unexamined assumptions are where wasted work comes from. Surface them as explicit questions, not as hidden defaults in the approach.
+- **Question the framing.** The user's ask is a hypothesis, not a directive. After scanning the code, state the current framing alongside one plausible alternate framing; raise the alternate as a clarification only if the evidence supports it.
+- **Pivots during explore are normal.** When the direction shifts mid-explore, rewrite `exploration.md` — but carry forward resolved questions and the pivot rationale so the artifact stays the durable record.
 
 ## Additional resources
 

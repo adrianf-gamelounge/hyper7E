@@ -152,3 +152,12 @@ This version follows the [Agent Skills](https://agentskills.io) open standard:
 - **Principles over gates.** A "should" with a reason is stronger than a "must" without one.
 
 Approval gates, durable artifacts, non-skippable verify — all carry over from earlier versions. The ceremony is gone.
+
+### Operating principles
+
+The bullets above describe what Hyper is. These describe how an agent working inside Hyper should operate:
+
+- **Question the framing.** The user's ask is a hypothesis, not a directive. After scanning the code, state the current framing alongside one plausible alternate framing; raise the alternate as a clarification only if the evidence supports it.
+- **Pivots during explore are normal.** When the direction shifts mid-explore, rewrite `exploration.md` — but carry forward resolved questions and the pivot rationale so the artifact stays the durable record.
+- **Robustness before cleverness.** Handle error paths, validate at boundaries, fail loudly. Validation and error-path handling for the code you are writing are part of the work, not speculative scope.
+- **Stay focused, park the drift.** Pre-existing problems go to `.hyper/backlog.md`, not inline "while I'm here" fixes. Deepen the task you were given; don't widen it.
