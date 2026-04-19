@@ -1,6 +1,6 @@
 # Hyper
 
-A lightweight, structured development workflow for AI coding agents. Implemented as eleven [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
+A lightweight, structured development workflow for AI coding agents. Implemented as twelve [Agent Skills](https://agentskills.io) — plain markdown files that any compatible agent can load. No CLI, no plugin, no server.
 
 ## What it does
 
@@ -14,7 +14,7 @@ Each phase writes one markdown artifact on disk. Two phases pause for your appro
 
 ## The skills
 
-Six skills are user-facing. Five phase skills run internally — dispatched by `hyper` — and won't appear in your slash-command menu.
+Six skills are user-facing. Six internal skills run under the hood — dispatched by `hyper` and `hyper-implement` — and won't appear in your slash-command menu.
 
 **User-facing:**
 
@@ -32,12 +32,13 @@ Six skills are user-facing. Five phase skills run internally — dispatched by `
 | Skill | Purpose |
 |-------|---------|
 | `hyper-explore` | Clarifies goal, scans code, proposes approach. Writes `exploration.md`. |
-| `hyper-plan` | Turns approach into acceptance criteria + subtask checklist. Writes `spec.md`. |
-| `hyper-implement` | Walks the subtask checklist and does the work. |
+| `hyper-plan` | Turns approach into acceptance criteria + one `T<N>.<M>.md` file per vertical slice at the task folder root. Writes `spec.md`. |
+| `hyper-implement` | For feature scope: orchestrates — dispatches one `hyper-worker` sub-agent per subtask file. For quick scope: implements directly. |
+| `hyper-worker` | Dispatched by `hyper-implement` to finish one subtask end-to-end in a fresh sub-agent — research, implement, test, write a `## Completion` record, flip `status: done`. |
 | `hyper-verify` | Runs tests, reviews the diff, verifies behavior. Writes `checks.md`. |
 | `hyper-docs` | Updates any affected documentation. |
 
-To rerun a phase manually, edit `phase:` in the task's `task.md` and invoke `hyper`.
+To rerun a phase manually, edit `phase:` in the task's `task.md` and invoke `hyper`. To re-run a single subtask, edit its file's `status:` back to `todo` and invoke `hyper` — the orchestrator picks it up on the next iteration.
 
 ## Install
 
@@ -61,7 +62,7 @@ mkdir -p .claude/skills
 cp -r /path/to/hyper7/skills/* .claude/skills/
 ```
 
-**Verify**: open Claude Code in a project and type `/hyper` — you should see autocomplete for `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, and `team`. (The five phase skills are internal and don't appear in the menu.)
+**Verify**: open Claude Code in a project and type `/hyper` — you should see autocomplete for `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, and `team`. (The six internal skills are dispatched by `hyper` and `hyper-implement` and don't appear in the menu.)
 
 ### Codex, Cursor, Gemini CLI, generic agents
 
@@ -84,9 +85,9 @@ Agent: [loads hyper, creates task T1, runs explore phase]
        Wrote exploration.md. Scope: feature. Please read it and tell me to proceed.
 You: looks good
 Agent: [runs plan phase]
-       Wrote spec.md. 4 subtasks. Approve to start implementation?
+       Wrote spec.md and 4 subtask files (T1.1.md … T1.4.md) in the task folder. Approve to start implementation?
 You: approve
-Agent: [implements, verifies, updates docs]
+Agent: [dispatches one worker per subtask, then verifies and updates docs]
        T1 is complete.
 ```
 
@@ -102,7 +103,9 @@ After first use, your project has:
     T1-add-login-page/
       task.md         # goal + current phase
       exploration.md  # findings + approach (approved)
-      spec.md         # acceptance criteria + subtask checklist
+      spec.md         # acceptance criteria + subtask index + out-of-scope + edge cases
+      T1.1.md         # subtask (feature scope): status, depends, what/why/done-when, worker's completion record
+      T1.2.md         # subtask
       checks.md       # tests, review, qa, docs results
   archive/            # tasks that reached done or cancelled (moved here automatically)
   memory.md           # durable decisions across tasks
@@ -147,7 +150,7 @@ Hyper is the seventh iteration of an idea. Earlier versions had a CLI, a state d
 This version follows the [Agent Skills](https://agentskills.io) open standard:
 
 - **Markdown on disk, no CLI.** Agents edit markdown directly.
-- **Eleven focused skills, each under 250 lines.** Six user-facing, five internal phase skills. Progressive disclosure through bundled `templates/` and `reference/` files.
+- **Twelve focused skills, each under ~300 lines.** Six user-facing, six internal (five phase skills + `hyper-worker` for per-subtask dispatch). Progressive disclosure through bundled `templates/` and `reference/` files.
 - **Scope triage up front.** Quick tasks stay quick. Features get the full workflow.
 - **Principles over gates.** A "should" with a reason is stronger than a "must" without one.
 
