@@ -27,9 +27,9 @@ Hyper installs as a suite — `install-hyper` symlinks every skill together, nev
 Hyper has two kinds of skills:
 
 - **User-facing** — `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`. No `user-invocable` field (defaults to `true`). Show up in the slash-command menu. Triggered either by `/<name>` or by description auto-activation.
-- **Internal phase skills** — `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`. Set `user-invocable: false`. Invoked only by `hyper`. Don't appear in the `/` menu, which keeps the user's surface clean.
+- **Internal** — `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`, `hyper-worker`. Set `user-invocable: false`. The five phase skills (`explore`, `plan`, `implement`, `verify`, `docs`) are invoked only by `hyper`. The worker skill (`hyper-worker`) is invoked only by `hyper-implement` during feature-scope orchestration. None appear in the `/` menu, which keeps the user's surface clean.
 
-When adding a new skill, decide which category it belongs to and set the frontmatter accordingly. Phase-style skills that only make sense as part of a larger flow go `user-invocable: false`.
+When adding a new skill, decide which category it belongs to and set the frontmatter accordingly. Phase-style skills and dispatched-worker skills that only make sense as part of a larger flow go `user-invocable: false`.
 
 ## Agent Skills spec constraints
 
@@ -58,7 +58,8 @@ Not `Follow skills/hyper-<name>/SKILL.md`. Skills are invoked by name (host's sk
 
 Hyper targets **any** agent that supports the Agent Skills spec, not just Claude Code. This constrains edits:
 
-- **No Claude-Code-only tool references** in skill bodies (`Skill` tool, Agent tool, Task tool, etc.). Use neutral language: "invoke the X skill", "read the file".
+- **No Claude-Code-only tool references** in skill bodies as a general rule (`Skill` tool, Agent tool, Task tool, etc.). Use neutral language: "invoke the X skill", "read the file".
+  - **One documented exception:** `hyper-implement` names Claude Code's Task tool (`subagent_type: general-purpose`) for dispatching `hyper-worker` sub-agents during feature-scope orchestration, because the Agent Skills spec has no neutral primitive for spawning a sub-agent. On agents without equivalent sub-agent-dispatch support, feature-scope orchestration will need a fallback path — treat that as a known limitation, not an invitation to sprinkle Claude-specific tool names elsewhere.
 - **No CLI.** This was a deliberate departure from Hyper4. Don't re-introduce a `hyper` command or any executable. State is markdown on disk, edited directly.
 - **No plugin.json / no `.claude-plugin/`.** Distribution is by copying the `skills/` folder.
 
@@ -71,7 +72,7 @@ Hyper targets **any** agent that supports the Agent Skills spec, not just Claude
 
 ## When touching the data model
 
-`skills/hyper/reference/data-model.md` is authoritative for `.hyper/` layout, `task.md` frontmatter, and artifact filenames. Any change there needs matching updates in the skills that read/write those artifacts (`hyper`, `hyper-task`, `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`, `hyper-backlog`) and in the relevant templates.
+`skills/hyper/reference/data-model.md` is authoritative for `.hyper/` layout, `task.md` frontmatter, subtask file shape, and artifact filenames. Any change there needs matching updates in the skills that read/write those artifacts (`hyper`, `hyper-task`, `hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-worker`, `hyper-verify`, `hyper-docs`, `hyper-backlog`, `hyper-handoff`) and in the relevant templates.
 
 ## Testing changes locally
 
