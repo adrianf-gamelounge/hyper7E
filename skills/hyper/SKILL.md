@@ -20,9 +20,12 @@ If `.hyper/` does not exist in the project root, create it:
   archive/        # terminal tasks (done / cancelled) — created on first archive move
   memory.md       # empty file with a top-level "# Memory" heading
   backlog.md      # file with a top-level "# Backlog" heading and the standard HTML comment
+  rules.md        # optional — project-level normative rules (see below)
 ```
 
 `archive/` is created lazily — the first skill to archive a task runs `mkdir -p .hyper/archive` before the move. No need to pre-create.
+
+**Project rules (optional).** If `.hyper/rules.md` exists, read it once at session start and treat its contents as normative constraints for every phase (explore, plan, implement, verify, docs). It captures conventions, workflow rules, and preferences the user does not want to restate each session — Git workflow, branch naming, commit style, forbidden patterns, etc. Do **not** create this file; it only applies when the user has authored one. Rules there override defaults but never the user's in-session instructions.
 
 The data model — frontmatter fields, artifact filenames, phase values — is in `reference/data-model.md` next to this SKILL.md. Read it once per session; the rest of this skill assumes you know it.
 
@@ -182,3 +185,4 @@ The auto-advance in step 5 is scoped to approval-gated phases (`explore`, `plan`
 - `reference/intake-triage.md` — shared heuristic for direct-handling vs task vs backlog idea.
 - `reference/state-recovery.md` — repair path for malformed, legacy, or contradictory `.hyper/` state.
 - `templates/task.md` — ready-to-fill template used in **Create task**.
+- `.hyper/rules.md` (in the user's project, optional) — project-level normative rules every phase must respect. Read once per session if present.
