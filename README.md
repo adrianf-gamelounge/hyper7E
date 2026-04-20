@@ -31,7 +31,7 @@ Five Hyper skills are user-facing. Six internal Hyper skills run under the hood 
 | Skill | Purpose |
 |-------|---------|
 | `hyper-explore` | Clarifies goal, scans code, proposes approach. Writes `exploration.md`. |
-| `hyper-plan` | Turns approach into acceptance criteria + one `T<N>.<M>.md` file per vertical slice at the task folder root. Writes `spec.md`. |
+| `hyper-plan` | Turns approach into acceptance criteria + one `T<N>.<M>-<slug>.md` file per vertical slice at the task folder root. Writes `spec.md`. |
 | `hyper-implement` | For feature scope: orchestrates — dispatches one `hyper-worker` sub-agent per subtask file. For quick scope: implements directly. If verify sends work back blocked, handles the remediation pass from `checks.md`. |
 | `hyper-worker` | Dispatched by `hyper-implement` to finish one subtask end-to-end in a fresh sub-agent — research, implement, test, write a `## Completion` record, flip `status: done`. |
 | `hyper-verify` | Runs tests, reviews the diff, verifies behavior. Writes `checks.md`. |
@@ -90,7 +90,7 @@ Agent: [loads hyper, creates task T1, runs explore phase]
        Wrote exploration.md. Scope: feature. Please read it and tell me to proceed.
 You: looks good
 Agent: [runs plan phase]
-       Wrote spec.md and 4 subtask files (T1.1.md … T1.4.md) in the task folder. Approve to start implementation?
+       Wrote spec.md and 4 subtask files (T1.1-wire-login-endpoint.md … T1.4-session-persistence.md) in the task folder. Approve to start implementation?
 You: approve
 Agent: [dispatches one worker per subtask, then verifies and updates docs]
        T1 is complete.
@@ -143,7 +143,7 @@ You: Add locale-aware page caching.
 Agent: [explore → plan → implement]
        T4.2 is blocked. Recommendation: include locale, because `pages.get` crosses locales and a post-id-only key risks collisions. If you want post id only instead, say so.
 You: include locale
-Agent: [records answer in T4.2.md, re-dispatches the worker]
+Agent: [records answer in T4.2-add-locale-to-cache-key.md, re-dispatches the worker]
 ```
 
 ### Verify remediation pass
@@ -180,8 +180,8 @@ After first use, your project has:
       task.md         # goal + current phase (optional why)
       exploration.md  # findings + approach (approved)
       spec.md         # acceptance criteria + subtask index + out-of-scope + edge cases
-      T1.1.md         # subtask (feature scope): status, depends, what/why/done-when, worker's completion record
-      T1.2.md         # subtask
+      T1.1-wire-login-endpoint.md   # subtask (feature scope): status, depends, what/why/done-when, worker's completion record
+      T1.2-login-form.md            # subtask
       checks.md       # tests, review, qa, docs results
       handoff.md      # optional session handoff snapshot
       retro.md        # optional task-scoped retrospective
@@ -192,6 +192,8 @@ After first use, your project has:
   team/               # team skill output (only when you use /team)
     providers/        # project-local teammate definitions (optional)
 ```
+
+The numeric `T<N>.<M>` prefix remains the stable subtask id. The slugged suffix is there so a folder listing is readable at a glance; older tasks may still have legacy bare filenames like `T1.1.md`.
 
 Add `.hyper/` to `.gitignore` unless you want to share task history with your team.
 

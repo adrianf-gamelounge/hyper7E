@@ -14,8 +14,8 @@ status. The subtask files (sibling to this spec.md) are the source of truth
 for progress — this index is a human-readable table of contents written
 once at plan time.>
 
-- **T<N>.1** — <short title> → [T<N>.1.md](T<N>.1.md)
-- **T<N>.2** — <short title> → [T<N>.2.md](T<N>.2.md)
+- **T<N>.1** — <short title> → [T<N>.1-<slug>.md](T<N>.1-<slug>.md)
+- **T<N>.2** — <short title> → [T<N>.2-<slug>.md](T<N>.2-<slug>.md)
 
 ## Out of scope
 

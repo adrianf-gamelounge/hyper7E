@@ -11,8 +11,8 @@ All Hyper state lives on disk under `.hyper/` in the project root. Plain markdow
       task.md           # status + what the user asked for
       exploration.md    # what exists in the code + how we'll approach it
       spec.md           # acceptance criteria + subtask index + out-of-scope + edge cases
-      T20.1.md          # subtask file (feature scope): id, parent, status, depends, awaiting + what/why/done-when/completion
-      T20.2.md          # subtask file
+      T20.1-first-slice.md   # subtask file (feature scope): id, parent, status, depends, awaiting + what/why/done-when/completion
+      T20.2-second-slice.md  # subtask file
       checks.md         # test results, review findings, qa notes; docs phase appends docs outcome
       handoff.md        # (optional) latest session handoff snapshot
       retro.md          # (optional) task-scoped retrospective entries
@@ -103,14 +103,14 @@ Written by the `hyper-explore` skill. Two required sections plus one optional:
 Written by the `hyper-plan` skill for `feature`-scope tasks. Contains:
 
 1. **Acceptance criteria** — testable statements that define "done".
-2. **Subtasks** — a ToC-style index listing each subtask with its title and a link to its file in the task folder (e.g. `T1.1.md`). No checkboxes, no status indicators. This index is a human-readable table of contents, not the source of truth for progress — the subtask files' frontmatter is.
+2. **Subtasks** — a ToC-style index listing each subtask with its title and a link to its file in the task folder (e.g. `T1.1-wire-login-endpoint.md`). No checkboxes, no status indicators. This index is a human-readable table of contents, not the source of truth for progress — the subtask files' frontmatter is.
 3. **Out of scope** — explicit list of things *not* being done.
 4. **Edge cases** — known tricky scenarios the implementer must handle.
 5. **Open questions** (optional) — a list of questions for the user. Used at planning time (before approval). Mid-implementation blockers are recorded on the specific subtask's `## Open questions` section instead of here — the blocked subtask, not the whole spec, is what pauses. Same serialization rule as in `exploration.md`: asked one per message, answers recorded in-file, section renamed to `Resolved questions` when done. While questions are pending, `awaiting: user-input`.
 
 ## Subtask files
 
-Feature-scope tasks decompose into subtask files named `T<N>.<M>.md`, one file per vertical slice, stored directly in the task folder alongside `task.md` and `spec.md`. Each file has frontmatter carrying orchestration state and a body describing the work. The dotted-id filename prevents collision with task-level artifacts (`task.md`, `spec.md`, etc.) — no subdirectory is needed.
+Feature-scope tasks decompose into subtask files whose preferred filename is `T<N>.<M>-<slug>.md`, one file per vertical slice, stored directly in the task folder alongside `task.md` and `spec.md`. Derive `<slug>` from the subtask title using the same lowercase, spaces-to-hyphens, punctuation-stripping, roughly-40-character rule used for task-folder slugs. Legacy bare filenames like `T<N>.<M>.md` remain valid for older tasks; readers and orchestrators accept both shapes. The dotted-id prefix keeps subtask files visually distinct from task-level artifacts (`task.md`, `spec.md`, etc.) while the slug makes a directory listing readable without opening every file. The filename is a convenience label, not the source of truth — the in-file `id` and `title` fields remain authoritative if a title later changes.
 
 ```markdown
 ---
@@ -175,7 +175,7 @@ If verify later sends the task back with `checks.md` overall `blocked`, `hyper-i
 
 ### Validation
 
-Before each dispatch iteration, the orchestrator scans the task folder for subtask files (`T<parent>.*.md`, where `<parent>` is the parent task id like `T27`) and aborts with a specific error if any of the following are true:
+Before each dispatch iteration, the orchestrator scans the task folder for subtask files whose names start with `T<parent>.` and end with `.md` (for example `T27.1-wire-login-endpoint.md` or legacy `T27.1.md`) and aborts with a specific error if any of the following are true:
 
 - No subtask files exist on a feature-scope task.
 - Any subtask file's YAML frontmatter is unparseable or missing required fields (`id`, `parent`, `status`).

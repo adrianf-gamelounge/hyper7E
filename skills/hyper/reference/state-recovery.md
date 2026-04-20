@@ -54,7 +54,7 @@ There are only three valid explanations:
 
 Recovery:
 
-- if it is clearly a legacy checklist spec, either migrate manually into `T<N>.<M>.md` files or re-run `hyper-plan`
+- if it is clearly a legacy checklist spec, either migrate manually into current-format subtask files (`T<N>.<M>-<slug>.md`) or re-run `hyper-plan`
 - if plan output is partial or suspect, re-run `hyper-plan` from the approved `exploration.md`
 - if the task was misclassified and is really quick-scope, correct `scope` and continue
 
@@ -70,7 +70,7 @@ Examples:
 Recovery:
 
 - repair the frontmatter directly in the affected subtask files
-- update `spec.md` ToC if titles or ids changed
+- update `spec.md` ToC if titles, ids, or filenames changed
 - do not dispatch workers until the graph validates cleanly
 
 ### 4. `awaiting` divergence

@@ -1,6 +1,6 @@
 ---
 name: hyper-implement
-description: Runs the implement phase of a Hyper task. For feature-scope tasks, orchestrates per-subtask workers — scans the task folder for T<N>.<M>.md subtask files, picks the next unblocked one, dispatches a sub-agent via the Task tool to run the hyper-worker skill on that file, then advances. For quick-scope tasks, implements directly from the approach in exploration.md. If verify sends a task back blocked, runs a remediation pass from checks.md and returns to verify. Use when a Hyper task is in the 'implement' phase. Keywords hyper, implement, orchestrator, dispatch, worker, subtasks, sub-agent.
+description: Runs the implement phase of a Hyper task. For feature-scope tasks, orchestrates per-subtask workers — scans the task folder for subtask files named `T<N>.<M>-<slug>.md` (while still accepting legacy `T<N>.<M>.md`), picks the next unblocked one, dispatches a sub-agent via the Task tool to run the hyper-worker skill on that file, then advances. For quick-scope tasks, implements directly from the approach in exploration.md. If verify sends a task back blocked, runs a remediation pass from checks.md and returns to verify. Use when a Hyper task is in the 'implement' phase. Keywords hyper, implement, orchestrator, dispatch, worker, subtasks, sub-agent.
 user-invocable: false
 ---
 
@@ -13,7 +13,7 @@ You are in the **implement** phase. For `feature` scope, you usually orchestrate
 - `task.md` (phase=implement)
 - `exploration.md` (approved approach)
 - `spec.md` (for `feature` scope — acceptance criteria + ToC index of subtask files + out-of-scope + edge cases)
-- `T<N>.<M>.md` subtask files (for `feature` scope — one per vertical slice in the task folder, with frontmatter `status`, `depends`, `awaiting`)
+- `T<N>.<M>-<slug>.md` subtask files for new `feature`-scope tasks (legacy `T<N>.<M>.md` also valid) — one per vertical slice in the task folder, with frontmatter `status`, `depends`, `awaiting`
 
 ## Outputs
 
@@ -63,11 +63,11 @@ You are an **orchestrator**. You read subtask files, dispatch one worker per sub
 
 ### Step 1 — Validate subtask files
 
-Scan the task folder for subtask files: `.hyper/tasks/T<N>-*/T<N>.*.md` (e.g. `T27.1.md`, `T27.2.md`). Task-level artifacts like `task.md`, `spec.md`, `checks.md`, `notes.md` do not match the `T<N>.*.md` pattern and are ignored.
+Scan the task folder for subtask files: `.hyper/tasks/T<N>-*/T<N>.*.md` (for example `T27.1-wire-login-endpoint.md`, `T27.2-login-form.md`, or legacy `T27.1.md`). Task-level artifacts like `task.md`, `spec.md`, `checks.md`, `notes.md` do not match the `T<N>.*.md` pattern and are ignored.
 
 Before picking anything to dispatch, validate. If any check fails, abort with an error naming the specific problem. Do not guess, default, or silently skip.
 
-- At least one `T<N>.<M>.md` file exists in the task folder. (If none found: *"no subtask files found at the task folder root — this task is either legacy (checklist-in-spec model), scope-classified wrong, or missing plan output. Re-run hyper-plan or migrate manually."*)
+- At least one subtask file exists in the task folder whose name starts with `T<N>.` and ends with `.md`. (If none found: *"no subtask files found at the task folder root — this task is either legacy (checklist-in-spec model), scope-classified wrong, or missing plan output. Re-run hyper-plan or migrate manually."*)
 - Every matching file has parseable YAML frontmatter with required fields (`id`, `parent`, `status`, `depends`).
 - Every file's `parent` matches the current task id.
 - No two files claim the same `id`.
@@ -94,7 +94,7 @@ Prompt template:
 ```
 Load the `hyper-worker` skill and run it against this subtask file:
 
-  <absolute path to T<N>.<M>.md in the task folder>
+  <absolute path to the selected subtask file in the task folder, e.g. T<N>.<M>-<slug>.md or legacy T<N>.<M>.md>
 
 Parent task folder:
 
@@ -157,7 +157,7 @@ Workers own the escalation path for out-of-scope findings (they append to `.hype
 
 Before flipping `phase: verify`:
 
-- **Feature scope:** every `T<N>.<M>.md` subtask file in the task folder has `status: done`. No `awaiting` set. No subtasks missing or unaccounted for.
+- **Feature scope:** every subtask file in the task folder whose name starts with `T<N>.` has `status: done`. No `awaiting` set. No subtasks missing or unaccounted for.
 - **Quick scope:** the change is made, tests ran at least once and passed (or you explicitly told the user no test suite exists), no debug prints or stray TODOs left behind.
 - Scope did not expand beyond what `spec.md` (feature) or `exploration.md` (quick) described.
 
