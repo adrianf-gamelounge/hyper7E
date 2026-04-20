@@ -76,6 +76,8 @@ If the id doesn't exist in either location, say so and offer to list active task
 
 Create a task the user doesn't want to start right now — it queues up for later.
 
+Creation has two mandatory synchronous elicitations: the title (step 1) and the Why (step 7). Neither is optional. If the user refuses to supply a Why, the task is not created — see step 7 for the refusal path. The Why is the durable record of *why the task exists*; it is not design rationale and is not added later.
+
 Steps:
 
 1. Get the title from the user's request. If they said "create a task to migrate v2", the title is "Migrate to v2". Clean it up (trim filler, keep it under ~60 chars).
@@ -84,7 +86,7 @@ Steps:
    The user already said "create a task", so task is the default. Only nudge toward backlog if the content is clearly idea-shaped. Ask once: *"This is a rough sketch. Park in backlog for later triage, or create the task now anyway?"* If the user opts for backlog, recommend `/hyper-backlog "add: <goal>"` and stop. Otherwise proceed. One nudge, not a loop.
 3. Determine the next task id: scan **both** `.hyper/tasks/` and `.hyper/archive/` for the highest `T<N>` prefix across the two, use `T<N+1>`. Archived ids count — they are never reused.
 4. Derive a kebab-case slug from the title (lowercase, spaces → hyphens, strip punctuation, ~40 chars).
-5. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `../hyper/templates/task.md`, with frontmatter:
+5. Draft the frontmatter (to be written in step 7, once the Why is in hand):
    ```yaml
    ---
    id: T<N>
@@ -95,8 +97,15 @@ Steps:
    awaiting: null
    ---
    ```
-6. Body: one paragraph capturing the user's intent in their words.
-7. Report to the user: *"Created T<N> — <title> (deferred). Invoke `hyper T<N>` when you're ready to start it."*
+6. Draft the body: one paragraph capturing the user's intent in their words. Hold the draft in memory — do not write `task.md` yet.
+7. **Elicit the Why.** Ask the user once, verbatim: *"Why this task? One or two sentences — motivation, constraint, or triggering incident. This is the durable record of why the task exists."* Stop and wait for the answer. Same synchronous pattern as the title elicitation in step 1 — do not proceed until the user responds.
+
+   When the user answers, trim leading and trailing whitespace and decide:
+
+   - **Non-empty answer after trimming:** append `## Why\n\n<answer verbatim>\n` to the body drafted in step 6. Preserve the user's input exactly — do not reformat, truncate, or rewrap, even if it spans multiple paragraphs or contains Markdown. Now create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `../hyper/templates/task.md` with the frontmatter from step 5 and the composed body. Continue to step 8.
+   - **Empty or whitespace-only answer, or explicit refusal ("skip", "no", "none", "n/a", etc.):** do **not** create the folder or write `task.md`. Stop and report: *"Cannot create T<N> without a Why. Re-run `/hyper-task create <goal>` when you have the motivation, or add to backlog with `/hyper-backlog add: <goal>`."* No task.md is written in this case — the artifact must never land without a Why.
+
+8. Report to the user: *"Created T<N> — <title> (deferred). Invoke `hyper T<N>` when you're ready to start it."*
 
 Do not start the workflow. `phase: deferred` signals the task exists but is unscheduled. When the user later invokes `hyper T<N>`, `hyper` sees the deferred phase, transitions it to `explore`, and begins the normal flow.
 

@@ -115,9 +115,16 @@ Given task id `T<N>`:
 2. Determine the next task id: scan **both** `.hyper/tasks/` and `.hyper/archive/` for the highest `T<N>` prefix across both, use `T<N+1>`. Archived ids count — they are never reused.
 3. Derive a short title from the user's goal (trim filler, keep it under ~60 chars, imperative phrasing when possible).
 4. Derive a kebab-case slug from the title (lowercase, spaces → hyphens, strip punctuation, ~40 chars).
-5. Create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `templates/task.md`. Fill in `id`, `title`, `created` (today's ISO date), and set `phase: explore`, `scope: unknown`, `awaiting: null`.
-6. Body: one short paragraph restating the user's goal in their words.
-7. Announce: *"Created T<N> — <title>. Starting explore phase."*
+5. Draft the frontmatter (to be written in step 7, once the Why is in hand) using the `templates/task.md` shape, with `id`, `title`, `created` (today's ISO date), `phase: explore`, `scope: unknown`, and `awaiting: null`.
+6. Draft the body: one short paragraph restating the user's goal in their words. Hold the draft in memory — do not write `task.md` yet.
+7. **Elicit the Why.** Ask the user once, verbatim: *"Why this task? One or two sentences — motivation, constraint, or triggering incident. This is the durable record of why the task exists."* Stop and wait for the answer.
+
+   When the user answers, trim leading and trailing whitespace and decide:
+
+   - **Non-empty answer after trimming:** append `## Why\n\n<answer verbatim>\n` to the body drafted in step 6. Preserve the user's input exactly — do not reformat, truncate, or rewrap, even if it spans multiple paragraphs or contains Markdown. Now create `.hyper/tasks/T<N>-<slug>/task.md` using the shape in `templates/task.md` with the frontmatter from step 5 and the composed body. Continue to step 8.
+   - **Empty or whitespace-only answer, or explicit refusal ("skip", "no", "none", "n/a", etc.):** do **not** create the folder or write `task.md`. Stop and report: *"Cannot create T<N> without a Why. Re-run `/hyper <goal>` when you have the motivation, or use `/hyper-backlog add: <goal>` if this should wait."*
+
+8. Announce: *"Created T<N> — <title>. Starting explore phase."*
 
 ## Dispatch phase
 

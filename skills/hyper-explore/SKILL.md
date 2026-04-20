@@ -27,6 +27,8 @@ This phase runs first on every task. No code gets written until the user approve
 ```
 read task.md
   │
+  ├── backfill ## Why on task.md (elicit if missing, no-op if present)
+  │
   ├── clarify the goal (if needed)
   │
   ├── classify scope (quick / feature / research)
@@ -41,6 +43,24 @@ read task.md
   │
   └── set awaiting: user-approval and stop
 ```
+
+## Step 1a — Backfill `## Why` on `task.md`
+
+Before clarification, ensure the task has a persisted motivation. This runs on every explore invocation, including re-entry after revision requests.
+
+1. Read `task.md` body. Find `## Why` headings using a case-insensitive match on the heading line itself. Accept casing and whitespace variants like `## why`, `## WHY`, or `##  Why` (double space). Match only the exact heading `## Why` — a longer variant such as `## Why this approach` does **not** satisfy the rule.
+2. For each matched `## Why` heading, inspect its body up to the next `##` heading or EOF. A `## Why` section counts as valid only if, after trimming whitespace, it contains non-empty content and is not just a placeholder line wrapped in angle brackets like `<...>`.
+3. **If any valid `## Why` section is present** (even if the file also has empty or malformed duplicates): skip elicitation. Do not re-prompt. Do not modify the section. Proceed to Step 1.
+4. **If no valid `## Why` section is present:** set `task.md` frontmatter `awaiting: user-input` and ask the user once, verbatim:
+
+   *"Before we go further on this task — why does it need doing? One or two sentences on the motivation, constraint, or triggering incident."*
+
+   Stop and wait for the answer.
+5. When the user answers:
+   - **Non-empty answer (after trimming whitespace):** if `task.md` already has a `## Why` heading whose body is empty or placeholder-only, replace that section body with the answer verbatim. Otherwise append a blank line followed by `## Why`, a blank line, and the answer verbatim. Accept multi-paragraph prose, markdown, code fences, or links — do not reformat or truncate. Always emit the canonical `## Why` heading form when creating a new section. Clear `awaiting` on `task.md`. Proceed to Step 1.
+   - **Empty or whitespace-only answer:** ask once more with a short nudge: *"Even one sentence is enough — why does this task matter?"* If the user still declines (empty answer or explicit refusal), do **not** append a blank `## Why`. Leave `awaiting: user-input` set, stop, and let the user retry or take other action. Do not silently proceed to Step 1 with no Why persisted.
+
+Re-entry case: if explore is re-invoked after the user requested revisions in a previous pass, and that earlier pass already persisted a valid `## Why`, the check in points 1–3 short-circuits this step. No re-prompt.
 
 ## Step 1 — Clarify the goal
 

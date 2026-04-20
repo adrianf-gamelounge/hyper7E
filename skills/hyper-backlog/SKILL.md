@@ -135,7 +135,13 @@ Steps:
 2. **Parse the entry:** title is everything after `— ` in the heading; body is every line after the heading up to (but not including) the next `^## B\d+ — ` heading or EOF. Trim leading/trailing blank lines from the body.
 3. **Allocate the next task id** `T<M>` by scanning **both** `.hyper/tasks/` and `.hyper/archive/` for the highest existing `T<N>` prefix and adding 1.
 4. **Derive a kebab-case slug** from the title (lowercase, spaces → hyphens, strip punctuation, ~40 chars).
-5. **Create the task folder** `.hyper/tasks/T<M>-<slug>/task.md` with:
+5. **Elicit the Why.** Ask the user once, verbatim: *"Why this task? One or two sentences — motivation, constraint, or triggering incident. This is the durable record of why the task exists."* Stop and wait for the answer.
+
+   When the user answers, trim leading and trailing whitespace and decide:
+
+   - **Non-empty answer after trimming:** build the task body from the backlog entry body, verbatim. If the backlog entry had no body, use the one-line body *"Promoted from backlog entry B<N>."* Then append a blank line, `## Why`, a blank line, and the answer verbatim. Do not reformat or truncate either the backlog body or the user's answer, even if they contain Markdown. Continue to step 6.
+   - **Empty or whitespace-only answer, or explicit refusal ("skip", "no", "none", "n/a", etc.):** do **not** create the task folder, do **not** write `task.md`, and do **not** remove the backlog entry. Stop and report: *"Cannot promote B<N> without a Why. The backlog entry is unchanged. Re-run `/hyper-backlog promote B<N>` when you have the motivation."*
+6. **Create the task folder** `.hyper/tasks/T<M>-<slug>/task.md` using the `task.md` shape from the bundled Hyper data model, with:
    ```markdown
    ---
    id: T<M>
@@ -148,11 +154,10 @@ Steps:
 
    # <title>
 
-   <body from the backlog entry, verbatim>
+   <body from step 5, plus the appended `## Why` section>
    ```
-   If the backlog entry had no body, write a one-line body: *"Promoted from backlog entry B<N>."*
-6. **Remove the entry** from `.hyper/backlog.md` — delete the heading line and all lines until (not including) the next `## B<N>` heading or EOF. Collapse the two blank lines this leaves into one so the file stays tidy.
-7. **Report:** *"Promoted B<N> → T<M> — <title> (deferred). Start it with `/hyper T<M>` when you're ready."*
+7. **Remove the entry** from `.hyper/backlog.md` — delete the heading line and all lines until (not including) the next `## B<N>` heading or EOF. Collapse the two blank lines this leaves into one so the file stays tidy.
+8. **Report:** *"Promoted B<N> → T<M> — <title> (deferred). Start it with `/hyper T<M>` when you're ready."*
 
 Do **not** invoke `hyper` or start the explore phase yourself. Promotion creates a deferred task folder; the user decides when to start it later.
 
