@@ -49,13 +49,9 @@ awaiting: null
 <The user's goal in their words, cleaned up after any clarification.
 Two or three paragraphs max. This is what the task is about — the
 artifacts below say how it gets done.>
-
-## Why
-
-<1–3 sentences on the motivation, constraint, or triggering incident behind the task.>
 ```
 
-`## Why` is required on tasks created after this rule was introduced. Existing tasks that pre-date the rule are grandfathered and do not need backfill unless they are otherwise being repaired.
+`## Why` is an optional body section on `task.md`. Add it when persisting the motivation, constraint, or triggering incident would help a future reader. When creating or promoting a task, the agent may reuse a clear reason already present in the request or source artifact, but it should not elicit a dedicated Why prompt just to satisfy structure. During explore, the agent may still ask about the end goal behind the requested change when that context is needed to reason well about alternatives; missing `## Why` does not block the workflow.
 
 ### Frontmatter fields
 
@@ -279,7 +275,7 @@ An entry begins at `^## B\d+ — ` and ends at the next such heading (or EOF). B
 
 ### Promotion
 
-`hyper-backlog promote B<N>` turns an idea into a task: it asks the user for a short `## Why`, then, if supplied, creates `.hyper/tasks/T<M>-<slug>/task.md` seeded from the backlog entry's title and body plus that `## Why`, with `phase: deferred`, removes the entry from `backlog.md`, and waits for the user to start it later with `hyper T<M>`. If the user declines or leaves the Why empty, promotion stops and the backlog entry stays untouched. The `B<N>` id is not reused; the new task gets a fresh `T<M>`.
+`hyper-backlog promote B<N>` turns an idea into a task: it creates `.hyper/tasks/T<M>-<slug>/task.md` from the backlog entry's title and body with `phase: deferred`. If the backlog entry already contains a clear reason and persisting it would help, the agent may carry that reason into an optional `## Why` section; otherwise it leaves the task body as-is. The backlog entry is then removed from `backlog.md`, and the user can start the task later with `hyper T<M>`. The `B<N>` id is not reused; the new task gets a fresh `T<M>`.
 
 ## Repairing malformed state
 

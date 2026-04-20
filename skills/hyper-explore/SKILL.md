@@ -27,7 +27,7 @@ This phase runs first on every task. No code gets written until the user approve
 ```
 read task.md
   │
-  ├── backfill ## Why on task.md (elicit if missing, no-op if present)
+  ├── surface / elicit end goal if needed (optional Why, not a gate)
   │
   ├── clarify the goal (if needed)
   │
@@ -44,29 +44,18 @@ read task.md
   └── set awaiting: user-approval and stop
 ```
 
-## Step 1a — Backfill `## Why` on `task.md`
+## Step 1 — Surface the end goal, then clarify the goal
 
-Before clarification, ensure the task has a persisted motivation. This runs on every explore invocation, including re-entry after revision requests.
+If `task.md` already has a `## Why` section, leave it alone and use it as context. If it does not, treat that as missing context, not malformed state.
 
-1. Read `task.md` body. Find `## Why` headings using a case-insensitive match on the heading line itself. Accept casing and whitespace variants like `## why`, `## WHY`, or `##  Why` (double space). Match only the exact heading `## Why` — a longer variant such as `## Why this approach` does **not** satisfy the rule. Ignore `## Why`-looking lines that appear inside fenced code blocks or blockquotes; only a real section heading counts.
-2. For each matched `## Why` heading, inspect its body up to the next `##` heading or EOF. A `## Why` section counts as valid only if, after trimming whitespace, it contains substantive reason text, is not just a placeholder line wrapped in angle brackets like `<...>`, and is not just acknowledgement or filler.
-3. **If any valid `## Why` section is present** (even if the file also has empty or malformed duplicates): skip elicitation. Do not re-prompt. Do not modify the section. Proceed to Step 1.
-4. **If no valid `## Why` section is present:** set `task.md` frontmatter `awaiting: user-input` and ask the user once, verbatim:
+Before settling the approach, make sure you understand the end goal behind the requested change — what problem the user is trying to solve, what outcome they want, or what they are optimizing for.
 
-   *"Before we go further on this task — why does it need doing? One or two sentences on the motivation, constraint, or triggering incident."*
+- **If the end goal is already clear from `task.md`**, carry that understanding into exploration. You may optionally persist it under `## Why` if that would help future readers, but do not reshape the file just to satisfy structure.
+- **If the end goal is not clear enough to reason well about alternatives,** ask one question focused on outcome, not implementation: *"What's the end goal here — what problem are we solving or what are we optimizing for?"* Stop and wait for the answer.
+- **If the user answers with useful end-goal context,** carry it into `exploration.md` and optionally persist it under `## Why` on `task.md` if that would help future readers.
+- **If the user declines, is unsure, or gives no additional context,** continue anyway. Missing Why is not a gate.
 
-   Stop and wait for the answer.
-5. When the user answers, classify it before writing anything:
-   - **Substantive reason:** if the reply clearly gives a motivation, constraint, or triggering incident, then if `task.md` already has a `## Why` heading whose body is empty or placeholder-only, replace that section body with the answer verbatim. Otherwise insert a blank line, `## Why`, a blank line, and the answer verbatim immediately after the lead goal-restatement block and before the first later `##` heading if one exists; if no later `##` heading exists, append the section at the end. Accept multi-paragraph prose, markdown, code fences, or links — do not reformat or truncate. Always emit the canonical `## Why` heading form when creating a new section. Clear `awaiting` on `task.md`. Proceed to Step 1.
-   - **Follow-up question:** answer briefly, leave `awaiting: user-input` set, stop, and wait for the Why.
-   - **Explicit refusal:** do **not** append a blank `## Why`. Leave `awaiting: user-input` set and stop.
-   - **Empty answer, filler, or other non-reason reply:** ask once more with a short nudge: *"Even one sentence is enough — why does this task matter?"* Stop and wait for that answer. If the next reply still does not give a substantive reason, do **not** append a blank `## Why`. Leave `awaiting: user-input` set, stop, and let the user retry or take other action. Do not silently proceed to Step 1 with no Why persisted.
-
-Re-entry case: if explore is re-invoked after the user requested revisions in a previous pass, and that earlier pass already persisted a valid `## Why`, the check in points 1–3 short-circuits this step. No re-prompt.
-
-## Step 1 — Clarify the goal
-
-Read the task body. Does it unambiguously describe what to do?
+Then read the task body. Does it unambiguously describe what to do?
 
 - **Clear** → continue to scope classification.
 - **One likely interpretation** → state it and ask one question: *"I read this as X. Sound right?"*

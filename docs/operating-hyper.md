@@ -70,7 +70,7 @@ A good rule of thumb:
 - `maybe later` → backlog
 - `ship this` → task
 
-When Hyper creates or promotes a task, expect one short `Why` prompt. That answer is written into `task.md` so the task keeps its motivation even if you resume it much later.
+When Hyper creates or promotes a task, it may persist a short `Why` in `task.md` when that would help future readers. If the current request or source artifact already makes the reason clear, Hyper may reuse that context. It should not ask a separate Why prompt just to satisfy structure. During explore, though, Hyper may still ask about the end goal behind the requested change so it can reason like a companion and not just implement the first proposed solution.
 
 ## What to do when the repo is already dirty
 

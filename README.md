@@ -159,15 +159,15 @@ Agent: [implement remediation pass from checks.md, then returns to verify]
 ### Backlog promotion
 
 ```text
-You: add to backlog: maybe replace Redis locks with DB-backed locks
+You: add to backlog: maybe replace Redis locks with DB-backed locks because Redis is becoming a reliability bottleneck in local dev and CI.
 Agent: Added B7 — Replace Redis locks with DB-backed locks.
 You: promote B7
-Agent: Why this task? One or two sentences — motivation, constraint, or triggering incident.
-You: Redis is becoming a reliability bottleneck in local dev and CI, so we need a simpler lock path.
 Agent: Promoted B7 → T6 — Replace Redis locks with DB-backed locks (deferred).
 You: /hyper T6
 Agent: Starting T6 — Replace Redis locks with DB-backed locks.
 ```
+
+If the current request or backlog entry already makes the reason clear, Hyper may reuse that context for an optional `## Why` on `task.md`. It does not ask a separate Why question just to satisfy structure. During explore, Hyper may still ask about the end goal behind the requested change so it can reason about better approaches or challenge a bad idea before implementation.
 
 ## What Hyper writes
 
@@ -177,7 +177,7 @@ After first use, your project has:
 .hyper/
   tasks/              # active tasks
     T1-add-login-page/
-      task.md         # goal + why + current phase
+      task.md         # goal + current phase (optional why)
       exploration.md  # findings + approach (approved)
       spec.md         # acceptance criteria + subtask index + out-of-scope + edge cases
       T1.1.md         # subtask (feature scope): status, depends, what/why/done-when, worker's completion record
