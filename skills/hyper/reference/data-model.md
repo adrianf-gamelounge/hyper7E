@@ -134,8 +134,8 @@ awaiting: null
 <Testable criterion — what the worker checks before flipping status to done.>
 
 ## Open questions
-<Optional. Added mid-work by the worker when blocked. Removed or renamed
-to "Resolved questions" once answered.>
+<Optional. Added mid-work by the worker when it hits a clarification blocker.
+Removed or renamed to "Resolved questions" once answered.>
 
 ## Completion
 <Written by the worker when status flips to done. File-grouped bullets:
@@ -155,7 +155,7 @@ to "Resolved questions" once answered.>
 | `id` | `T<N>.<M>` | Full dotted id. `N` is the parent task id, `M` is a per-task incrementing integer starting at 1. |
 | `parent` | `T<N>` | Parent task id. Must match the id of the task folder that owns this file. |
 | `title` | short string | Human-readable title. Mirrored in the `spec.md` ToC index. |
-| `status` | `todo` · `in-progress` · `done` · `blocked` | Current state. Orchestrator picks the next `todo` whose `depends` are all `done`. `blocked` means user intervention is required even after clearing `awaiting`. |
+| `status` | `todo` · `in-progress` · `done` | Current state. `todo` is the initial state and the only one the orchestrator dispatches from (next `todo` whose `depends` are all `done`). `in-progress` is set by the worker as its first mutation so an interrupted dispatch can be diagnosed. `done` is the terminal state, set by the worker after tests pass and `## Completion` is written. User-intervention blockers use `awaiting: user-input` — not a status value. |
 | `depends` | list of sibling ids | Subtask ids (e.g. `[T1.1, T1.2]`) that must have `status: done` before this one can be dispatched. Empty list means independently dispatchable. |
 | `awaiting` | `null` · `user-input` | Subtask-level gate. When `user-input`, the worker hit a clarification blocker; the orchestrator propagates this to the parent `task.md`'s `awaiting` so the top-level `hyper` gate stops dispatch. Cleared when the user answers. |
 
@@ -168,7 +168,7 @@ Subtask-level `awaiting: user-input` propagates up to `task.md`'s `awaiting: use
 The orchestrator in `hyper-implement` selects subtasks by scanning frontmatter:
 
 - Pick the first file (alphabetical by id) where `status: todo` and every id listed in `depends` has `status: done` in its own file.
-- If nothing matches and at least one subtask is still `todo`, either a dependency chain is unsatisfied (expected — other subtasks are still running or blocked) or there's a deadlock (abort with error).
+- If nothing matches and at least one subtask is still `todo`, either a dependency chain is unsatisfied (expected — other subtasks are still running or awaiting user input) or there's a deadlock (abort with error).
 - If every subtask is `status: done`, advance the parent task to `phase: verify` and return.
 
 If verify later sends the task back with `checks.md` overall `blocked`, `hyper-implement` runs a remediation pass directly from `checks.md` instead of reopening or renumbering completed subtask files.
