@@ -98,6 +98,73 @@ Agent: [dispatches one worker per subtask, then verifies and updates docs]
 
 Or invoke a skill directly with its slash command: `/hyper` (work), `/hyper-task` (list, create-deferred, cancel, status), `/hyper-backlog` (add, list, promote, drop ideas), `/hyper-handoff`, `/hyper-retro`. Resume a specific task with `/hyper T3`.
 
+## When not to use Hyper
+
+Skip Hyper when the work is obviously micro-sized and tracking would add more ceremony than value.
+
+Typical examples:
+- typo fixes
+- tiny copy tweaks
+- one-line config corrections
+- obvious mechanical edits in a non-sensitive area
+
+If the area is sensitive — auth, payments, migrations, deletes, security boundaries — prefer Hyper even if the diff may be small.
+
+## More example flows
+
+### Quick task
+
+```text
+You: Rename this local helper and update its two call sites.
+Agent: [loads hyper, classifies scope: quick]
+       Wrote exploration.md. Scope: quick. Please read it and tell me to proceed.
+You: proceed
+Agent: [implements directly, verifies, archives task]
+       T2 is complete.
+```
+
+### Research task
+
+```text
+You: Investigate whether our current auth flow can support SSO without a rewrite.
+Agent: [loads hyper, classifies scope: research]
+       Wrote exploration.md. Scope: research. Please read it and tell me to proceed.
+You: looks good
+Agent: [archives the task at done]
+       T3 is complete.
+```
+
+### Blocked feature subtask
+
+```text
+You: Add locale-aware page caching.
+Agent: [explore → plan → implement]
+       T4.2 is blocked: should the cache key include locale, or only post id?
+You: include locale
+Agent: [records answer in T4.2.md, re-dispatches the worker]
+```
+
+### Verify remediation pass
+
+```text
+Agent: [verify]
+       Wrote checks.md. Verdict: blocked. Rate limiting acceptance criterion still fails.
+You: fix it
+Agent: [implement remediation pass from checks.md, then returns to verify]
+       T5 is ready for verify. Continue?
+```
+
+### Backlog promotion
+
+```text
+You: add to backlog: maybe replace Redis locks with DB-backed locks
+Agent: Added B7 — Replace Redis locks with DB-backed locks.
+You: promote B7
+Agent: Promoted B7 → T6 — Replace Redis locks with DB-backed locks (deferred).
+You: /hyper T6
+Agent: Starting T6 — Replace Redis locks with DB-backed locks.
+```
+
 ## What Hyper writes
 
 After first use, your project has:
@@ -172,3 +239,14 @@ The bullets above describe what Hyper is. These describe how an agent working in
 - **Pivots during explore are normal.** When the direction shifts mid-explore, rewrite `exploration.md` — but carry forward resolved questions and the pivot rationale so the artifact stays the durable record.
 - **Robustness before cleverness.** Handle error paths, validate at boundaries, fail loudly. Validation and error-path handling for the code you are writing are part of the work, not speculative scope.
 - **Stay focused, park the drift.** Pre-existing problems go to `.hyper/backlog.md`, not inline "while I'm here" fixes. Deepen the task you were given; don't widen it.
+
+## Further reading
+
+- [`docs/operating-hyper.md`](docs/operating-hyper.md) — how to use Hyper on real projects, including when not to use it.
+- [`docs/maintaining-hyper.md`](docs/maintaining-hyper.md) — how to maintain the Hyper repo itself.
+
+To validate this repo's own skill/docs contracts locally:
+
+```bash
+python3 scripts/validate-hyper.py
+```
