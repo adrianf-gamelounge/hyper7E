@@ -26,7 +26,7 @@ Do **not** touch `task.md`, `spec.md`, or sibling subtask files. The orchestrato
 
 ## Flow
 
-1. **Load the subtask file.** Read frontmatter (`id`, `parent`, `title`, `status`, `depends`, `awaiting`) and body (`## What`, `## Why`, `## Done when`, optional `## Open questions`).
+1. **Load the subtask file.** Read frontmatter (`id`, `parent`, `title`, `status`, `depends`, `awaiting`) and body (`## What`, `## Why`, `## Done when`, optional `## Open questions` or `## Resolved questions` — the orchestrator renames the section after the last answer is recorded, so on re-dispatch you'll see `## Resolved questions`).
 2. **Verify state.** `status` must be `todo` or `in-progress`. `awaiting` must be `null` (if it's `user-input`, the orchestrator should have cleared it before re-dispatching — if not, stop and report). Every id in `depends` must be `status: done` in its own file.
 3. **Load surrounding context.** Re-read the parent `task.md` (for scope and original goal) and `spec.md` (for acceptance criteria). Don't re-read exploration unless `## What` or `## Why` references it.
 4. **Mark in-progress.** Set the subtask's frontmatter `status: in-progress`. This is the one and only mutation before the work starts — it lets an interrupted dispatch be diagnosed.
@@ -64,7 +64,7 @@ If you hit a question you cannot resolve from the spec, exploration, or the code
 2. Set the subtask's frontmatter `awaiting: user-input`. Leave `status` unchanged.
 3. Return to the orchestrator with: *"T<N>.<M> blocked on <one-line question topic>"*. The orchestrator returns an `awaiting-input` verdict to `hyper`; `hyper` sets `task.md` `awaiting: user-input` and surfaces the question to the user. Once answered, the orchestrator records the answer, clears the subtask's `awaiting`, and re-dispatches you.
 
-When you're re-dispatched after an answer, step 1 of the Flow picks up the answer (now recorded under the question in `## Open questions`). Use it and continue.
+When you're re-dispatched after an answer, step 1 of the Flow picks up the answer (now recorded under the question in `## Resolved questions` — the orchestrator renames the section from `## Open questions` once every question has an answer, before re-dispatching). Use it and continue.
 
 ## Pre-existing problems you notice
 
