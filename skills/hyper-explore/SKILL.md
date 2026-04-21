@@ -245,9 +245,3 @@ On a user reply that requests changes, revise `exploration.md` (rewrite-over-pat
 - Unexamined assumptions are where wasted work comes from. Surface them as explicit questions, not as hidden defaults in the approach.
 - **Question the framing.** The user's ask is a hypothesis, not a directive. After scanning the code, state the current framing alongside one plausible alternate framing; raise the alternate as a clarification only if the evidence supports it.
 - **Pivots during explore are normal.** When the direction shifts mid-explore, rewrite `exploration.md` — but carry forward resolved questions and the pivot rationale so the artifact stays the durable record.
-
-## Additional resources
-
-- `../hyper/reference/gates.md` — shared gate protocol for open questions and approval replies.
-- `templates/exploration.md` — ready-to-fill template for non-bugfix tasks.
-- `templates/exploration-bugfix.md` — ready-to-fill template when `task.md` has `bugfix: true`.

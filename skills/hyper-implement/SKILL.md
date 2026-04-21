@@ -223,9 +223,3 @@ Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gat
 - **Clean, reviewable diff.** Every piece of work should reduce surprise for whoever reads the diff next — including future you.
 - **Robustness before cleverness (quick scope).** Handle error paths, validate at boundaries, fail loudly. Validation is part of the work, not speculative scope.
 - **Stay focused, park the drift.** Pre-existing problems go to `.hyper/backlog.md`, not inline "while I'm here" fixes.
-
-## Additional resources
-
-- `../hyper/reference/gates.md` — shared gate protocol for blocked-subtask questions and later replies.
-- `../hyper/reference/state-recovery.md` — repair path for malformed, partial, or legacy task state.
-- `../hyper/reference/memory.md` — what belongs in `.hyper/memory.md`, and what does not.
