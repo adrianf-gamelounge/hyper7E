@@ -235,7 +235,7 @@ Verdict: pass | needs-changes | blocked
 
 Missing `## docs` means the docs phase hasn't completed yet. Missing one of the earlier sections means verify hasn't completed yet.
 
-Direct verify remediation is allowed only for local fixes that do not change decomposition, planning, or user-visible scope. Larger blocked findings return through `implement` using `checks.md` as the remediation brief.
+Verify never patches code. Any blocked finding returns the task to `implement` with `awaiting: user-input`; the next implement pass reads `checks.md` as its remediation brief and bounces back to verify when done.
 
 ## `handoff.md`
 

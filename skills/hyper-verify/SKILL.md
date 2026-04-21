@@ -40,14 +40,7 @@ git status --short
 
 Include untracked files in your mental model — they're part of the change.
 
-If a check uncovers a problem directly caused by the change under review, you may make a narrow remediation edit during verify **only when all of these are true**:
-
-- the fix is local to the finding you already have in hand
-- no new acceptance criterion, design branch, or user decision is needed
-- no subtask decomposition or spec rewrite is needed
-- the resulting diff stays small and reviewable
-
-If any of those are false, do not patch during verify. Stop and send the task back to implement. Cap yourself at two remediation rounds total across this phase.
+**Verify never patches code.** If a check uncovers a problem, record it in `checks.md` and bounce the task back to implement with `phase: implement` and `awaiting: user-input`. The implement phase owns all remediation; verify only observes and reports. This keeps the responsibility boundary sharp and avoids two skills fighting over the same diff.
 
 ## Section 1 — Tests
 
@@ -67,7 +60,7 @@ If any of those are false, do not patch during verify. Stop and send the task ba
 <If no test runner: say so explicitly — "Project has no test suite." — and do not fake a pass.>
 ```
 
-**If tests fail because of the current change:** spend from your remediation budget to fix them. Before the second round, re-read all files touched in round one and explicitly state what assumption was wrong. If the second round still fails, stop fixing — record the failures and escalate via `awaiting: user-input`.
+**If tests fail because of the current change:** record the failures in `checks.md` and set the overall verdict to `blocked`. Do not attempt fixes in verify — the implement phase will read `checks.md` as its brief on the bounce-back.
 
 **If tests fail for reasons unrelated to the change:** append a new entry to `.hyper/backlog.md`. Format: a `## B<N> — <short title>` heading (e.g. `## B<N> — Pre-existing failure in auth.test.ts`) followed by a body containing the test name, error message, and a note that it's pre-existing. Allocate `B<N>` by scanning `backlog.md` for the highest existing `^## B\d+ — ` heading and adding 1 (bootstrap with a `# Backlog` heading if missing). Don't fix inline. Record the pre-existing failures in `checks.md` but mark the verdict `pass` if current-change tests pass.
 
@@ -212,7 +205,7 @@ Use the shape in `templates/checks.md` (bundled with this skill). This phase wri
 
 - `pass` — tests pass, review has no critical, qa passes (or n/a). Ready to advance.
 - `needs-changes` — warnings exist but no criticals. Agent still advances; user sees the warnings.
-- `blocked` — at least one critical or qa failure remains after up to two remediation rounds, or the fix is too large / structural for verify to patch directly. Phase moves to `implement` with `awaiting: user-input`; the next implement pass addresses `checks.md`.
+- `blocked` — at least one test failure, critical review finding, or QA failure. Phase moves to `implement` with `awaiting: user-input`; the next implement pass reads `checks.md` as its brief and returns to verify.
 
 ## Advancing the phase
 
@@ -245,8 +238,7 @@ Return to the `hyper` skill.
 - **Run the tests.** Static analysis is not a test run. If you can't run tests (no runner, env issues), record that explicitly — don't fake a pass.
 - **Review the diff, not the file.** Pre-existing code is out of scope unless the change makes it worse.
 - **Critical means critical.** Don't inflate severity to look thorough, and don't downgrade real findings to ship faster.
-- **Verify only patches local fixes.** If the needed fix changes decomposition, planning, or user-visible scope, bounce back to implement instead of patching here.
-- **Max two remediation rounds.** Across tests/review/QA combined, you get at most two fix-and-rerun loops in this phase. After that, escalate — looping agents make bugs worse, not better.
+- **Verify never patches code.** Any blocked finding bounces to implement with `checks.md` as the brief. Implement is the single owner of the remediation loop.
 - **QA tests behavior, not code.** Reading the implementation is review, not QA. Run the feature.
 - **Evidence over assertion.** Every QA row has real output. "I checked, it works" is not evidence.
 
