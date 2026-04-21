@@ -16,7 +16,6 @@ All Hyper state lives on disk under `.hyper/` in the project root. Plain markdow
       checks.md         # test results, review findings, qa notes; docs phase appends docs outcome
       handoff.md        # (optional) latest session handoff snapshot
       retro.md          # (optional) task-scoped retrospective entries
-      notes.md          # (optional) free-form working notes
   archive/              # terminal tasks (phase: done or cancelled)
     T1-add-login-page/
       task.md           # same artifacts, just moved
@@ -63,7 +62,7 @@ artifacts below say how it gets done.>
 | `scope` | `quick` · `feature` · `research` · `unknown` | Set during explore by `hyper-explore`. Drives which phases run. `unknown` before explore classifies it. Phase-owned classification, not workflow state. |
 | `created` | ISO date | When the task was created. |
 | `bugfix` | `true` · `false` | Set by `hyper-explore` when the task is a bugfix or regression. Routes `hyper-explore` to the root-cause-first sub-flow. Defaults to `false`; detection lives in `hyper-explore` Step 1. Missing field is treated as `false` for back-compat. Phase-owned classification, not workflow state. |
-| `awaiting` | `null` · `user-approval` · `user-input` · `<custom label>` | When set, the gate is open. **Owned by `hyper`.** `hyper` sets and clears this field based on the verdict returned by the phase skill (`awaiting-approval` → `user-approval`, `awaiting-input` → `user-input`, `phase-complete` → clear). `hyper` pauses normal routing while the gate is open, surfaces the gate on blank / generic resume turns, and routes the next substantive reply back to the current phase skill. See `reference/gates.md` for the verdict contract. |
+| `awaiting` | `null` · `user-approval` · `user-input` | When set, the gate is open. **Owned by `hyper`.** `hyper` sets and clears this field based on the verdict returned by the phase skill (`awaiting-approval` → `user-approval`, `awaiting-input` → `user-input`, `phase-complete` → clear). `hyper` pauses normal routing while the gate is open, surfaces the gate on blank / generic resume turns, and routes the next substantive reply back to the current phase skill. See `reference/gates.md` for the verdict contract. |
 | `cancelled_at` | ISO date | Present only when `phase: cancelled`. Date the task was cancelled. |
 | `cancelled_reason` | short string | Present only when `phase: cancelled`. One-line reason. |
 
