@@ -77,6 +77,7 @@ Hyper targets **any** agent that supports the Agent Skills spec, not just Claude
 2. Update `README.md` — the skills table and any prose mentioning the skill.
 3. If the new skill is chained from another, update that skill's body to reference it by name.
 4. Run a grep pass for stray references (old name, old path form).
+5. If you use per-skill symlinks in `~/.claude/skills/` for local development, add or refresh the corresponding link for the new folder. Existing wildcard or one-off links do not automatically expose newly added skill directories.
 
 ## When touching the data model
 
@@ -87,6 +88,7 @@ Hyper targets **any** agent that supports the Agent Skills spec, not just Claude
 There's no test suite — the "tests" are exercising Hyper end-to-end on a real project. Rough loop:
 
 1. `ln -sfn $(pwd)/skills/hyper ~/.claude/skills/hyper` (and siblings) — symlink, so edits take effect live.
+   If you add a new skill folder, create its link explicitly. Re-running a past wildcard link command does not update already-linked directories by itself.
 2. Open Claude Code (or another agent) in a throwaway project.
 3. Invoke `/hyper <some task>` and walk through the phases.
 4. If a skill triggers wrong or its instructions go off the rails, read the failed session carefully before editing — often it's the description that's misaligned, not the body.

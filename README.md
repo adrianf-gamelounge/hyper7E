@@ -61,6 +61,8 @@ mkdir -p ~/.claude/skills
 ln -s ~/hyper7/skills/* ~/.claude/skills/
 ```
 
+If you pull updates that add new skill folders later, re-run the `ln -s ~/hyper7/skills/* ~/.claude/skills/` command or link the new folder manually. The glob expands only when you run it, so existing links do not pick up newly added skill directories automatically.
+
 **Per-project install** (skills available in one project):
 
 ```bash
