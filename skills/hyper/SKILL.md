@@ -171,18 +171,7 @@ Route through the cancellation flow. Set `phase: cancelled`, record `cancelled_a
 
 ### Phase-transition table
 
-| From phase | Task scope | Next phase | Checkpoint? |
-|------------|------------|------------|-------------|
-| `explore` | `quick` | `implement` | no |
-| `explore` | `feature` | `plan` | no |
-| `explore` | `research` | `done` | terminal — archive + announce |
-| `plan` | `feature` | `implement` | no |
-| `implement` | any | `verify` | **yes** |
-| `verify` | `quick` | `done` | terminal — archive + announce |
-| `verify` | `feature` | `docs` | **yes** |
-| `docs` | `feature` | `done` | terminal — archive + announce |
-
-Approval-gated phases (`explore`, `plan`) auto-advance because their approval **was** the user's proceed signal. Agent-completion transitions (`implement → verify`, `verify → docs`) stop and ask so the user can inspect the diff or `checks.md` before moving on.
+Apply the phase-transition table from `reference/gates.md`. Approval-gated phases (`explore`, `plan`) auto-advance because their approval **was** the user's proceed signal. Agent-completion transitions (`implement → verify`, `verify → docs`) stop and ask so the user can inspect the diff or `checks.md` before moving on.
 
 ### Archive on terminal
 
