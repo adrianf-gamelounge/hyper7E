@@ -129,6 +129,7 @@ Read the task's `phase` field and route:
 | `implement` | Invoke the `hyper-implement` skill for this task. |
 | `verify` | Invoke the `hyper-verify` skill for this task. |
 | `docs` | Invoke the `hyper-docs` skill for this task. |
+| `review` | Invoke the `hyper-code-review` skill for this task (only legal when `scope: code-review`). |
 | `done` | Report completion and task folder path. Stop. |
 | `cancelled` | Report the cancellation and reason. Stop. |
 

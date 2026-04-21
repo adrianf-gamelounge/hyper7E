@@ -58,8 +58,8 @@ artifacts below say how it gets done.>
 |-------|--------|---------|
 | `id` | `T1`, `T2`, … | Sequential integer. First task is `T1`. |
 | `title` | short string | Human-readable title, used in the folder name and headings. |
-| `phase` | `deferred` · `explore` · `plan` · `implement` · `verify` · `docs` · `done` · `cancelled` | Current phase. **Owned by `hyper`** (and by `hyper-task` on cancellation). Phase skills return verdicts; they do not write this field. `done` and `cancelled` are terminal. `deferred` means the task exists but the user hasn't started it yet (created by `hyper-task`). |
-| `scope` | `quick` · `feature` · `research` · `unknown` | Set during explore by `hyper-explore`. Drives which phases run. `unknown` before explore classifies it. Phase-owned classification, not workflow state. |
+| `phase` | `deferred` · `explore` · `plan` · `implement` · `verify` · `docs` · `review` · `done` · `cancelled` | Current phase. **Owned by `hyper`** (and by `hyper-task` on cancellation). Phase skills return verdicts; they do not write this field. `done` and `cancelled` are terminal. `deferred` means the task exists but the user hasn't started it yet (created by `hyper-task`). `review` is only used by `scope: code-review` tasks and is handled by `hyper-code-review`. |
+| `scope` | `quick` · `feature` · `research` · `code-review` · `unknown` | Set during explore by `hyper-explore`, or set at task creation by `hyper-code-review` for standalone code-review tasks. Drives which phases run. `unknown` before explore classifies it. Phase-owned classification, not workflow state. |
 | `created` | ISO date | When the task was created. |
 | `bugfix` | `true` · `false` | Set by `hyper-explore` when the task is a bugfix or regression. Routes `hyper-explore` to the root-cause-first sub-flow. Defaults to `false`; detection lives in `hyper-explore` Step 1. Missing field is treated as `false` for back-compat. Phase-owned classification, not workflow state. |
 | `awaiting` | `null` · `user-approval` · `user-input` | When set, the gate is open. **Owned by `hyper`.** `hyper` sets and clears this field based on the verdict returned by the phase skill (`awaiting-approval` → `user-approval`, `awaiting-input` → `user-input`, `phase-complete` → clear). `hyper` pauses normal routing while the gate is open, surfaces the gate on blank / generic resume turns, and routes the next substantive reply back to the current phase skill. See `reference/gates.md` for the verdict contract. |
@@ -73,6 +73,7 @@ artifacts below say how it gets done.>
 | `quick` | explore → implement → verify → done |
 | `feature` | explore → plan → implement → verify → docs → done |
 | `research` | explore → done (terminal artifact is `exploration.md`; no code changes) |
+| `code-review` | review → done (terminal artifact is `checks.md` with a `## review` block; no code changes, no explore/plan/implement) |
 
 Phases are skipped by scope, not by agent judgment. If a feature task has no docs to update, `docs` phase still runs and writes `checks.md` recording "no docs changed, rationale: …".
 
@@ -82,7 +83,7 @@ Requests that the shared intake heuristic classifies as direct-handling work nev
 
 ### Internal vs user-facing skills
 
-Users invoke five Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`. The phase skills (`hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`) plus `hyper-worker` are internal — invoked by `hyper` or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu.
+Users invoke six Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, and `hyper-code-review` (for standalone code reviews on arbitrary diffs). The phase skills (`hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`) plus `hyper-worker` are internal — invoked by `hyper` or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu. `hyper-code-review` is dual-mode: user-invocable for standalone reviews, and also invoked internally by `hyper-verify` as its review pass on in-flight tasks.
 
 This repo also ships the companion `team` skill, but it sits outside the Hyper task-state model described in this file.
 

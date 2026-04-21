@@ -123,200 +123,29 @@ Otherwise:
 User opted out at verify start.
 ```
 
-No sub-sections (no 2a, 2b, 2c, no Validation). The false-positive blocklist and high-signal criteria do not apply because nothing is being reviewed. Move on to Section 3.
+No sub-sections. Move on to Section 3.
 
-Otherwise:
+Otherwise, invoke the `hyper-code-review` skill in **embedded mode**. That skill owns the three ordered sub-passes (spec compliance, bug-finding, standards compliance), the validation step that drops unconfirmed findings, the false-positive blocklist, and the high-signal criteria for `critical`.
 
-Review runs as three ordered sub-passes. Spec compliance is a gate that runs first. Bug-finding and standards compliance run only when spec compliance passes — reviewing the soundness or standards of code that doesn't match the contract is wasted work.
+**Dispatching `hyper-code-review`.** Hand over:
 
-**Parallelism.** 2a always runs first. Sub-passes 2b (Bug-finding) and 2c (Standards compliance) are independent: they read the same diff but write to different sub-sections of `checks.md`, so they may be dispatched concurrently on harnesses that reliably support parallel subagent dispatch (such as Claude Code). Harnesses without reliable parallel dispatch — Codex CLI, Gemini CLI, PI, Aider, Continue, and any inline-only mode — must run 2b and 2c sequentially. The validation step (after this section's sub-passes collect findings) always runs after 2b and 2c finish, regardless of how they were dispatched.
+- the absolute task folder path (`.hyper/tasks/T<N>-*/`),
+- the diff command scoped to the change under review (`git diff HEAD` for single-branch work, or a ref-range like `git diff <base>...<head>` if the task is on a feature branch against a base),
+- the task's `scope` (`quick` or `feature`) so it knows whether to read `spec.md`.
 
-**False-positive blocklist.** The reviewer must not flag any of the following as findings in 2a, 2b, or 2c:
+On harnesses with reliable parallel subagent dispatch (Claude Code and any agent SDK exposing a comparable primitive), the skill may internally run 2b and 2c concurrently and validate per-finding in parallel. On Codex CLI, Gemini CLI, PI, Aider, Continue, and any inline-only mode, the same skill runs sequentially in the current session. Either way, verify calls it the same way — the skill decides how to run its sub-passes based on the host harness.
 
-- Pre-existing issues not touched by this diff (reinforces the "Review the diff, not the file" rule).
-- Issues the project's linter, type-checker, or formatter would catch. The reviewer has no reason to re-verify what the tooling covers.
-- Subjective style suggestions (naming preferences, formatting variations).
-- Issues already silenced in code via documented suppressions (e.g. `// eslint-disable-line`, `@phpstan-ignore` with a reason).
-- Speculative input-dependent concerns ("could break if someone passes X") without concrete evidence in the diff.
-- General coverage or testing concerns not called out as an acceptance criterion in `spec.md`.
+**What `hyper-code-review` returns.** A single `## review` markdown block written into `checks.md`, overwriting any prior `## review` section. The block carries its own rollup verdict (`pass | needs-changes | blocked`) at the top, per the shape in `templates/checks.md`. It also returns a one-line summary with the verdict and finding counts for use in your own summary back to `hyper`.
 
-The blocklist targets noise, not genuine context. A reviewer may still mention a blocklisted item as `note` severity when there is a specific, stated reason to surface it — but never as `warning` or `critical`.
+**What verify does with that verdict.**
 
-### 2a — Spec compliance (runs first, gates 2b and 2c)
+- `pass` — continue to Section 3 (QA).
+- `needs-changes` — continue to Section 3 (QA). The overall rollup will surface the warnings to the user without blocking.
+- `blocked` — stop the phase here. Section 3 (QA) does not run on a blocked review because a remediation pass will bring the task back to verify anyway. Return verdict `redirect target: implement` to `hyper`. `hyper` sets `phase: implement` and `awaiting: user-input`. The next implement pass uses `checks.md` as its brief, fixes the blockers, and returns to verify.
 
-Read the diff against `spec.md` (or, for quick-scope tasks with no `spec.md`, the implicit acceptance criteria from `exploration.md`'s Approach section). One question: **does the diff implement the contract?**
+**Verify does not re-review.** You do not second-guess `hyper-code-review`'s findings, add severities, or re-run any sub-pass yourself. If you believe the review missed something, record it as a note under a `### Verify notes` sub-section after `hyper-code-review`'s output — but do not modify the findings list or verdict it produced.
 
-Look for:
-
-- Missing acceptance criterion — listed in `spec.md` but not visible in the diff.
-- Partially implemented criterion — present but doesn't satisfy the contract (wrong shape, wrong behavior, missing edge case the spec called out).
-- Scope creep — code in the diff that isn't covered by any acceptance criterion or `## Done when` line.
-- For feature scope, also cross-check each subtask file's `## Done when` against the diff.
-
-This sub-pass does **not** cover whether the code is sound — that's 2b. It does **not** cover whether the code follows project standards — that's 2c. It does **not** cover whether the running behavior matches the contract — that's QA. Only the static read of the diff against the contract.
-
-Severities here collapse to two values:
-
-- **blocker** — any real spec mismatch. Per the principle that ordering matters, every spec drift blocks 2b and 2c and bounces the task back to implement.
-- **note** — observation worth flagging that stays inside the contract.
-
-Record as:
-
-```markdown
-### Spec compliance
-
-**Verdict:** pass | blocked
-
-- **[blocker]** `<criterion or path:line>` — <which acceptance criterion is unmet, how>. **Fix:** <how>.
-- **[note]** `<...>`
-
-<If no findings: "Diff matches spec.md acceptance criteria.">
-```
-
-**If 2a verdict is `blocked`:** write the spec compliance section, write both the bug-finding and standards compliance sections as `**Verdict:** skipped — spec compliance blocked.` with no findings list, set the combined `## review` verdict to `blocked`, then stop the phase. Return verdict `redirect target: implement` to `hyper`. `hyper` sets `phase: implement` and `awaiting: user-input`. The next implement pass uses `checks.md` as its brief, fixes the spec drift, and returns to verify.
-
-### 2b — Bug-finding (runs only when 2a passes)
-
-Read the diff again, this time for soundness. Scope: correctness, robustness, security, data-loss risk, crash paths. Architecture and hygiene belong in 2c, not here. Look for:
-
-**Correctness**
-- Error paths handled? `JSON.parse` in a try/catch? External call with no timeout?
-- Off-by-one, null/undefined cases, race conditions?
-- Logic that will produce wrong results on real inputs?
-
-**Robustness**
-- External input validated at the boundary (not trusted three layers in)?
-- Errors surfaced loudly — thrown, returned, or logged — never silently swallowed or turned into empty defaults?
-- Failure paths complete? No stub returns, no `// TODO handle this`, no early return that leaves the system in a half-written state?
-- Boundary and edge-case behavior present: empty input, max size, unexpected shape, unreachable-on-happy-path branch?
-
-**Security** (any code touching external input or output)
-- Input sanitized / validated at the boundary?
-- SQL parameterized, never interpolated?
-- Output escaped in the correct context?
-- Secrets absent from code and logs?
-- File paths validated against traversal?
-
-**High-signal criteria for `critical`.** A finding in 2b may be recorded at `critical` severity only if it meets at least one of:
-
-- (a) the code fails to compile, parse, or type-check;
-- (b) the code definitely produces wrong results regardless of inputs;
-- (c) the code is exploitable via a named attack path (e.g. SQL injection through unparameterized input, path traversal via an unvalidated file name, command injection via unescaped shell arguments).
-
-A suspected bug that does not meet (a), (b), or (c) must be recorded as `warning` or `note`, not `critical`. Warnings and notes stay speculative — the reviewer may flag probable issues at those severities without meeting the high-signal bar.
-
-This sub-pass does **not** cover whether the diff matches `spec.md` — that's 2a. It does **not** cover architecture, hygiene, or project-rule compliance — that's 2c. It does **not** cover whether the running behavior matches the contract — that's QA. Only correctness, robustness, security, and crash/data-loss risk in the code as written.
-
-Each finding has a severity:
-
-- **critical** — exploitable vulnerability, data-loss risk, crash path, or correctness bug that will break behavior. Blocks completion.
-- **warning** — real problem worth fixing before merging. Does not block.
-- **note** — observation, suggestion, small improvement.
-
-Record as:
-
-```markdown
-### Bug-finding
-
-**Verdict:** pass | needs-changes | blocked
-
-- **[critical]** `<path>:<line>` — <what's wrong>. <why it matters>. **Fix:** <how>.
-- **[warning]** `<path>:<line>` — <...>
-- **[note]** `<path>` — <...>
-
-<If no findings: "No findings. Diff shows no correctness, robustness, or security issues.">
-```
-
-2b verdict rules:
-
-- `pass` — no critical, maybe warnings/notes. Move on.
-- `needs-changes` — warnings the user should see before shipping, but you as the agent are not going to fix them right now.
-- `blocked` — at least one critical finding. You (or the user) must fix before the task can complete.
-
-A `blocked` verdict in 2b does not short-circuit 2c — the two sub-passes are independent and both write their findings before the combined review verdict is rolled up. The `redirect target: implement` decision is made after 2c is written.
-
-### 2c — Standards compliance (runs only when 2a passes)
-
-Read the diff a third time, this time for conformance to project standards. Scope: architecture (layer boundaries, speculative abstractions, duplication/extraction), hygiene (debug code, commented-out blocks, dead code), and project-rule compliance against `.hyper/rules.md`, `AGENTS.md` (user and project level), and the project's `CLAUDE.md`.
-
-Load the rule sources before reading the diff:
-
-- `.hyper/rules.md` — project-local Hyper rules.
-- `AGENTS.md` at project root and at user level (`~/AGENTS.md`, plus any language/platform addenda it points to).
-- The project's `CLAUDE.md` if present.
-
-Look for:
-
-**Architecture**
-- Layer boundaries respected? No HTTP helpers in core logic, no DB access from presentation?
-- New abstractions actually needed, or speculative?
-- Duplication that should have been extracted? Extraction that should have been duplication?
-
-**Hygiene**
-- Debug code, commented-out blocks, `console.log`, `var_dump`, dead branches, stray `TODO`s left behind?
-
-**Project rules**
-- Conventions from `.hyper/rules.md`, `AGENTS.md`, or the project's `CLAUDE.md` that the diff breaks — naming, structure, forbidden patterns, workflow rules, etc.
-
-**Every finding in 2c must cite a specific rule by file path and quoted text.** The format is `<file path>: "<quoted rule text>"`. If you cannot cite a rule, it is not a standards violation — either it belongs in 2b (if it is a real bug) or it is out of scope for review. An architectural observation with no cite-able rule is not a 2c finding.
-
-This sub-pass does **not** cover whether the diff matches `spec.md` — that's 2a. It does **not** cover correctness, robustness, or security — that's 2b. It does **not** cover whether the running behavior matches the contract — that's QA. Only conformance to documented project standards.
-
-Each finding has a severity:
-
-- **critical** — a standards violation severe enough to block (e.g. a hard "never do X" rule broken, a forbidden pattern shipped). Blocks completion.
-- **warning** — a standards violation worth fixing before merging. Does not block.
-- **note** — observation, minor drift, small improvement.
-
-Record as:
-
-```markdown
-### Standards compliance
-
-**Verdict:** pass | needs-changes | blocked
-
-- **[critical]** `<path>:<line>` — <what's wrong>. Rule: `<rule file>`: "<quoted rule text>". **Fix:** <how>.
-- **[warning]** `<path>:<line>` — <...>. Rule: `<rule file>`: "<...>".
-- **[note]** `<path>` — <...>. Rule: `<rule file>`: "<...>".
-
-<If no findings: "No findings. Diff follows project standards and documented rules.">
-```
-
-2c verdict rules:
-
-- `pass` — no critical, maybe warnings/notes. Move on.
-- `needs-changes` — warnings the user should see before shipping, but you as the agent are not going to fix them right now.
-- `blocked` — at least one critical finding. You (or the user) must fix before the task can complete.
-
-**If 2c verdict is `blocked`:** stop the phase after 2c is written. Return verdict `redirect target: implement` to `hyper`. `hyper` sets `phase: implement` and `awaiting: user-input`. The next implement pass uses `checks.md` as its brief, fixes the criticals, and returns to verify.
-
-### Validation (runs after 2b and 2c finish)
-
-Before the combined `## review` verdict is computed, validate every finding collected by 2b and 2c. This is the accuracy pass: its job is to cut false positives before the user sees them.
-
-**Scope.** Validation applies to every finding from 2b and 2c regardless of severity (`critical`, `warning`, or `note`). 2a findings are not validated — spec compliance is a direct comparison against `spec.md` and a second read would be redundant.
-
-**Mechanism.** For each finding, re-examine the diff plus the surrounding context and answer one question: *"Is this claim true with high confidence?"* "High confidence" means you can point to the specific lines or behavior that make the finding true — not just a plausible concern. Apply the same filters the sub-passes did: the false-positive blocklist above, and (for 2b `critical` findings) the high-signal criteria. A finding that now looks blocklisted, or a `critical` that no longer meets (a)/(b)/(c), does not hold up.
-
-**Drop, don't demote.** Findings that do not hold up under the second read are dropped entirely. Do not demote a non-confirmed `critical` to `warning` or `note` — if the claim is not true with high confidence, it is out.
-
-**On parallel-capable harnesses,** validation runs as a single pass over the combined 2b + 2c findings list after both sub-passes finish. Do not attempt to run validation concurrently with 2b or 2c — validation reads the findings they produce.
-
-**Effect on sub-pass verdicts.** The combined `## review` verdict is computed on the post-validation findings set: whatever survives validation is what counts toward each sub-pass verdict. If validation drops every `critical` from 2b, 2b's verdict becomes `pass`. Likewise for 2c.
-
-**No trace of dropped findings.** Dropped findings are not recorded in `checks.md`. They are not logged, listed, or counted anywhere in the written output. The whole point of validation is a clean report; the rationale for a drop exists only in your reasoning during the pass. If the user asks why something was dropped, the conversation can discuss it — the durable artifact stays clean.
-
-**User override.** If the user reads `checks.md` and believes a validated finding is wrong (because they know context the agent does not), they can push back on the next turn. The existing `redirect target: implement` path handles the override: the remediation brief is `checks.md`, and implement reconciles the pushback on its next pass. Validation inside verify is primary; user override through the remediation loop is the escape hatch.
-
-### Combined review verdict
-
-Write the top-level `## review` verdict at the start of the section as the worst of 2a, 2b, and 2c, ranked `blocked` > `needs-changes` > `pass`. The 2b and 2c verdicts used here are the post-validation verdicts — computed on the findings set that survived the validation step above. 2a is not validated, so its verdict enters the rollup as-written.
-
-- `blocked` if any sub-pass is `blocked`.
-- `needs-changes` if at least one sub-pass is `needs-changes` and no sub-pass is `blocked`.
-- `pass` if all three sub-passes are `pass`.
-
-Downstream consumers (the overall `checks.md` verdict logic, the implement-pass remediation loop) read this single combined verdict.
+**Remediation-pass reviews.** When verify re-dispatches after an implement remediation, call `hyper-code-review` again the same way. It overwrites the prior `## review` section cleanly on each pass; `checks.md` represents current state, not history.
 
 ## Section 3 — QA (conditional)
 

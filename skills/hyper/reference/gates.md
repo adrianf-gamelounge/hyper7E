@@ -43,6 +43,7 @@ Phase skills must return exactly one verdict per dispatch. A verdict with no new
 | `verify` | `quick` | `done` | no — `hyper` archives and announces |
 | `verify` | `feature` | `docs` | **yes** — "T<N> verify passed. Continue to docs?" |
 | `docs` | `feature` | `done` | no — `hyper` archives and announces |
+| `review` | `code-review` | `done` | no — `hyper` archives and announces (the post-review prompt is inside `hyper-code-review`, not a phase-transition checkpoint) |
 
 For `redirect`:
 
