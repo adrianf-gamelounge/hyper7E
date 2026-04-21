@@ -73,7 +73,44 @@ If any of those are false, do not patch during verify. Stop and send the task ba
 
 ## Section 2 — Review
 
-Read the diff. Look for:
+Review runs as two ordered sub-passes. Spec compliance is a gate that runs first. Code quality runs only when spec compliance passes — reviewing the polish of code that doesn't match the contract is wasted work.
+
+### 2a — Spec compliance (runs first, gates 2b)
+
+Read the diff against `spec.md` (or, for quick-scope tasks with no `spec.md`, the implicit acceptance criteria from `exploration.md`'s Approach section). One question: **does the diff implement the contract?**
+
+Look for:
+
+- Missing acceptance criterion — listed in `spec.md` but not visible in the diff.
+- Partially implemented criterion — present but doesn't satisfy the contract (wrong shape, wrong behavior, missing edge case the spec called out).
+- Scope creep — code in the diff that isn't covered by any acceptance criterion or `## Done when` line.
+- For feature scope, also cross-check each subtask file's `## Done when` against the diff.
+
+This sub-pass does **not** cover whether the code is well written — that's 2b. It does **not** cover whether the running behavior matches the contract — that's QA. Only the static read of the diff against the contract.
+
+Severities here collapse to two values:
+
+- **blocker** — any real spec mismatch. Per the principle that ordering matters, every spec drift blocks 2b and bounces the task back to implement.
+- **note** — observation worth flagging that stays inside the contract.
+
+Record as:
+
+```markdown
+### Spec compliance
+
+**Verdict:** pass | blocked
+
+- **[blocker]** `<criterion or path:line>` — <which acceptance criterion is unmet, how>. **Fix:** <how>.
+- **[note]** `<...>`
+
+<If no findings: "Diff matches spec.md acceptance criteria.">
+```
+
+**If 2a verdict is `blocked`:** write the spec compliance section, write the code quality section as `**Verdict:** skipped — spec compliance blocked.` with no findings list, set the combined `## review` verdict to `blocked`, then stop the phase. Update `task.md` with `phase: implement` and `awaiting: user-input`, then return to the `hyper` skill. The next implement pass uses `checks.md` as its brief, fixes the spec drift, and returns to verify.
+
+### 2b — Code quality (runs only when 2a passes)
+
+Read the diff again, this time for soundness. Look for:
 
 **Correctness**
 - Error paths handled? `JSON.parse` in a try/catch? External call with no timeout?
@@ -98,25 +135,23 @@ Read the diff. Look for:
 - Secrets absent from code and logs?
 - File paths validated against traversal?
 
-**Scope**
-- Does the diff match `spec.md`? Any sneaky additions?
+**Hygiene**
 - Debug code, commented-out blocks, `console.log`, `var_dump`, etc. left behind?
+
+This sub-pass does **not** cover whether the diff matches `spec.md` — that's 2a. It does **not** cover whether the running behavior matches the contract — that's QA. Only the soundness of the code as written.
 
 Each finding has a severity:
 
-- **critical** — exploitable vulnerability, data-loss risk, crash path, or bug that breaks an acceptance criterion. Blocks completion.
+- **critical** — exploitable vulnerability, data-loss risk, crash path, or correctness bug that will break behavior. Blocks completion.
 - **warning** — real problem worth fixing before merging. Does not block.
 - **note** — observation, suggestion, small improvement.
 
 Record as:
 
 ```markdown
-## review
+### Code quality
 
 **Verdict:** pass | needs-changes | blocked
-**Files reviewed:** <count> files, <+lines/-lines>
-
-### Findings
 
 - **[critical]** `<path>:<line>` — <what's wrong>. <why it matters>. **Fix:** <how>.
 - **[warning]** `<path>:<line>` — <...>
@@ -125,13 +160,23 @@ Record as:
 <If no findings: "No findings. Diff is consistent with existing patterns, no correctness or security issues spotted.">
 ```
 
-The verdict:
+2b verdict rules:
 
 - `pass` — no critical, maybe warnings/notes. Move on.
 - `needs-changes` — warnings the user should see before shipping, but you as the agent are not going to fix them right now.
 - `blocked` — at least one critical finding. You (or the user) must fix before the task can complete.
 
-**If verdict is `blocked`:** stop the phase. Update `task.md` with `phase: implement` and `awaiting: user-input`, then return to the `hyper` skill. The next implement pass uses `checks.md` as its brief, fixes the criticals, and returns to verify.
+**If 2b verdict is `blocked`:** stop the phase. Update `task.md` with `phase: implement` and `awaiting: user-input`, then return to the `hyper` skill. The next implement pass uses `checks.md` as its brief, fixes the criticals, and returns to verify.
+
+### Combined review verdict
+
+Write the top-level `## review` verdict at the start of the section as the worst of 2a and 2b:
+
+- `blocked` if either sub-pass is `blocked`.
+- `needs-changes` if 2b is `needs-changes` and 2a is `pass`.
+- `pass` if both sub-passes are `pass`.
+
+Downstream consumers (the overall `checks.md` verdict logic, the implement-pass remediation loop) read this single combined verdict.
 
 ## Section 3 — QA (conditional)
 

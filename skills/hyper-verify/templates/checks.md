@@ -17,7 +17,19 @@
 **Verdict:** pass | needs-changes | blocked
 **Files reviewed:** <count> files, <+lines/-lines>
 
-### Findings
+### Spec compliance
+
+**Verdict:** pass | blocked
+
+- **[blocker]** `<criterion or path:line>` — <which acceptance criterion is unmet, how>. **Fix:** <how>.
+- **[note]** `<...>`
+
+<If no findings: "Diff matches spec.md acceptance criteria.">
+
+### Code quality
+
+**Verdict:** pass | needs-changes | blocked
+<If 2a blocked: "skipped — spec compliance blocked.">
 
 - **[critical]** `<path>:<line>` — <what's wrong>. <why it matters>. **Fix:** <how>.
 - **[warning]** `<path>:<line>` — <...>
