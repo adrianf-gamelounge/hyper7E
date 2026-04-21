@@ -97,6 +97,8 @@ Written by the `hyper-explore` skill. Two required sections plus one optional:
 2. **Approach** — how we'll do the work. For `quick`, two or three sentences. For `feature`, one or two paragraphs plus alternatives considered. For `research`, this is where the recommendation goes.
 3. **Open questions** (optional) — a list of questions for the user whose answers would change the approach. When present, `hyper-explore` asks them serially in chat (one per message) and records each answer under the question in this file, renaming the section to `Resolved questions` once all are answered. While questions are pending, `awaiting: user-input`; once answered, it transitions to `awaiting: user-approval`.
 
+The exploration template also carries `### Files to change` and `### Out of scope` subsections under **Approach**. These are **template-level, quick-scope only** — feature-scope exploration defers both to `spec.md` (acceptance criteria + subtasks cover the file list; spec owns "Out of scope"), and research-scope exploration omits "Files to change" while keeping "Out of scope". See `hyper-explore` SKILL.md Step 5 for the full rule.
+
 `exploration.md` is the approval artifact for the explore phase. Once the user approves, phase advances.
 
 ### `exploration-bugfix.md`

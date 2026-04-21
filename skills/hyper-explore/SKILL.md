@@ -189,7 +189,11 @@ For **research** tasks: this section becomes **Findings & Recommendation**. Stru
 
 Use the shape in `templates/exploration.md` (bundled with this skill). It has two sections — **Findings** and **Approach** — with subsections for files to change and out-of-scope, plus an optional **Open questions** section.
 
-**Template routing.** When `task.md` has `bugfix: true`, use `templates/exploration-bugfix.md` instead of `templates/exploration.md`. The bugfix template has different sections (see `skills/hyper/reference/data-model.md` § exploration-bugfix.md). For research tasks, rename **Approach** to **Findings & Recommendation** and omit the "Files to change" subsection.
+**Template routing.** When `task.md` has `bugfix: true`, use `templates/exploration-bugfix.md` instead of `templates/exploration.md`. The bugfix template has different sections (see `skills/hyper/reference/data-model.md` § exploration-bugfix.md). Scope rules for the "Files to change" and "Out of scope" subsections (same rules apply to the bugfix template's top-level sections of the same name):
+
+- **quick scope** — keep both subsections. `exploration.md` is the only artifact, so the file list and out-of-scope note live here.
+- **feature scope** — omit both subsections. They move into `spec.md` (acceptance criteria + subtasks carry the file list; spec owns "Out of scope").
+- **research scope** — rename **Approach** to **Findings & Recommendation**, omit "Files to change", keep "Out of scope" (existing rule preserved).
 
 If any assumption in the approach could change the design depending on the user's answer, add a `## Open questions` section listing one question per list item. Prefer surfacing the assumption as an explicit question over burying it as a hidden default — see the Key principles below.
 

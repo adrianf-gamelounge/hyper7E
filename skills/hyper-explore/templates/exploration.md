@@ -20,13 +20,15 @@ write the structured research answer with a clear final recommendation.>
 
 ### Files to change
 
-<For quick/feature. List file paths. Omit for research.>
+<Quick scope only — feature scope moves this into `spec.md`. Research omits
+this section.>
 
 - `<path>` — <what changes>
 
 ### Out of scope
 
-<Things this task explicitly will not do.>
+<Quick scope only — feature scope moves this into `spec.md`. Research keeps
+this section.>
 
 - <...>
 

@@ -107,9 +107,15 @@ the change; detailed files-to-change goes in the next section. -->
 
 ## Files to change
 
+<!-- Quick scope only — feature scope moves this into `spec.md`. Research
+omits this section. -->
+
 - `<path>` — <what changes>
 
 ## Out of scope
+
+<!-- Quick scope only — feature scope moves this into `spec.md`. Research
+keeps this section. -->
 
 - <...>
 
