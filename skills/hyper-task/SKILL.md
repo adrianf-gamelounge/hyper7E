@@ -12,18 +12,9 @@ Active tasks live at `.hyper/tasks/T<N>-<slug>/task.md`. Terminal (`done` / `can
 
 ## First-use bootstrap
 
-For write operations (`Create`, `Cancel`), if `.hyper/` does not exist yet, create:
+For write operations (`Create`, `Cancel`), ensure `.hyper/` is bootstrapped per `../hyper/reference/bootstrap.md`.
 
-```
-.hyper/
-  tasks/
-  memory.md   # with top-level "# Memory"
-  backlog.md  # with top-level "# Backlog" and the standard HTML comment
-```
-
-`archive/` stays lazy — the first archive move creates it with `mkdir -p .hyper/archive`.
-
-For read-only operations (`List`, `Status`), a missing `.hyper/` just means there are no tasks yet.
+For read-only operations (`List`, `Status`), a missing `.hyper/` just means there are no tasks yet — no bootstrap needed.
 
 ## Routing
 
@@ -118,19 +109,7 @@ Steps:
    - `cancelled_at: <today's ISO date>`
    - `cancelled_reason: <user's reason>`
    - Clear `awaiting` if set (`awaiting: null`).
-5. Archive the folder — move it from `.hyper/tasks/` to `.hyper/archive/`:
-
-   ```bash
-   mkdir -p .hyper/archive
-   # refuse to overwrite an existing archive destination
-   if [ -d ".hyper/archive/T<N>-<slug>" ]; then
-     echo "ERROR: archive destination exists, aborting move"
-     exit 1
-   fi
-   mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
-   ```
-
-   The folder is preserved, not deleted — archive is a move, not a removal.
+5. Archive the folder per `../hyper/reference/archive.md`.
 6. Report: *"Cancelled T<N> — <title>. Reason recorded in `task.md`. Folder archived."*
 
 ## Rules

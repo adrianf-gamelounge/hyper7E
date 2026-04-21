@@ -12,18 +12,7 @@ For task *management* operations (list, create-deferred, cancel, status) the use
 
 ## Before anything else
 
-If `.hyper/` does not exist in the project root, create it:
-
-```
-.hyper/
-  tasks/          # active tasks
-  archive/        # terminal tasks (done / cancelled) — created on first archive move
-  memory.md       # empty file with a top-level "# Memory" heading
-  backlog.md      # file with a top-level "# Backlog" heading and the standard HTML comment
-  rules.md        # optional — project-level normative rules (see below)
-```
-
-`archive/` is created lazily — the first skill to archive a task runs `mkdir -p .hyper/archive` before the move. No need to pre-create.
+Ensure `.hyper/` is bootstrapped per `reference/bootstrap.md`. The canonical folder shape, seed content, and the lazy `archive/` rule live there — any write-side entry point follows the same contract.
 
 **Project rules (optional).** If `.hyper/rules.md` exists, read it once at session start and treat its contents as normative constraints for every phase (explore, plan, implement, verify, docs). It captures conventions, workflow rules, and preferences the user does not want to restate each session — Git workflow, branch naming, commit style, forbidden patterns, etc. Create the file when the user asks to record a project-level rule and it does not already exist; append new rules to the existing file otherwise. Rules there override defaults but never the user's in-session instructions.
 

@@ -81,19 +81,7 @@ The rationale matters. A `no-changes-needed` without reasoning is how stale docs
 
 Update `task.md` frontmatter: `phase: done`.
 
-Then archive the task folder — move it from `.hyper/tasks/` to `.hyper/archive/` so active-task listings stay focused on live work:
-
-```bash
-mkdir -p .hyper/archive
-# refuse to overwrite an existing archive destination
-if [ -d ".hyper/archive/T<N>-<slug>" ]; then
-  echo "ERROR: archive destination exists, aborting move"
-  exit 1
-fi
-mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
-```
-
-By-id lookups (`hyper T<N>`, `hyper-task status`, `hyper-retro`) fall back to `.hyper/archive/` automatically once the folder is moved.
+Then archive the task folder per `../hyper/reference/archive.md`.
 
 Return to the `hyper` skill. It will announce completion.
 

@@ -231,19 +231,7 @@ On a later turn, `hyper` routes the reply back into this skill because the task 
 
 ## Archive on research done
 
-When a `research`-scope exploration is approved and `phase` becomes `done`, move the task folder from `.hyper/tasks/` to `.hyper/archive/`:
-
-```bash
-mkdir -p .hyper/archive
-# refuse to overwrite an existing archive destination
-if [ -d ".hyper/archive/T<N>-<slug>" ]; then
-  echo "ERROR: archive destination exists, aborting move"
-  exit 1
-fi
-mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
-```
-
-Research tasks terminate at this phase (no plan/implement/verify/docs). By-id lookups fall back to `.hyper/archive/` automatically.
+When a `research`-scope exploration is approved and `phase` becomes `done`, archive the task folder per `../hyper/reference/archive.md`. Research tasks terminate at this phase (no plan/implement/verify/docs).
 
 ## Rules
 

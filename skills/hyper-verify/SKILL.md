@@ -217,19 +217,7 @@ Once `checks.md` is written with verdict `pass` or `needs-changes`:
 
 ### Archive the folder
 
-When you set `phase: done` for a quick-scope task, move the task folder from `.hyper/tasks/` to `.hyper/archive/` so active-task listings stay focused on live work:
-
-```bash
-mkdir -p .hyper/archive
-# refuse to overwrite an existing archive destination
-if [ -d ".hyper/archive/T<N>-<slug>" ]; then
-  echo "ERROR: archive destination exists, aborting move"
-  exit 1
-fi
-mv ".hyper/tasks/T<N>-<slug>" ".hyper/archive/T<N>-<slug>"
-```
-
-By-id lookups (`hyper T<N>`, `hyper-task status`, `hyper-retro`) fall back to `.hyper/archive/` automatically once the folder is moved.
+When you set `phase: done` for a quick-scope task, archive the task folder per `../hyper/reference/archive.md`.
 
 Return to the `hyper` skill.
 

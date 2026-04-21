@@ -12,18 +12,9 @@ Tasks live at `.hyper/tasks/T<N>-<slug>/task.md`; the data model is documented i
 
 ## First-use bootstrap
 
-For write operations (`Add`, `Promote`, `Drop`), if `.hyper/` does not exist yet, create:
+For write operations (`Add`, `Promote`, `Drop`), ensure `.hyper/` is bootstrapped per `../hyper/reference/bootstrap.md`.
 
-```
-.hyper/
-  tasks/
-  memory.md   # with top-level "# Memory"
-  backlog.md  # with top-level "# Backlog" and the standard HTML comment
-```
-
-`archive/` stays lazy — the first archive move creates it with `mkdir -p .hyper/archive`.
-
-For `List`, a missing `.hyper/backlog.md` just means the backlog is empty.
+For `List`, a missing `.hyper/backlog.md` just means the backlog is empty — no bootstrap needed.
 
 ## Routing
 

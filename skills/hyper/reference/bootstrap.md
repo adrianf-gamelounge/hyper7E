@@ -1,0 +1,39 @@
+# Bootstrapping `.hyper/`
+
+The `.hyper/` folder is the state root for every Hyper skill. On first use in a fresh project, any skill that needs to write must bootstrap the folder shape before proceeding. Read-only skills may skip bootstrap — a missing `.hyper/` simply means no tasks yet.
+
+## Canonical folder shape
+
+```
+.hyper/
+  tasks/          # active tasks
+  archive/        # terminal tasks (done / cancelled) — created on first archive move
+  memory.md       # top-level "# Memory" heading
+  backlog.md      # top-level "# Backlog" heading + the standard HTML comment
+  rules.md        # optional — project-level normative rules
+```
+
+## Bootstrap rules
+
+1. **Write-side skills** (`hyper`, `hyper-task` Create/Cancel, `hyper-backlog` Add/Promote/Drop) ensure the folder shape exists before writing. Create missing directories and seed `memory.md` and `backlog.md` with their top-level headings.
+2. **Read-side skills** (`hyper-task` List/Status, `hyper-backlog` List) do not bootstrap. A missing `.hyper/` is a valid "empty" state and should produce an empty listing, not an error.
+3. **`archive/` is lazy.** Do not pre-create it during bootstrap; the first archive move runs `mkdir -p .hyper/archive` itself. See `reference/archive.md`.
+4. **`rules.md` is optional.** Create it only when the user explicitly asks to record a project-level rule.
+
+## `backlog.md` seed content
+
+```markdown
+# Backlog
+
+<!-- Ideas live here until promoted to a task. Add with /hyper-backlog. -->
+```
+
+## `memory.md` seed content
+
+```markdown
+# Memory
+```
+
+## Where to reference this
+
+Any skill that used to embed a bootstrap block verbatim should instead say *"Ensure `.hyper/` is bootstrapped per `reference/bootstrap.md`"* and rely on this file for the shape and seeds.
