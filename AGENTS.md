@@ -97,16 +97,9 @@ There's no test suite — the "tests" are exercising Hyper end-to-end on a real 
 
 These are the invariants that keep Hyper small. Apply them to every edit, especially when adding surface area feels easier than restructuring.
 
-- **Single source of truth.** Every contract (table, enum, snippet, mechanic) has exactly one file that owns it. Every other mention is a pointer, not a copy. *Test: if you change the rule in one place, does another file silently disagree? If yes, one of them has to go.*
-- **No dead surface area.** If no skill reads or writes a field, value, artifact, or code path, delete it. Unused options mislead more than they enable. *Test: grep the string across `skills/`. Zero producers or zero consumers → remove it.*
-- **No restatement sections.** `SKILL.md` bodies don't carry "Key principles", "Additional resources", or "Rules" bullets that repeat the flow. `## Rules` lists only novel operational constraints a careful reader would otherwise miss. *Test: could a reader who scanned the body have inferred this bullet? If yes, drop it.*
-- **One artifact name per concept.** Branches live inside the artifact, not in the filename. `exploration.md` carries the bugfix body when needed; there is no `exploration-bugfix.md`. *Test: would a downstream skill need an OR-clause to find this file? If yes, collapse to one name.*
-- **Scope every section to where it applies.** If a subsection is only meaningful in one scope or branch, state the condition and keep it out of the others. *Test: does this section exist on artifacts where nobody reads it? If yes, narrow the scope.*
-- **Pure-producer phase skills.** Phase skills produce an artifact and return a verdict; they don't mutate `task.md` phase/awaiting, decide transitions, or patch state owned by another skill. `hyper` interprets the verdict and owns the transition. *Test: does this skill both produce output and decide where work goes next? If yes, split.*
-- **Shared mechanics live in `reference/`.** Copy-pasted multi-line snippets across skills (archive moves, bootstrap blocks, validation recipes) go into a reference file; call sites become one-liners. *Test: is the same block in two `SKILL.md` files? If yes, extract.*
-- **Provenance hygiene.** Nothing written into this repo — skill bodies, README, docs, code comments, any file the agent touches — carries provenance: no absolute local paths (`/Users/...`, `/home/...`, `~/Projects/...`), no external or predecessor repo names, no concrete historical task ids (`T39`, `T40.2`). Provenance belongs in commit messages, retros, and `.hyper/` workflow state. Placeholder examples that teach a format (`T<N>`, `T1`, `T1.3`, `/path/to/thing`) are fine; concrete references that only mean something to the author are not. Enforced universally by `hyper-plan-review` and `hyper-code-review` — those skills carry the same rule when they ship into other projects. *Test: would a downstream reader with no access to this repo's history benefit from this reference? If no, it is provenance — move it out.*
+The canonical list — rule, rationale, and a quick test for each — lives in [.claude/skills/review-hyper-skills/reference/authoring-invariants.md](.claude/skills/review-hyper-skills/reference/authoring-invariants.md). `review-hyper-skills` audits against the same file, so authoring-time and review-time judgments stay aligned.
 
-When an edit grows the skill set — more files, more filename variants, more enum values, more cross-references — check whether it's enforcing one of these rules or violating one.
+When an edit grows the skill set — more files, more filename variants, more enum values, more cross-references — check whether it's enforcing one of those rules or violating one.
 
 ## Anti-patterns
 

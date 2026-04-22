@@ -106,18 +106,7 @@ For maintainer-drift work, hotspot patterns include:
 
 ### 3. Evaluate against invariants
 
-- single source of truth
-- no dead surface area
-- no restatement sections ("Rules", "Key principles", "Additional resources" tails)
-- no overengineered workflow — every step, section, guard, and abstraction must pay for itself; collapse defensive machinery whose risk is not named, and merge numbered steps that could be one
-- name-drop over re-explain — when a concept has a standard name (SOLID, YAGNI, DRY, idempotency, Chesterton's fence, LRU, exponential backoff, etc.), cite the name rather than re-teaching it; agents already know these, and re-explanation is restatement wearing a different hat
-- one artifact name per concept
-- scope sections only where they apply
-- pure-producer phase skills; orchestrator owns phase and awaiting
-- shared mechanics extracted to `reference/`
-- portability: no accidental host-specific sprawl outside documented exceptions
-- every maintained inventory matches reality on disk
-- cross-file contract surfaces agree on names, vocabularies, and required fields
+The canonical invariants list lives at [reference/authoring-invariants.md](reference/authoring-invariants.md) — rule, rationale, and a quick test for each. Apply it as the evaluation axis for every finding in all three modes. `AGENTS.md` cites the same file so authoring-time and review-time judgments stay aligned.
 
 A finding needs a smallest safe fix, not just a complaint.
 
