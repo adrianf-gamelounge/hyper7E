@@ -49,6 +49,8 @@ Read the user's natural-language input and infer three things:
 | `research` | "how", "why", "investigate", "find out", "explain how X works" | Codebase investigation — read-only, evidence-backed |
 | `verify` | "verify", "confirm", "is it true that", "fact-check" | Fact-check a claim against source code |
 
+Reviews are adversarial by default — the point is to find problems. There is no "gentle review" mode. v1 supports read-only task types only; write-capable delegation (implement, refactor) is deferred.
+
 **Provider detection:** explicit in the request ("ask Codex", "give this to Gemini") or multi-provider ("ask Codex and Gemini"). If the provider is unclear, **ask** — never guess. Task type and target are inferred from context. Only ask about provider.
 
 ### Step 2 — Confirm plan
@@ -66,9 +68,9 @@ The user can correct any part. **Never proceed without confirmation.**
 For each provider, resolve the provider file in this order:
 
 1. `.hyper/team/providers/{provider}.md` in the current project root (project-local teammates).
-2. `${CLAUDE_SKILL_DIR}/references/providers/{provider}.md` (bundled teammates).
+2. `references/providers/{provider}.md` bundled with this skill (resolved relative to this `SKILL.md`).
 
-Use the first file that exists. If neither location has `{provider}.md`, stop and tell the user: list every available provider — the union of `.hyper/team/providers/*.md` and `${CLAUDE_SKILL_DIR}/references/providers/*.md`, excluding `_template.md` — and ask which to use. Never guess.
+Use the first file that exists. If neither location has `{provider}.md`, stop and tell the user: list every available provider — the union of `.hyper/team/providers/*.md` and bundled `references/providers/*.md`, excluding `_template.md` — and ask which to use. Never guess.
 
 Once the file is loaded, verify readiness:
 
@@ -84,7 +86,7 @@ If a CLI can't be installed or authenticated, stop — do not proceed without a 
 To add a teammate that only exists in this project (e.g. a sandboxed Claude reached over `docker exec` or SSH):
 
 1. Create `.hyper/team/providers/<name>.md` in the project root.
-2. Start from the bundled template at `${CLAUDE_SKILL_DIR}/references/providers/_template.md` — copy it to the new path and fill in every section. Project-local files use the same contract as bundled ones.
+2. Start from the bundled template at `references/providers/_template.md` (bundled with this skill) — copy it to the new path and fill in every section. Project-local files use the same contract as bundled ones.
 3. Invoke the teammate by name: "ask `<name>` to review …".
 
 A project-local file fully replaces the bundled one when both define the same `<name>` — there is no section-level merge. To tweak a bundled provider locally, copy the whole file and edit the copy.
@@ -108,13 +110,12 @@ Always include: repo root conventions (README, AGENTS.md, CLAUDE.md if present),
 
 ### Step 5 — Build prompt
 
-1. Read `${CLAUDE_SKILL_DIR}/references/prompts/{task-type}.md` for the prompt template.
-2. Read `${CLAUDE_SKILL_DIR}/references/prompt-blocks.md` for the XML block definitions.
-3. Fill placeholders with context from Step 4: `{CONTEXT}`, `{TARGET}`, `{CONSTRAINTS}`, `{CUSTOM_INSTRUCTIONS}` (omit the block if none).
+1. Read `references/prompts/{task-type}.md` (bundled with this skill) for the prompt template. Each prompt file already inlines its XML blocks verbatim — no separate block library to load.
+2. Fill placeholders with context from Step 4: `{CONTEXT}`, `{TARGET}`, `{CONSTRAINTS}`, `{CUSTOM_INSTRUCTIONS}` (omit the block if none).
 
 **Multi-provider:** the same prompt goes to all providers. Do not customize per provider.
 
-**Structured output:** if the provider supports JSON schema output (see `${CLAUDE_SKILL_DIR}/references/capability-matrix.md`), use it. Otherwise the XML output contract in the prompt enforces structure.
+**Structured output:** if the provider supports JSON schema output (see `references/capability-matrix.md` bundled with this skill), use it. Otherwise the XML output contract in the prompt enforces structure.
 
 If the prompt is too large, reduce context scope (fewer files, shorter diff) and rebuild.
 
@@ -148,7 +149,7 @@ timestamp: {ISO 8601}
 
 Never present unverified teammate output to the user.
 
-**Single provider:** read raw output, check each finding against the codebase (file:line refs exist, described behavior is accurate, reasoning sound). Mark as **verified**, **partially correct** (with correction), or **rejected** (with reason). Add findings the teammate missed.
+**Single provider:** read raw output, check each finding against the codebase (file:line refs exist, described behavior is accurate, reasoning sound). Mark as **verified**, **partially correct** (with correction), or **rejected** (with reason). Add findings the teammate missed. Never invent findings — if verification reveals a hallucination, reject it; do not replace it with a made-up alternative.
 
 **Multi-provider:**
 1. Merge findings across providers.
@@ -177,16 +178,6 @@ Never present unverified teammate output to the user.
 **For research and verify:** present the verified output directly. Include provenance when multi-provider. Add lead's assessment and corrections.
 
 **Save verified artifact** named `team-{providers}-{task-type}.md`. If running inside a Hyper task dir, save there (e.g., `.hyper/tasks/T22-foo/team-codex-code-review.md`). Otherwise save to `.hyper/team/` alongside the raw output.
-
-## Rules
-
-- **Reviews are adversarial by default.** No "gentle review" mode. The point is to find problems.
-- **Self-delegation requires explicit confirmation.** Always warn when lead = teammate.
-- **Provenance on every finding.** Multi-provider runs always attribute which provider said what.
-- **Lead breaks ties.** When providers disagree, the lead reasons through it with project context.
-- **Never invent findings.** If verification reveals a hallucination, reject it — don't replace with a made-up alternative.
-- **Read-only tasks only (v1).** Write-capable delegation (implement, refactor) is deferred.
-- **Max 2 clarification rounds per provider.** Work with what you have after that.
 
 ## Storage
 
