@@ -106,7 +106,10 @@ For maintainer-drift work, hotspot patterns include:
 
 ### 3. Evaluate against invariants
 
-The canonical invariants list lives at [reference/authoring-invariants.md](reference/authoring-invariants.md) — rule, rationale, and a quick test for each. Apply it as the evaluation axis for every finding in all three modes. `AGENTS.md` cites the same file so authoring-time and review-time judgments stay aligned.
+Two different axis sets apply, picked by mode:
+
+- **Mode 1 (`contract-drift`) and shipped-skill findings in Mode 3** — use the canonical authoring invariants at [reference/authoring-invariants.md](reference/authoring-invariants.md). These govern the `skills/**` tree; `AGENTS.md` cites the same file so authoring-time and review-time judgments stay aligned.
+- **Mode 2 (`maintainer-drift`) and repo-surface findings in Mode 3** — use the focus list in Mode 2's own description above (non-operational provenance prose, stale inventories, portability violations, dead or duplicated instruction surface). These govern `AGENTS.md`, `README.md`, `.claude/skills/**`, and repo-local documentation — not the shipped skills.
 
 A finding needs a smallest safe fix, not just a complaint.
 

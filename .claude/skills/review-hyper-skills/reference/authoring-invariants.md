@@ -1,6 +1,8 @@
 # Hyper Authoring Invariants
 
-Canonical list of drift invariants for Hyper skills. This file is cited by `AGENTS.md` (authoring-time guidance for agents editing this repo) and by `review-hyper-skills/SKILL.md` (review-time evaluation axis). Keep it as the single source — if a rule belongs here, it lives here and only here.
+Canonical list of drift invariants for **the shipped Hyper skills under `skills/**`** — the code that installs into other projects. Rules here govern `SKILL.md` bodies, `templates/`, and `reference/` files inside `skills/`. They do **not** cover this repo's maintainer surface (`AGENTS.md`, `README.md`, `.claude/skills/**`, `docs/`, `scripts/`) — that scope is owned by `review-hyper-skills` Mode 2 (`maintainer-drift`) and lives in the review skill's own body.
+
+This file is cited by `AGENTS.md` (authoring-time guidance) and by `review-hyper-skills/SKILL.md` (review-time axis for Mode 1 and shipped-skill findings in Mode 3). Keep it as the single source for the shipped-skill scope — if a rule belongs here, it lives here and only here.
 
 Each rule carries a short rationale and a quick test. A finding against any of these needs a smallest-safe-fix, not just a complaint.
 
@@ -29,10 +31,9 @@ Each rule carries a short rationale and a quick test. A finding against any of t
 
 ## Cross-file agreement
 
-- **Inventories match reality on disk.** Every maintained inventory — skill counts, `README.md` skill list, "who reads/writes this artifact" lists, slash-command examples — reflects the current repo. *Test: does grep across `skills/` return the same set the inventory claims?*
-- **Cross-file contract surfaces agree.** Filenames, enum values, verdict vocabularies, and required fields must agree across every producer and consumer. *Test: does every consumer match the authority file's names and fields exactly?*
+- **Cross-file contract surfaces agree.** Filenames, enum values, verdict vocabularies, and required fields must agree across every producer and consumer inside `skills/`. *Test: does every consumer match the authority file's names and fields exactly?*
 
 ## When to apply
 
-- At authoring time: when an edit grows the skill set (more files, more filename variants, more enum values, more cross-references), check whether it's enforcing one of these rules or violating one.
-- At review time: `review-hyper-skills` uses this list as its evaluation axis across all three modes (`contract-drift`, `maintainer-drift`, `suite-evaluation`).
+- At authoring time: when editing any file under `skills/**` — adding a skill, changing an enum, extending a reference — check whether the edit is enforcing one of these rules or violating one.
+- At review time: `review-hyper-skills` uses this list as its evaluation axis for Mode 1 (`contract-drift`) and for shipped-skill findings in Mode 3 (`suite-evaluation`). Mode 2 (`maintainer-drift`) operates on this-repo surfaces and has its own criteria inside the review skill's body.

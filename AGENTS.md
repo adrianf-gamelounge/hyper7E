@@ -4,7 +4,16 @@ This repo is **Hyper**: a collection of [Agent Skills](https://agentskills.io) t
 
 See `README.md` for the user-facing overview and install instructions.
 
-Unless stated otherwise, the normative rules here are for the Hyper suite (`skills/hyper*`) and Hyper-owned docs/artifacts. Bundled companion skills and repo-local dev helpers can have their own structure when they solve different problems.
+## Two surfaces — do not mix them
+
+**Read this before editing anything.** The repo has two distinct scopes, and every rule below belongs to one of them. Identify the scope of the file you are about to touch before touching it.
+
+1. **Shipped skills** — `skills/**`. These install into other projects and must run on any agent implementing the Agent Skills spec, not just Claude Code. No absolute paths, no references to this repo's `README.md` / `AGENTS.md`, no assumptions about a surrounding dev harness. Authoring rules for this scope live in [.claude/skills/review-hyper-skills/reference/authoring-invariants.md](.claude/skills/review-hyper-skills/reference/authoring-invariants.md).
+2. **Repo-local dev surface** — `AGENTS.md` (this file), `README.md`, `.claude/skills/**` (repo-local dev skills like `review-hyper-skills` and `install-hyper`), `docs/`, `scripts/`. Only meaningful for agents editing this repo. This-repo paths, maintained inventories (skill counts, README skill list), and dev tooling live here — never under `skills/`.
+
+Rules from one scope do not apply to the other. If you catch yourself referencing `README.md` from inside a shipped skill, or pulling a shipped-skill rule to police the repo's own inventories, you are mixing scopes. Maintainer-drift concerns (stale inventories, skill counts, repo portability violations) are audited by `review-hyper-skills` Mode 2 and belong in that skill's body, not in the authoring list.
+
+Unless stated otherwise, the normative rules in the rest of this file are for the Hyper suite (`skills/hyper*`) and Hyper-owned docs/artifacts. Bundled companion skills and repo-local dev helpers can have their own structure when they solve different problems.
 
 ## Documentation
 
