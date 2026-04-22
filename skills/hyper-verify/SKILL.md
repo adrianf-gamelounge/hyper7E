@@ -99,7 +99,7 @@ Otherwise:
 ```markdown
 ## tests
 
-**Verdict:** pass | blocked
+**Verdict:** pass | blocked | skipped — user opted out
 **Commands run:**
 - `<command>` — <exit code>, <brief summary: N tests, X passed, Y failed>
 
@@ -185,7 +185,7 @@ For each acceptance criterion in `spec.md` (or the implicit ones from a quick ta
 ```markdown
 ## qa
 
-**Verdict:** pass | blocked | not-applicable
+**Verdict:** pass | blocked | not-applicable | skipped — user opted out
 
 | Criterion | Result | Evidence |
 |-----------|--------|----------|
@@ -200,7 +200,7 @@ For each acceptance criterion in `spec.md` (or the implicit ones from a quick ta
 
 ## Writing `checks.md`
 
-Use the shape in `templates/checks.md` (bundled with this skill). This phase writes the top-level verdict plus `## tests`, `## review`, and `## qa` in that order. On feature tasks, the docs phase later appends `## docs`. Overwrite cleanly on re-runs — don't append old attempts; current state is what matters.
+Use the shape in `templates/checks.md` (bundled with this skill). This phase writes the top-level verdict plus `## tests`, `## review`, and `## qa` in that order. On feature tasks, the docs phase later appends `## docs`. Overwrite `checks.md` cleanly on entry — don't append to a prior attempt. `checks.md` represents current state, not history; a stale `blocked` verdict left on disk would false-trigger the implement remediation preflight on the next dispatch.
 
 **Skipped sections.** When the user opted to skip a section at the opt-out gate, that section's body is just two lines: the verdict line `**Verdict:** skipped — user opted out` and a one-line note echoing the user's choice (e.g. `User opted out at verify start.`). No commands, no sub-sections, no findings list, no criteria table. See the per-section conditionals above for the exact shape each of `## tests`, `## review`, and `## qa` writes when skipped.
 
@@ -219,15 +219,3 @@ Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gat
 - `awaiting-input` — opt-out gate prompt on the first dispatch of a verify run. The summary is the one-message prompt (Tests / Review / QA with the reply examples). `hyper` sets `task.md` `awaiting: user-input` and relays the prompt. On the next user reply, `hyper` clears `awaiting` and re-dispatches `hyper-verify`; the re-dispatch parses the reply and runs the non-skipped sections without re-prompting. This is the only `awaiting-input` verify emits — sections themselves do not gate mid-run.
 - `phase-complete` — overall `pass` or `needs-changes`. Your summary should report the verify outcome (`verify: pass` for a clean run, or `verify: needs-changes` with the dominant warning context when applicable), not pre-frame the next phase. `hyper` reads `scope:` and advances per its transition table: `docs` for feature (with the checkpoint prompt), `done` + archive for quick. You do not write `phase:` or run the archive.
 - `redirect target: implement` — overall `blocked`. `hyper` sets `phase: implement` and `awaiting: user-input`.
-
-## Rules
-
-- **Run the tests.** Static analysis is not a test run. If you can't run tests (no runner, env issues), record that explicitly — don't fake a pass.
-- **Review the diff, not the file.** Pre-existing code is out of scope unless the change makes it worse.
-- **Critical means critical.** Don't inflate severity to look thorough, and don't downgrade real findings to ship faster.
-- **Verify never patches code.** Any blocked finding returns `redirect target: implement` with `checks.md` as the brief. Implement is the single owner of the remediation loop.
-- **Overwrite `checks.md` cleanly on entry.** `checks.md` represents current state, not history. Never append to a prior attempt — a stale `blocked` verdict on disk would false-trigger the implement remediation preflight on the next dispatch.
-- **Roll up, don't retype.** The top-level overall verdict is computed from the three section verdicts (worst of `tests`, `review`, `qa`; `not-applicable` counts as `pass`). Assigning it independently is how drift starts.
-- **Never write `task.md` `phase:` or `awaiting:`.** Return a verdict; `hyper` owns the mutation.
-- **QA tests behavior, not code.** Reading the implementation is review, not QA. Run the feature.
-- **Evidence over assertion.** Every QA row has real output. "I checked, it works" is not evidence.

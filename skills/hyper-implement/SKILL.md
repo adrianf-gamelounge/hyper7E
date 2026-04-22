@@ -50,7 +50,7 @@ If `checks.md` is absent or not blocked, continue with the normal flow below.
 The approach in `exploration.md` is your whole brief. No spec, no subtasks, no worker dispatch. Go:
 
 1. Re-read `exploration.md` and `task.md`.
-2. Make the change.
+2. Make the change. Do not widen scope by touching adjacent code, fixing pre-existing bugs, or adding features the approach did not name. Deepen the code you are writing — validation at boundaries, error-path handling, edge-case guards are part of the change, not scope creep. Pre-existing bugs you notice go to `.hyper/backlog.md`, not inline fixes.
 3. Run the project's test suite (or the relevant subset) to check you didn't break anything. If no tests exist, say so — don't fake it.
 4. Run lint / type check if the project has them.
 5. Return verdict `phase-complete` to `hyper`. `hyper` advances to `verify` with a user checkpoint.
@@ -65,10 +65,10 @@ You are an **orchestrator**. You read subtask files, dispatch one or more worker
 
 Scan the task folder for subtask files: `.hyper/tasks/T<N>-*/T<N>.*.md` (for example `T27.1-wire-login-endpoint.md`, `T27.2-login-form.md`). Task-level artifacts like `task.md`, `spec.md`, `checks.md`, `notes.md` do not match the `T<N>.*.md` pattern and are ignored.
 
-Before picking anything to dispatch, validate. If any check fails, abort with an error naming the specific problem. Do not guess, default, or silently skip.
+Before picking anything to dispatch, validate. If any check fails, abort with an error naming the specific problem. Do not guess, default, or silently skip. Use `../hyper/reference/state-recovery.md` for the repair path.
 
 - At least one subtask file exists in the task folder whose name starts with `T<N>.` and ends with `.md`. (If none found: *"no subtask files found at the task folder root — this task is either legacy checklist-in-spec, scope-classified wrong, or missing plan output. Re-run hyper-plan or migrate manually."*)
-- Every matching file has parseable YAML frontmatter with required fields (`id`, `parent`, `status`, `depends`, `writes`).
+- Every matching file has parseable YAML frontmatter with required fields (`id`, `parent`, `status`, `writes`).
 - Every file's `parent` matches the current task id.
 - No two files claim the same `id`.
 - Every id in every `depends` list exists as a subtask file in the task folder.
@@ -164,6 +164,10 @@ If the running list of backlog ids collected in Step 3 is non-empty, append a se
 
 `hyper` advances to `verify` and applies the checkpoint rule.
 
+### Spec contradicts itself
+
+If `spec.md` contradicts itself or leaves a critical decision unmade that a worker would hit, return verdict `awaiting-input` with the specific question rather than guessing. A round-trip is cheaper than a wrong dispatch.
+
 ### Subtask file is wrong mid-flight
 
 If the orchestrator or a worker realizes a subtask is wrong — missing dependency, needs splitting, no longer needed — the orchestrator (not the worker) is the one who edits the file. Update the affected subtask file, update the ToC in `spec.md` if the title changed, note what you changed and why in a short line to the user, then continue dispatching.
@@ -217,16 +221,6 @@ Any code that touches external input (HTTP, CLI args, file contents, environment
 If during implementation (quick scope) or orchestration (feature scope) you discovered a convention, constraint, or surprise that future tasks should know about, first apply the bar in `../hyper/reference/memory.md`. If it clears that bar, append a short note to `.hyper/memory.md` in the documented format — for example `## <ISO date> — Decision: <short title>` (or `Pattern`, `Lesson`, `Constraint`).
 
 Only save things that will matter to a *different* task. Details of the current change belong in commit messages, not memory.
-
-## Rules
-
-- **Feature scope: orchestrate, don't implement — except on a verify remediation pass.** In the normal feature flow you do not write, test, or review project code. You dispatch workers and propagate their state. If you find yourself about to edit a `.ts` / `.php` / `.py` file outside `.hyper/`, stop — unless you are explicitly fixing blocked findings from `checks.md`.
-- **Only batch disjoint ownership.** Parallel dispatch is allowed only when the selected subtasks' `writes` sets are pairwise disjoint. Overlapping ownership stays sequential.
-- **Quick scope: stay scoped.** Do not widen scope by touching adjacent code, fixing pre-existing bugs, or adding features the approach did not name. Deepen the code you are writing: validation at boundaries, error-path handling, edge-case guards are part of the change, not scope creep.
-- **Fail loudly on malformed state.** No subtask files found, cycles in `depends`, unparseable frontmatter — abort with a specific error. Silent skips turn small bugs into mysterious ones. Use `../hyper/reference/state-recovery.md` for the repair path.
-- **Ask, don't guess.** If `spec.md` contradicts itself or leaves a critical decision unmade, return verdict `awaiting-input` with the specific question. Guessing usually costs more than a round-trip.
-- **Never write `task.md` `phase:` or `awaiting:`.** Return a verdict; `hyper` owns the mutation. You still own subtask-file edits (answers, `## Resolved questions` rename) because the subtask file is a phase-internal artifact.
-- **Pre-existing bugs go to backlog.** Workers escalate them; as orchestrator you just relay. In quick scope, you're the one escalating — same rule: backlog it, don't fix inline.
 
 ## Return contract
 

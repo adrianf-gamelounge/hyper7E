@@ -5,7 +5,7 @@
 
 ## tests
 
-**Verdict:** pass | blocked
+**Verdict:** pass | blocked | skipped — user opted out
 **Commands run:**
 - `<command>` — exit <N>, <brief summary>
 
@@ -43,7 +43,7 @@ User opted out at verify start.
 
 ### Bug-finding
 
-**Verdict:** pass | needs-changes | blocked
+**Verdict:** pass | needs-changes | blocked | skipped — spec compliance blocked
 <If 2a blocked: "skipped — spec compliance blocked.">
 
 - **[critical]** `<path>:<line>` — <what's wrong>. <why it matters>. **Fix:** <how>.
@@ -54,7 +54,7 @@ User opted out at verify start.
 
 ### Standards compliance
 
-**Verdict:** pass | needs-changes | blocked
+**Verdict:** pass | needs-changes | blocked | skipped — spec compliance blocked
 <If 2a blocked: "skipped — spec compliance blocked.">
 
 - **[critical]** `<path>:<line>` — <what's wrong>. Rule: `<rule file>`: "<quoted rule text>". **Fix:** <how>.
@@ -65,7 +65,7 @@ User opted out at verify start.
 
 ## qa
 
-**Verdict:** pass | blocked | not-applicable
+**Verdict:** pass | blocked | not-applicable | skipped — user opted out
 
 <Use one of the forms below.>
 
