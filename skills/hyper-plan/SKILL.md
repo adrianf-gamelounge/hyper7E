@@ -152,9 +152,53 @@ If you find problems, fix them. Then continue.
 
 ## Step 7 — Plan review
 
-Self-review catches planner-visible problems; it does not catch the problems you can't see from inside the draft. After Step 6 passes, invoke `hyper-plan-review` for an independent pass. This step always runs on feature scope — there is no skip condition.
+Self-review catches planner-visible problems; it does not catch the problems you can't see from inside the draft. After Step 6 passes, invoke `hyper-plan-review` for an independent pass unless the user opts out at the skip prompt below.
 
-Invoke `hyper-plan-review` with the absolute task folder path (for example `/abs/path/to/project/.hyper/tasks/T<N>-<slug>/`). On harnesses with reliable subagent dispatch, dispatch it as a sub-agent for context isolation; on inline-only harnesses, the skill runs inline. Either way, the skill writes `plan-review.md` at the task folder root and returns a structured one-liner with a verdict (`pass | needs-changes | blocked`), a recommendation (`continue | fix-in-place | rethink`), per-severity finding counts, and a one-line summary. The artifact itself opens with `**Verdict:**` and `**Recommendation:**` lines, followed by `## Findings` and `## Summary` sections.
+### Skip prompt
+
+Before invoking the reviewer, decide whether to ask the user about skipping. Check `plan-review.md` at the task folder root:
+
+- **Exists with `**Verdict:** skipped — user opted out`** — the user already declined review for this task. Keep the stub and advance to Step 8. Do not re-ask.
+- **Exists with any other verdict** — the reviewer already ran on a prior Step 7 entry (this is a revision-loop re-entry). Branch on the existing verdict as described below. Do not re-ask and do not re-run the reviewer unless the revision loop calls for it.
+- **Does not exist** — first Step 7 entry. Ask the user verbatim:
+
+  > *Plan review is ready to run on `spec.md` and the subtask files. Run it now, or skip for this task? (Y = run, n = skip — default Y)*
+
+  Return verdict `awaiting-input` to `hyper` with that question as the summary. `hyper` sets `task.md` `awaiting: user-input` and stops.
+
+On re-dispatch after the user answers the skip prompt, interpret the reply:
+
+- Empty, `yes`, `y`, `run`, `approve`, `continue` — run the reviewer normally (continue with the invocation below).
+- `no`, `n`, `skip`, `skip review`, or a clear equivalent — write the stub `plan-review.md` shown below and advance to Step 8.
+- Anything else — treat it as a clarification or change request, answer it inline, and re-ask the skip prompt with another `awaiting-input` verdict.
+
+The skip prompt is asked **at most once per plan phase**. Once answered either way, `plan-review.md` exists and subsequent Step 7 re-entries branch on the existing artifact without re-prompting.
+
+### Skip stub
+
+When the user opts out, write `plan-review.md` at the task folder root with this exact shape:
+
+```markdown
+## Plan Review — T<N>
+
+**Verdict:** skipped — user opted out
+**Recommendation:** continue
+**Date:** <YYYY-MM-DD>
+
+## Findings
+
+No review run (user declined at the Step 7 skip prompt).
+
+## Summary
+
+Plan review skipped by user opt-out.
+```
+
+The stub is the durable audit record: it archives with the task folder so later retros can see which tasks bypassed review. Do not skip writing the file.
+
+### Running the reviewer
+
+When the user opts to run the review, invoke `hyper-plan-review` with the absolute task folder path (for example `/abs/path/to/project/.hyper/tasks/T<N>-<slug>/`). On harnesses with reliable subagent dispatch, dispatch it as a sub-agent for context isolation; on inline-only harnesses, the skill runs inline. Either way, the skill writes `plan-review.md` at the task folder root and returns a structured one-liner with a verdict (`pass | needs-changes | blocked`), a recommendation (`continue | fix-in-place | rethink`), per-severity finding counts, and a one-line summary. The artifact itself opens with `**Verdict:**` and `**Recommendation:**` lines, followed by `## Findings` and `## Summary` sections.
 
 Read the returned `plan-review.md` and branch on the verdict × recommendation combination.
 
@@ -233,7 +277,7 @@ Once every question has an answer, rename the section heading from `## Open ques
 Tell the user, in one tight approval message:
 
 - `Wrote spec.md and <N> subtask files (`T<N>.1-<slug>.md` … `T<N>.<M>-<slug>.md`) at the task folder root.`
-- A concise chat-readable synopsis of the artifact: the acceptance-criteria shape, the subtask decomposition, and any advisory `[note]` / `[warning]` findings from `plan-review.md` that Step 7 said to inline into this gate message.
+- A concise chat-readable synopsis of the artifact: the acceptance-criteria shape, the subtask decomposition, and any advisory `[note]` / `[warning]` findings from `plan-review.md` that Step 7 said to inline into this gate message. When the user opted to skip review at the Step 7 prompt, add a one-line note that plan review was skipped by user opt-out — the stub `plan-review.md` is the audit record and has no findings to inline.
 - A **derived schedule preview** computed from the subtask files' `depends` and `writes`. Render it as a short list in dispatch order, grouping subtasks whose `depends` are satisfied by the same prior step *and* whose `writes` are pairwise disjoint: those "may run together" on a parallel-capable harness and run sequentially otherwise. Example shape: `T1.1 → T1.2 → [T1.3, T1.4 — disjoint writes, may run together] → T1.5`. This preview is a rendering of the authoritative fields, not a separate declaration; never store it in `spec.md`.
 - `Approve to start implementation, or tell me what to change.`
 

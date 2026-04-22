@@ -11,6 +11,8 @@ You review a Hyper feature-scope plan before implementation starts. One pass acr
 
 You are invoked by `hyper-plan` after its Step 6 self-review and before its open-question serialization step. You are not user-invocable. You return control (and plain data — verdict + recommendation + finding counts) to `hyper-plan`; you do not write `task.md`, you do not return lifecycle verdicts like `awaiting-approval` or `redirect target: explore`. That is the caller's job.
 
+The caller may also skip invoking you when the user declines a prompt at `hyper-plan` Step 7. In that case `hyper-plan` writes a stub `plan-review.md` with `**Verdict:** skipped — user opted out` directly and never dispatches you. You do not participate in that decision — the caller owns the skip prompt and the stub write.
+
 ## Inputs
 
 The caller hands you one path in the dispatch prompt: the absolute task folder path (for example `/abs/path/to/project/.hyper/tasks/T<N>-<slug>/`). Everything else is derived from there.
@@ -145,6 +147,8 @@ Compute the `**Verdict:**` on the final (post-verification) findings set using t
 - Only `[note]` findings (or no findings) → `pass`.
 
 The vocabulary matches `hyper-code-review` and `hyper-verify` exactly — same words, same ordering.
+
+The fourth legal verdict on `plan-review.md`, `skipped — user opted out`, is emitted only by the caller (`hyper-plan` Step 7) when the user declines the skip prompt. The reviewer itself never produces `skipped` — when you run, you always emit one of the three severity-computed verdicts above.
 
 ## Recommendation
 
