@@ -76,8 +76,9 @@ Do all of these together:
 1. add/rename the folder under `skills/`
 2. update README skill tables and prose
 3. update `skills/hyper/reference/data-model.md` if the skill changes the workflow or state model
-4. run `node scripts/validate-hyper.mjs`
-5. grep for the old skill name and old path forms
+4. update `scripts/validate-hyper.mjs` if the shipped skill inventory changed
+5. run `node scripts/validate-hyper.mjs`
+6. grep for the old skill name and old path forms
 
 ## When changing the data model
 
@@ -98,6 +99,7 @@ At minimum, check:
 - `hyper-plan-review`
 - `hyper-handoff`
 - `hyper-retro`
+- `recipe`
 
 ## Repairing example drift
 

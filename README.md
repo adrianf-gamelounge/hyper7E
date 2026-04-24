@@ -98,6 +98,8 @@ For agents without native skill discovery, skill files are self-contained markdo
 
 You don't need to know about these to use Hyper — `hyper` invokes them for you. They're listed here for reference and for the rare cases you want direct control.
 
+Seven Hyper skills are user-facing. `hyper` is the main workflow entry point; the others are direct-control helpers:
+
 **Additional user-facing skills:**
 
 | Skill               | Purpose                                                                                                                                  |
@@ -107,9 +109,12 @@ You don't need to know about these to use Hyper — `hyper` invokes them for you
 | `hyper-handoff`     | Write a session handoff for resuming later.                                                                                              |
 | `hyper-retro`       | Reflect on what worked and didn't.                                                                                                       |
 | `hyper-code-review` | Review an arbitrary diff or PR as a standalone task.                                                                                     |
+| `recipe`            | Manage project-local playbooks in `.hyper/recipes/`: create, list, read, update, delete, and run.                                        |
 | `team`              | Delegate a task (code-review, research, verify) to another AI agent CLI for a second opinion. Ships with Claude, Codex, Gemini, Copilot. |
 
 **Internal skills (dispatched by `hyper`):**
+
+Seven internal Hyper skills run under the hood.
 
 `hyper-explore`, `hyper-plan`, `hyper-plan-review`, `hyper-implement`, `hyper-worker`, `hyper-verify`, `hyper-docs`. They don't appear in your slash-command menu.
 
@@ -135,6 +140,7 @@ After first use, your project has:
   memory.md           # durable decisions across tasks
   backlog.md          # idea-triage inbox
   retro.md            # optional project-scoped retrospectives
+  recipes/            # user-defined runnable playbooks (optional)
   team/providers/     # project-local teammate definitions (optional)
 ```
 

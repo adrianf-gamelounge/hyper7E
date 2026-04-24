@@ -24,6 +24,7 @@ All Hyper state lives on disk under `.hyper/` in the project root. Plain markdow
   memory.md             # durable decisions across tasks
   backlog.md            # idea-triage inbox (managed via hyper-backlog)
   retro.md              # (optional) project-scoped retrospective entries
+  recipes/              # (optional) user-defined runnable playbooks
 ```
 
 - Task folders are named `T<N>-<kebab-slug>`. `N` is a simple incrementing integer. Slug is derived from the title: lowercase, spaces → hyphens, strip punctuation, ~40 chars.
@@ -82,9 +83,31 @@ A task in `phase: deferred` skips straight to `explore` the first time `hyper` i
 
 Requests that the shared intake heuristic classifies as direct-handling work never become tasks. Requests that are future-looking or sketchy may become backlog entries instead of tasks.
 
+## `recipes/`
+
+Managed by the `recipe` skill. Each recipe is a markdown playbook at `.hyper/recipes/<name>.md`, with frontmatter followed by executable instructions.
+
+```markdown
+---
+name: deploy-staging
+description: Full staging deployment pipeline with smoke tests.
+---
+
+# Deploy Staging
+
+1. Pull latest from main.
+2. Run the test suite.
+3. Deploy to staging.
+4. Run smoke tests.
+```
+
+Recipe filenames use lowercase kebab-case. The `name` frontmatter field matches the filename stem. Recipe bodies are free-form markdown instructions; when a user runs a recipe, the agent reads the body as a step-by-step playbook.
+
+Recipes are standalone project-local automation notes. They do not create tasks, advance phases, or write task artifacts unless a recipe step explicitly tells the agent to invoke another skill.
+
 ### Internal vs user-facing skills
 
-Users invoke six Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, and `hyper-code-review` (for standalone code reviews on arbitrary diffs). The phase skills (`hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`), the plan reviewer (`hyper-plan-review`), and `hyper-worker` are internal — invoked by `hyper`, `hyper-plan`, or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu. `hyper-code-review` is dual-mode: user-invocable for standalone reviews, and also invoked internally by `hyper-verify` as its review pass on in-flight tasks.
+Users invoke seven Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review` (for standalone code reviews on arbitrary diffs), and `recipe`. The phase skills (`hyper-explore`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`), the plan reviewer (`hyper-plan-review`), and `hyper-worker` are internal — invoked by `hyper`, `hyper-plan`, or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu. `hyper-code-review` is dual-mode: user-invocable for standalone reviews, and also invoked internally by `hyper-verify` as its review pass on in-flight tasks.
 
 This repo also ships the companion `team` skill, but it sits outside the Hyper task-state model described in this file.
 
