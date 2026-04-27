@@ -87,6 +87,19 @@ The rationale matters. A `no-changes-needed` without reasoning is how stale docs
 
 Return verdict `phase-complete` to `hyper` with a short summary of what was updated. `hyper` sets `phase: done`, archives the task folder, and announces completion. You do not touch `phase:` or the archive move.
 
+## Decisions log
+
+When this phase settles a load-bearing choice, append a one-line entry to `dashboard.md` § Decisions per `../hyper/reference/dashboard.md`. Format: `- YYYY-MM-DD — docs — <decision> (<context>)`. Append directly to the file; `hyper`'s rollup preserves the section unchanged.
+
+A load-bearing choice is one a future reader would benefit from knowing about — a no-op decision with rationale (no docs needed and why), a non-obvious choice between candidate doc files, a deliberate scope cut on which surfaces to update. Routine README touch-ups and ordinary doc updates are not decisions.
+
+Examples for this phase:
+
+- *"No README update needed — user-facing API surface unchanged; only internal helper renamed."*
+- *"Updated CHANGELOG and migration guide; deferred API reference regeneration to a separate task because the schema change is broader than this slice."*
+
+Silence is correct for non-decisions. The user may also append to `## Decisions` manually as `user`.
+
 ## Return contract
 
 Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gates.md`. Docs emits:

@@ -251,6 +251,19 @@ Use the shape in `templates/checks.md` (bundled with this skill). This phase wri
 
 The overall verdict is computed, not retyped. It is the worst of the three section verdicts, ranked `blocked` > `needs-changes` > `pass`. Treat QA `not-applicable` as `pass` for the rollup. Treat a `skipped — user opted out` section (on any of tests, review, qa) as `pass` for the rollup — a run where the user skipped all three sections is overall `pass`. Do not assign the overall verdict independently — it must follow from `## tests`, `## review`, and `## qa`.
 
+## Decisions log
+
+When this phase settles a load-bearing choice, append a one-line entry to `dashboard.md` § Decisions per `../hyper/reference/dashboard.md`. Format: `- YYYY-MM-DD — verify — <decision> (<context>)`. Append directly to the file; `hyper`'s rollup preserves the section unchanged.
+
+A load-bearing choice is one a future reader would benefit from knowing about — a section opt-out from the Tests / Review / QA gate, a `redirect target: implement` decision driven by a specific class of finding, a QA `not-applicable` rationale that future verifies should respect. Routine `pass` outcomes and ordinary verdict computation are not decisions.
+
+Examples for this phase:
+
+- *"User opted out of QA pass at the Step 7 prompt — backend-only change with no UI surface."*
+- *"Tests blocked verify; redirected to implement with the failing-assertion subset of `checks.md` as the remediation brief."*
+
+Silence is correct for non-decisions. The user may also append to `## Decisions` manually as `user`.
+
 ## Return contract
 
 Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gates.md`. Verify emits:

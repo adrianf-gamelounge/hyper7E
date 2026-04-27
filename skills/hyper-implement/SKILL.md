@@ -227,6 +227,19 @@ If during implementation (quick scope) or orchestration (feature scope) you disc
 
 Only save things that will matter to a *different* task. Details of the current change belong in commit messages, not memory.
 
+## Decisions log
+
+When this phase settles a load-bearing choice, append a one-line entry to `dashboard.md` § Decisions per `../hyper/reference/dashboard.md`. Format: `- YYYY-MM-DD — implement — <decision> (<context>)`. Append directly to the file; `hyper`'s rollup preserves the section unchanged. Workers append on behalf of their slice when their dispatch makes the choice; the orchestrator appends when the choice is dispatch-level.
+
+A load-bearing choice is one a future reader would benefit from knowing about — a worker's answer to a blocked-subtask `awaiting-input` question that picked between meaningful alternatives, a remediation strategy chosen on a verify→implement bounce, a worker's escalation that changed the slice's approach. Per-slice `## Completion` records cover *what* was done; the Decisions log captures *why one option over another*.
+
+Examples for this phase:
+
+- *"Worker on T<N>.3 picked option B (use existing sanitizer) over option A (wrap input ourselves) at the awaiting-input gate."*
+- *"Verify→implement bounce: targeted only the failing assertion in `tests/auth.test.ts:42` rather than refactoring the helper, to keep diff focused."*
+
+Silence is correct for non-decisions. Routine subtask completions and ordinary orchestration are not logged. The user may also append to `## Decisions` manually as `user`.
+
 ## Return contract
 
 Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gates.md`. Implement emits:

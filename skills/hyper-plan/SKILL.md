@@ -343,6 +343,19 @@ The summary should be enough for the user to approve or push back without openin
 
 Return verdict `awaiting-approval` to `hyper`. `hyper` sets `task.md` `awaiting: user-approval` and stops. Do not write `phase:` or `awaiting:` yourself.
 
+## Decisions log
+
+When this phase settles a load-bearing choice, append a one-line entry to `dashboard.md` § Decisions per `../hyper/reference/dashboard.md`. Format: `- YYYY-MM-DD — plan — <decision> (<context>)`. Append directly to the file; `hyper`'s rollup preserves the section unchanged.
+
+A load-bearing choice is one a future reader would benefit from knowing about — a decomposition decision (split a slice, merge two slices, drop one), a plan-review opt-out, a non-default `**Recommendation:**` action chosen at Step 7, an open-question answer that materially shapes the plan. Routine plan-review pass results, default-path Step 7 actions, and ordinary plan progression are not decisions.
+
+Examples for this phase:
+
+- *"Plan review skipped (user opt-out at Step 7 prompt)."*
+- *"Split slice T<N>.2 into T<N>.2 (test) + T<N>.3 (impl) for TDD pairing — sibling roles to keep impl writes disjoint from test writes."*
+
+Silence is correct for non-decisions. The user may also append to `## Decisions` manually as `user`.
+
 ## Return contract
 
 Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gates.md`. Plan emits:

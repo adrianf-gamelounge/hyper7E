@@ -164,6 +164,19 @@ The summary should be enough for the user to approve or push back without openin
 
 Return verdict `awaiting-approval` to `hyper`. `hyper` sets `task.md` `awaiting: user-approval` and stops. Do not write `phase:` or `awaiting:` yourself.
 
+## Decisions log
+
+When this phase settles a load-bearing choice, append a one-line entry to `dashboard.md` § Decisions per `../hyper/reference/dashboard.md`. Format: `- YYYY-MM-DD — discover — <decision> (<context>)`. Append directly to the file; `hyper`'s rollup preserves the section unchanged.
+
+A load-bearing choice is one a future reader would benefit from knowing about — an approach picked over alternatives, an opt-out chosen, a fallback selected, a multi-choice clarification answered. Routine "yes continue" replies and ordinary phase progression are not decisions and are not logged.
+
+Examples for this phase:
+
+- *"User picked Option B over A and C at Step 1 clarification (multi-choice question on which surface to target)."*
+- *"Bugfix Step 3.5: hypothesis 2 falsified by minimal experiment, pivoted to instrumentation-first approach."*
+
+Silence is correct for non-decisions. The user may also append to `## Decisions` manually as `user`.
+
 ## Return contract
 
 Every dispatch ends with one verdict. Shared contract in `../hyper/reference/gates.md`. The discover phase emits:
