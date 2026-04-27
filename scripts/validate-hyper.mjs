@@ -20,7 +20,8 @@ const USER_FACING_HYPER = new Set([
   "hyper-handoff",
   "hyper-retro",
   "hyper-code-review",
-  "recipe",
+  "hyper-recipe",
+  "hyper-team",
 ]);
 
 const INTERNAL_HYPER = new Set([
@@ -105,7 +106,7 @@ function validateSkillFiles() {
     .sort();
 
   const names = new Set(skillDirs.map((skillDir) => path.basename(skillDir)));
-  const expected = new Set([...USER_FACING_HYPER, ...INTERNAL_HYPER, "team"]);
+  const expected = new Set([...USER_FACING_HYPER, ...INTERNAL_HYPER]);
 
   const missing = [...expected].filter((name) => !names.has(name)).sort();
   const extra = [...names].filter((name) => !expected.has(name)).sort();
@@ -192,7 +193,7 @@ function ensureContains(filePath, needle) {
 function validateReadmeAndDataModel() {
   ensureContains(README, "You normally use one skill: **`hyper`**.");
   ensureContains(README, "Internal skills such as");
-  for (const skill of [...USER_FACING_HYPER, ...INTERNAL_HYPER, "team"].sort()) {
+  for (const skill of [...USER_FACING_HYPER, ...INTERNAL_HYPER].sort()) {
     ensureContains(README, `\`${skill}\``);
   }
 

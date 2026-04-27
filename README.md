@@ -179,7 +179,7 @@ Add `.hyper/` to `.gitignore` unless you intentionally want to share task histor
 
 `hyper` is the main entry point.
 
-The user-facing skill names are `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review`, `recipe`, and `team`.
+The user-facing skill names are `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review`, `hyper-recipe`, and `hyper-team`.
 
 | Command | Use it for |
 | --- | --- |
@@ -190,8 +190,8 @@ The user-facing skill names are `hyper`, `hyper-task`, `hyper-backlog`, `hyper-h
 | `/hyper-handoff` | Write a handoff when conversation context would otherwise be lost. |
 | `/hyper-retro` | Record a concrete lesson after a task or session. |
 | `/hyper-code-review` | Review an arbitrary diff, branch, PR, or staged change. |
-| `/recipe` | Manage reusable project-local procedures in `.hyper/recipes/`. |
-| `/team` | Ask another AI agent CLI for a second opinion. |
+| `/hyper-recipe` | Manage reusable project-local procedures in `.hyper/recipes/`. |
+| `/hyper-team` | Ask another AI agent CLI for a second opinion. |
 
 Internal skills such as `hyper-discover`, `hyper-plan`, `hyper-plan-review`, `hyper-implement`, `hyper-worker`, `hyper-verify`, and `hyper-docs` are invoked by `hyper`; you usually do not call them directly.
 

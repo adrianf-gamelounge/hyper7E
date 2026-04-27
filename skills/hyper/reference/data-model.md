@@ -109,7 +109,7 @@ The full algorithm — extraction rules per section, placeholder semantics, fail
 
 ## `recipes/`
 
-Managed by the `recipe` skill. Each recipe is a markdown playbook at `.hyper/recipes/<name>.md`, with frontmatter followed by executable instructions.
+Managed by the `hyper-recipe` skill. Each recipe is a markdown playbook at `.hyper/recipes/<name>.md`, with frontmatter followed by executable instructions.
 
 ```markdown
 ---
@@ -131,9 +131,9 @@ Recipes are standalone project-local automation notes. They do not create tasks,
 
 ### Internal vs user-facing skills
 
-Users invoke seven Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review` (for standalone code reviews on arbitrary diffs), and `recipe`. The phase skills (`hyper-discover`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`), the plan reviewer (`hyper-plan-review`), and `hyper-worker` are internal — invoked by `hyper`, `hyper-plan`, or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu. `hyper-code-review` is dual-mode: user-invocable for standalone reviews, and also invoked internally by `hyper-verify` as its review pass on in-flight tasks.
+Users invoke seven Hyper skills directly: `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review` (for standalone code reviews on arbitrary diffs), and `hyper-recipe`. The phase skills (`hyper-discover`, `hyper-plan`, `hyper-implement`, `hyper-verify`, `hyper-docs`), the plan reviewer (`hyper-plan-review`), and `hyper-worker` are internal — invoked by `hyper`, `hyper-plan`, or `hyper-implement`, not by the user. They are marked `user-invocable: false` so they don't clutter the slash-command menu. `hyper-code-review` is dual-mode: user-invocable for standalone reviews, and also invoked internally by `hyper-verify` as its review pass on in-flight tasks.
 
-This repo also ships the companion `team` skill, but it sits outside the Hyper task-state model described in this file.
+This repo also ships the companion `hyper-team` skill, but it sits outside the Hyper task-state model described in this file.
 
 To manually re-run a phase on a task, edit `phase:` in the task's frontmatter and invoke `hyper`. The filesystem is the primary interface.
 

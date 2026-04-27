@@ -99,7 +99,7 @@ At minimum, check:
 - `hyper-plan-review`
 - `hyper-handoff`
 - `hyper-retro`
-- `recipe`
+- `hyper-recipe`
 
 ## Repairing example drift
 

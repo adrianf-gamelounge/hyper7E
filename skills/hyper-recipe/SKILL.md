@@ -1,10 +1,10 @@
 ---
-name: recipe
+name: hyper-recipe
 description: >
   Manages project-local recipes stored as markdown files under `.hyper/recipes/`. Lists, reads, creates, updates, deletes, and runs user-defined procedural playbooks without entering the Hyper task workflow. Use when the user asks to "create a recipe", "list recipes", "show recipe", "update recipe", "delete recipe", or "run recipe". Keywords: hyper, recipe, recipes, playbook, runbook, procedure.
 ---
 
-# recipe
+# hyper-recipe
 
 Manage user-defined recipes in `.hyper/recipes/`. A recipe is a markdown playbook with frontmatter, stored as one file per recipe, that the agent can later read and execute step by step.
 

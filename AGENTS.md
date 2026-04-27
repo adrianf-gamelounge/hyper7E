@@ -67,7 +67,7 @@ When editing a Hyper `SKILL.md` (`skills/hyper*`), enforce:
 - Write for an agent, not a human reader. Imperative steps, concrete examples, no historical narrative.
 - Don't explain things a capable agent already knows. Every token competes with conversation context.
 
-The bundled `team` companion skill is intentionally not forced into the same package layout; its nested `references/` tree is part of its own design.
+The bundled `hyper-team` companion skill is intentionally not forced into the same package layout; its nested `references/` tree is part of its own design.
 
 ## Cross-references between Hyper skills
 

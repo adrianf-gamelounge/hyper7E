@@ -16,8 +16,8 @@ The `.hyper/` folder is the state root for every Hyper skill. On first use in a 
 
 ## Bootstrap rules
 
-1. **Write-side skills** (`hyper`, `hyper-task` Create/Cancel, `hyper-backlog` Add/Promote/Drop, `recipe` Create/Update/Delete) ensure the folder shape exists before writing. Create missing directories and seed `memory.md` and `backlog.md` with their top-level headings.
-2. **Read-side skills** (`hyper-task` List/Status, `hyper-backlog` List, `recipe` List/Get) do not bootstrap. A missing `.hyper/` is a valid "empty" state and should produce an empty listing, not an error.
+1. **Write-side skills** (`hyper`, `hyper-task` Create/Cancel, `hyper-backlog` Add/Promote/Drop, `hyper-recipe` Create/Update/Delete) ensure the folder shape exists before writing. Create missing directories and seed `memory.md` and `backlog.md` with their top-level headings.
+2. **Read-side skills** (`hyper-task` List/Status, `hyper-backlog` List, `hyper-recipe` List/Get) do not bootstrap. A missing `.hyper/` is a valid "empty" state and should produce an empty listing, not an error.
 3. **`archive/` is lazy.** Do not pre-create it during bootstrap; the first archive move runs `mkdir -p .hyper/archive` itself. See `reference/archive.md`.
 4. **`rules.md` is optional.** Create it only when the user explicitly asks to record a project-level rule.
 
