@@ -204,6 +204,8 @@ Re-read `spec.md` and every `T<N>.<M>-<slug>.md` subtask file from disk. Check:
 - For every `role: impl` subtask: `depends` lists at least one corresponding `role: test` sibling, `writes` is non-empty and disjoint from every sibling test subtask's `writes`, and `## Done when` requires those tests to pass with no test-file modification since the sibling completed.
 - Every `role: impl` subtask has at least one corresponding `role: test` sibling listed in its `depends`. A bare `role: impl` with no test sibling is a planning bug — either pair it or downgrade it to `role: none`.
 
+**Convergence test.** Step back from the checklist and imagine handing `spec.md` plus the subtask files to three independent workers with no shared context. Would they converge on the same observable behavior? If you can plausibly imagine two of them making materially different choices on anything the user would notice, the spec has an unresolved ambiguity — promote it to `## Open questions` or pin it down in acceptance criteria before continuing.
+
 If you find problems, fix them. Then continue.
 
 ## Step 7 — Plan review
