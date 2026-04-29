@@ -1,87 +1,19 @@
 # Checks — T<N>: <title>
 
-**Overall:** pass | needs-changes | blocked
-**Date:** <YYYY-MM-DD>
+**Overall:** <pass|needs-changes|blocked>
 
 ## tests
 
-**Verdict:** pass | blocked | skipped — user opted out
-**Commands run:**
 - `<command>` — exit <N>, <brief summary>
-
-<If failures: list each with file, test name, error.>
-<If no test runner: "Project has no test suite.">
-
-<!-- If user opted out at the verify opt-out gate, replace the block above with:
-
-**Verdict:** skipped — user opted out
-
-User opted out at verify start.
--->
 
 ## review
 
-**Verdict:** pass | needs-changes | blocked
-**Files reviewed:** <count> files, <+lines/-lines>
-
-<!-- If user opted out at the verify opt-out gate, replace this entire section
-(including sub-sections) with:
-
-**Verdict:** skipped — user opted out
-
-User opted out at verify start.
--->
-
-### Spec compliance
-
-**Verdict:** pass | blocked
-
-- **[blocker]** `<criterion or path:line>` — <which acceptance criterion is unmet, how>. **Fix:** <how>.
-- **[note]** `<...>`
-
-<If no findings: "Diff matches spec.md acceptance criteria.">
-
-### Bug-finding
-
-**Verdict:** pass | needs-changes | blocked | skipped — spec compliance blocked
-<If 2a blocked: "skipped — spec compliance blocked.">
-
-- **[critical]** `<path>:<line>` — <what's wrong>. <why it matters>. **Fix:** <how>.
-- **[warning]** `<path>:<line>` — <...>
-- **[note]** `<path>` — <...>
-
-<If no findings: "No findings. Diff shows no correctness, robustness, or security issues.">
-
-### Standards compliance
-
-**Verdict:** pass | needs-changes | blocked | skipped — spec compliance blocked
-<If 2a blocked: "skipped — spec compliance blocked.">
-
-- **[critical]** `<path>:<line>` — <what's wrong>. Rule: `<rule file>`: "<quoted rule text>". **Fix:** <how>.
-- **[warning]** `<path>:<line>` — <...>. Rule: `<rule file>`: "<...>".
-- **[note]** `<path>` — <...>. Rule: `<rule file>`: "<...>".
-
-<If no findings: "No findings. Diff follows project standards and documented rules.">
+- <Review verdict or finding.>
 
 ## qa
 
-**Verdict:** pass | blocked | not-applicable | skipped — user opted out
+- <Manual or behavioral check.>
 
-<Use one of the forms below.>
+## docs
 
-<For user-facing changes, use the evidence table:>
-| Criterion | Result | Evidence |
-|-----------|--------|----------|
-| <criterion from spec> | pass / fail | <command output, screenshot path, HTTP response> |
-
-<For internal-only changes, replace the table with:>
-No user-facing changes — QA skipped.
-
-<If review already blocked the pass: "QA not run because review already blocked this verify pass. Re-run verify after remediation.">
-
-<!-- If user opted out at the verify opt-out gate, replace the block above with:
-
-**Verdict:** skipped — user opted out
-
-User opted out at verify start.
--->
+- <Docs result. Added or updated by `hyper-docs` for feature tasks.>

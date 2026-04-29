@@ -1,6 +1,6 @@
 # Hyper — Worker Guardrails
 
-This file is the shared dispatch-time rule set for every sub-agent Hyper launches (worker, reviewer, plan-reviewer, validation, and peer Explore). Consumer skills read it at session start and treat its contents as normative for the dispatch. Dispatcher skills mention it in their dispatch prompt so the reference is visible in the dispatch record before the sub-agent loads its own skill file.
+This file is the shared dispatch-time rule set for every sub-agent Hyper launches (worker, reviewer, validation, and peer review). Consumer skills read it at session start and treat its contents as normative for the dispatch. Dispatcher skills mention it in their dispatch prompt so the reference is visible in the dispatch record before the sub-agent loads its own skill file.
 
 Four rules, **G1** through **G4**. Each states the rule, why it exists, and the safe alternative for the "I think I need to violate this" case.
 

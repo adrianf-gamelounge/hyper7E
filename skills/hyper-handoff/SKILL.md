@@ -6,77 +6,57 @@ description: >
 
 # hyper-handoff
 
-Capture what this session knows that isn't already on disk, so the next session (or another person) can pick up without re-deriving.
+Capture what this session knows that is not already on disk, so the next
+session can pick up without re-deriving.
 
-Before resolving tasks, resolve the Hyper state root per `../hyper/reference/state-root.md`. Every `.hyper/` path in this skill is relative to that root.
+Resolve the Hyper state root per `../hyper/reference/state-root.md`.
 
 ## When to use
 
 - About to end a long session mid-task.
-- Passing work to a colleague or to a different agent.
-- The task has accumulated context (user decisions, half-investigated paths, things that almost worked) that would be lost when the conversation context is cleared.
+- Passing work to a colleague or another agent.
+- The task accumulated context that would be lost when conversation context is
+  cleared.
 
-If the task is between clean phases (just finished explore, just finished plan) and the artifacts on disk are up to date, you usually don't need a handoff — the next session reads `task.md`, `exploration.md`, `spec.md`, and any subtask files (`T<N>.<M>-<slug>.md`) and is caught up.
-
-## Inputs
-
-- A task ID (given by the user, or inferred as the only active task)
-
-## Output
-
-- `.hyper/tasks/T<N>-<slug>/handoff.md`
+If the task is between clean phases and artifacts are up to date, a handoff is
+usually unnecessary; the next session reads `task.md`, the current artifact
+(`01-intake.md`, `02-spec.md`, `03-technical-plan.md`,
+`04-execution-plan.md`, or `research.md`), subtask files, and `checks.md`.
 
 ## Resolve the task
 
-1. If the user gave a task id, resolve it under `.hyper/tasks/T<N>-*/`.
-2. Otherwise, if exactly one active task exists, use it.
-3. Otherwise, if there are no active tasks, say so and stop.
-4. Otherwise, list the active tasks and ask which one to write the handoff for. Stop.
-
-Handoffs are for active work. If the id resolves only in `.hyper/archive/`, tell the user the task is already terminal and usually does not need a new handoff.
+Use the given task id, or infer the only active task. Handoffs are for active
+work; if the task is archived, report that it is terminal and stop.
 
 ## Write policy
 
-Overwrite `handoff.md` with the latest snapshot. This file is current-state rescue, not append-only history.
+Overwrite `handoff.md` with the latest snapshot. This file is current-state
+rescue, not append-only history.
 
-Retention:
-
-- keep the latest handoff until a newer one replaces it
-- do not auto-delete it on resume
-- if the task later archives, the last handoff archives with it as historical context
-
-## What to include
-
-Write a short document covering only things that *aren't* already captured in the other artifacts. If it's in `task.md`, `exploration.md`, `spec.md`, any subtask file, or `checks.md`, don't repeat it here — reference it. Don't restate the goal or the approach — those are in `task.md` and `exploration.md`.
-
-Be specific. "The user wanted something more secure" is not useful. "The user said bcrypt is required and argon2id is out of scope" is useful.
+## Template
 
 ```markdown
 # Handoff — T<N>: <title>
 
-**From:** <session description — e.g., "Claude Code session on 2026-04-17">
+**From:** <session description>
 **Current phase:** <phase field from task.md>
-**Status:** <one sentence — what just happened, what's next>
+**Status:** <one sentence>
 
 ## What the next session needs to know
 
-- <A decision made in conversation that isn't recorded in artifacts.>
-- <An investigation path that was tried and ruled out — save the next session from repeating it.>
-- <An assumption the current work relies on that isn't obvious from the code.>
-- <A user preference or constraint the user mentioned this session.>
+- <Decision, ruled-out path, assumption, or user preference not in artifacts.>
 
 ## Current state
 
-- <Which subtask file is in progress (`status: in-progress`) or blocked (`awaiting: user-input`), if any. Name the file path.>
-- <Any uncommitted changes — list the files.>
-- <Anything that's in a weird half-state: test running but not recorded, partial refactor, etc.>
+- <In-progress or blocked subtask, uncommitted files, partial work.>
 
 ## Immediate next step
 
-<One paragraph. Exactly what the next session should do first to get oriented
-and continue. Reference the files to read and the first action to take.>
+<Exactly what to read and do first.>
 
 ## Open questions
 
-<If any — questions for the user that blocked progress.>
+<Questions blocking progress, if any.>
 ```
+
+Do not repeat content already present in primary artifacts.

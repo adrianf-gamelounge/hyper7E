@@ -108,7 +108,7 @@ Gather context based on task type. This is provider-agnostic — the same contex
 
 Always include: repo root conventions (README, AGENTS.md, CLAUDE.md if present), current branch and base branch, any user-provided custom instructions.
 
-**Hyper-artifact convenience:** if the user's request references a Hyper artifact ("review the spec", "check the exploration") and the current directory is inside a Hyper task folder (`.hyper/tasks/T<N>-*/`), read the corresponding artifact (`exploration.md`, `spec.md`, `checks.md`) and include it. This is a shortcut — for any other target, the user specifies it and the lead gathers context for it.
+**Hyper-artifact convenience:** if the user's request references a Hyper artifact ("review the execution plan", "check the technical plan") and the current directory is inside a Hyper task folder (`.hyper/tasks/T<N>-*/`), read the corresponding artifact (`01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, `research.md`, or `checks.md`) and include it. This is a shortcut — for any other target, the user specifies it and the lead gathers context for it.
 
 ### Step 5 — Build prompt
 

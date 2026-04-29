@@ -25,9 +25,12 @@ const USER_FACING_HYPER = new Set([
 ]);
 
 const INTERNAL_HYPER = new Set([
-  "hyper-discover",
-  "hyper-plan",
-  "hyper-plan-review",
+  "hyper-intake",
+  "hyper-spec",
+  "hyper-technical-plan",
+  "hyper-execution-plan",
+  "hyper-execution-plan-review",
+  "hyper-research",
   "hyper-implement",
   "hyper-worker",
   "hyper-verify",
@@ -197,13 +200,13 @@ function validateReadmeAndDataModel() {
     ensureContains(README, `\`${skill}\``);
   }
 
-  ensureContains(DATA_MODEL, "Users invoke seven Hyper skills directly");
+  ensureContains(DATA_MODEL, "Users invoke eight Hyper skills directly");
   ensureContains(
     DATA_MODEL,
-    "the plan reviewer (`hyper-plan-review`), and `hyper-worker` are internal",
+    "`hyper-execution-plan-review`",
   );
   ensureContains(DATA_MODEL, "`phase: deferred`");
-  ensureContains(DATA_MODEL, "## `plan-review.md`");
+  ensureContains(DATA_MODEL, "## `05-execution-plan-review.md`");
   ensureContains(DATA_MODEL, "## `retro.md`");
 }
 

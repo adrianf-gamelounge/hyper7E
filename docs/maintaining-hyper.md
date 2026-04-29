@@ -10,116 +10,105 @@ Run:
 node scripts/validate-hyper.mjs
 ```
 
-The validator checks a small set of high-value repo contracts:
+The validator checks a small set of structural contracts:
 
 - shipped `skills/*/SKILL.md` files have parseable frontmatter
-- Hyper user-facing vs internal skill expectations still match the current
-  suite
+- Hyper user-facing vs internal skill expectations match the shipped suite
 - internal Hyper skills keep `user-invocable: false`
-- bundled `templates/` and `reference/` paths resolve
-- named `Invoke the ... skill` / `Load the ... skill` handoffs point to real
-  shipped skills
+- referenced `templates/` and `reference/` files exist
+- named skill handoffs point to real shipped skills
 - README and the Hyper data model still describe the current skill inventory
 
-It is intentionally lightweight. It validates structural repo contracts, not
-natural-language quality or end-to-end behavior. Keep doing real `/hyper` dry
-runs in a throwaway project for workflow changes. If you add, remove, or
-rename a shipped skill, update the validator expectations in the same diff.
+It is intentionally lightweight. Keep doing real `/hyper` dry runs in a
+throwaway project for workflow changes.
 
 ## Most fragile contracts
 
-These areas are the most likely to drift:
+These surfaces are the easiest to drift:
 
 1. **Skill inventory and counts**
    - README
    - `skills/hyper/reference/data-model.md`
-   - any install / menu wording
+   - `scripts/validate-hyper.mjs`
 
-2. **Gate protocol**
+2. **Gate protocol and transitions**
    - `skills/hyper/SKILL.md`
-   - phase skills that set `awaiting`
+   - phase skills that set gates
    - `skills/hyper/reference/gates.md`
-   - README example flows that show approval-gate wording
+   - README example flows
 
-3. **Task-vs-idea intake triage**
-   - `skills/hyper/SKILL.md`
-   - `skills/hyper-task/SKILL.md`
-   - `skills/hyper-backlog/SKILL.md`
-   - `skills/hyper/reference/intake-triage.md`
+3. **Phase and artifact naming**
+   - `intake`, `spec`, `technical-plan`, `execution-plan`, `research`
+   - `01-intake.md`
+   - `02-spec.md`
+   - `03-technical-plan.md`
+   - `04-execution-plan.md`
+   - `05-execution-plan-review.md`
 
-4. **`checks.md` contract**
+4. **Execution-plan review contract**
+   - `skills/hyper-execution-plan-review/SKILL.md`
+   - `skills/hyper-execution-plan-review/templates/05-execution-plan-review.md`
+   - `skills/hyper-execution-plan/SKILL.md`
+   - `skills/hyper/reference/data-model.md`
+
+5. **Worker-guardrails contract**
+   - `skills/hyper/reference/worker-guardrails.md`
+   - `skills/hyper-worker/SKILL.md`
+   - `skills/hyper-code-review/SKILL.md`
+   - dispatcher skills that mention the reference in their dispatch prompt
+
+6. **`checks.md` contract**
    - `skills/hyper-verify/SKILL.md`
    - `skills/hyper-docs/SKILL.md`
    - `skills/hyper-verify/templates/checks.md`
    - `skills/hyper/reference/data-model.md`
 
-5. **Remediation path after blocked verify**
-   - `skills/hyper-verify/SKILL.md`
-   - `skills/hyper-implement/SKILL.md`
-   - `skills/hyper/reference/data-model.md`
-
-6. **`plan-review.md` contract**
-   - `skills/hyper-plan-review/SKILL.md`
-   - `skills/hyper-plan-review/templates/plan-review.md`
-   - `skills/hyper-plan/SKILL.md` (Step 7 invocation + post-review flow)
-   - `skills/hyper/reference/data-model.md`
-
-7. **Worker-guardrails contract**
-   - `skills/hyper/reference/worker-guardrails.md` (G1–G4 — the shared dispatch-time rules)
-   - consumer skills that read the reference at session start: `skills/hyper-worker/SKILL.md`, `skills/hyper-code-review/SKILL.md`, `skills/hyper-plan-review/SKILL.md`
-   - dispatcher skills that mention the reference in their dispatch prompt: `skills/hyper-implement/SKILL.md`, `skills/hyper-verify/SKILL.md`, `skills/hyper-plan/SKILL.md` (plus the nested dispatcher sections in `hyper-code-review` and `hyper-plan-review` themselves)
-
 ## When adding or renaming a skill
 
 Do all of these together:
 
-1. add/rename the folder under `skills/`
-2. update README skill tables and prose
-3. update `skills/hyper/reference/data-model.md` if the skill changes the workflow or state model
-4. update `scripts/validate-hyper.mjs` if the shipped skill inventory changed
+1. add or rename the folder under `skills/`
+2. update README
+3. update `skills/hyper/reference/data-model.md` if the workflow or state model changed
+4. update `scripts/validate-hyper.mjs`
 5. run `node scripts/validate-hyper.mjs`
-6. grep for the old skill name and old path forms
+6. grep for stale skill names and stale artifact names
 
 ## When changing the data model
 
-Treat `skills/hyper/reference/data-model.md` as the authoritative state contract.
-Any change there should trigger a review of every skill that reads or writes that state.
-
-At minimum, check:
+Treat `skills/hyper/reference/data-model.md` as authoritative. At minimum,
+check:
 
 - `hyper`
 - `hyper-task`
 - `hyper-backlog`
-- `hyper-discover`
-- `hyper-plan`
+- `hyper-intake`
+- `hyper-spec`
+- `hyper-technical-plan`
+- `hyper-execution-plan`
+- `hyper-execution-plan-review`
+- `hyper-research`
 - `hyper-implement`
 - `hyper-worker`
 - `hyper-verify`
 - `hyper-docs`
-- `hyper-plan-review`
 - `hyper-handoff`
 - `hyper-retro`
 - `hyper-recipe`
 
 ## Repairing example drift
 
-Examples in README and reference files are easy to forget.
-When changing a contract, grep for examples that may now be stale.
-
 Typical offenders:
 
-- skill counts
-- sample backlog entries
-- sample `checks.md` sections
-- approval-gate prompt examples in README / docs
-- promotion behavior
-- optional artifact lists
+- sample phase flows
+- approval-gate wording in README
+- task-folder examples
+- task artifact lists
+- sample `checks.md` or review artifacts
 
 ## Human docs vs skill docs
 
 - README and `docs/` are for humans.
 - `skills/**/SKILL.md` and `skills/**/reference/*.md` are for agents.
-- For user-visible changes, the docs phase is only satisfied by updating an existing human-facing doc surface. Agent-facing skill source can accompany that change, but it does not count on its own.
-
-If a topic is primarily about operating or maintaining Hyper as a project, prefer `docs/`.
-If a topic is needed by an agent while running the workflow, put it under `skills/hyper/reference/` and link from the relevant skill.
+- User-visible changes still require human-facing docs; agent-facing skill
+  source does not satisfy the docs phase by itself.

@@ -2,33 +2,31 @@
 
 Hyper is a lightweight workflow for AI coding agents.
 
-It gives the agent a simple, durable process for work that should not be handled as one long prompt:
+It gives the agent a durable process for work that should not live inside one
+long prompt:
 
 ```text
-discover -> plan -> implement -> verify -> docs -> done
+intake -> spec -> technical-plan -> execution-plan -> implement -> verify -> docs -> done
 ```
 
-Hyper is delivered as [Agent Skills](https://agentskills.io): plain markdown files an agent can load. There is no CLI, plugin, server, database, or hidden state. The workflow state lives in `.hyper/` inside your project, so you and the agent can both inspect what has been agreed and what happens next.
+Hyper is delivered as [Agent Skills](https://agentskills.io): plain markdown
+files an agent can load. There is no CLI, plugin, server, database, or hidden
+state. Workflow state lives in `.hyper/` inside your project.
 
-You normally use one skill: **`hyper`**. It reads the current task state and invokes the right phase. The other skills exist so the workflow can stay structured under the hood.
+You normally use one skill: **`hyper`**.
 
 ## When To Use Hyper
 
-Use Hyper when the work benefits from written-down context and checkpoints:
+Use Hyper when the cost of losing context is higher than the cost of a little
+structure:
 
-- features and meaningful refactors
+- features and large refactors
 - non-trivial bug fixes
 - investigations where you want findings recorded
 - work touching auth, payments, migrations, deletes, or security boundaries
 - anything you may pause, resume, or hand to another agent
 
-Skip Hyper for tiny, obvious edits:
-
-- typo fixes
-- one-line config changes
-- mechanical edits in low-risk code
-
-The rule of thumb: if the cost of losing context is higher than the cost of a little structure, use Hyper.
+Skip Hyper for tiny, obvious edits.
 
 ## Install
 
@@ -38,74 +36,35 @@ Clone this repo:
 git clone https://github.com/ovidiugalatan/hyper7 ~/hyper7
 ```
 
-### Recommended Installer
-
-From Claude Code, open the cloned `~/hyper7` folder and run:
-
-```text
-/install-hyper
-```
-
-Or run the installer directly:
+From the cloned repo, install the skills:
 
 ```bash
 bash ~/hyper7/.claude/skills/install-hyper/scripts/install.sh install
 ```
 
-The installer symlinks Hyper into the agent skill directories it finds:
-
-- `~/.claude/skills/`
-- `~/.codex/skills/`
-- `~/.agents/skills/`
-- `~/.pi/agent/skills/`
-
-Because the install uses symlinks, `git pull` in `~/hyper7` updates the installed skills immediately.
-
-To check or remove the install:
-
-```bash
-bash ~/hyper7/.claude/skills/install-hyper/scripts/install.sh status
-bash ~/hyper7/.claude/skills/install-hyper/scripts/install.sh uninstall
-```
-
-Verify the install by opening your agent in a project and typing `/hyper`.
-
-### Manual Claude Code Install
-
-Personal install, available in every project:
+Manual install for Claude Code:
 
 ```bash
 mkdir -p ~/.claude/skills
 ln -s ~/hyper7/skills/* ~/.claude/skills/
 ```
 
-Project-local install:
-
-```bash
-cd /path/to/your/project
-mkdir -p .claude/skills
-cp -r ~/hyper7/skills/* .claude/skills/
-```
-
-If a future update adds new skill folders, rerun the command. The shell glob expands only when the command runs.
-
-### Other Agents
-
-Agent Skills are plain markdown. For Codex, Cursor, Gemini CLI, or another compatible agent, put the `skills/` directory somewhere the agent can read and add a rule like:
-
-```text
-When the user asks for structured development work - build, fix, refactor, investigate, or continue an in-progress task - use the `hyper` skill at <path>/skills/hyper/SKILL.md.
-```
+Other agents can point at `skills/hyper/SKILL.md` and use Hyper for structured
+development work.
 
 ## Basic Use
 
-Start a task with `/hyper` and describe the work in normal language:
+Start a task with `/hyper`:
 
 ```text
 You: /hyper Add a login page with email and password, and keep the session after reload.
-Agent: Wrote exploration.md. Scope: feature. Approve to continue.
+Agent: Wrote 01-intake.md. Review the framing and route.
 You: approve
-Agent: Wrote spec.md and subtask files. Approve implementation.
+Agent: Wrote 02-spec.md. Approve to continue.
+You: approve
+Agent: Wrote 03-technical-plan.md. Approve to continue.
+You: approve
+Agent: Wrote 04-execution-plan.md and subtask files. Approve implementation.
 You: approve
 Agent: Implements, verifies, updates docs, and archives the finished task.
 ```
@@ -116,31 +75,42 @@ To resume later:
 /hyper T3
 ```
 
-Hyper reconstructs the task from files on disk. It does not need the old chat session.
+## Workflow Lanes
+
+Tracked lanes:
+
+- `feature`: `intake -> spec -> technical-plan -> execution-plan -> implement -> verify -> docs -> done`
+- `quick`: `intake -> technical-plan -> implement -> verify -> done`
+- `research`: `intake -> research -> done`
+- `code-review`: `review -> done`
+
+`bugfix: true` is orthogonal:
+
+- feature bugfix: `intake -> technical-plan -> execution-plan -> implement -> verify -> docs -> done`
+- quick bugfix: `intake -> technical-plan -> implement -> verify -> done`
 
 ## What The Phases Mean
 
 | Phase | Purpose | Main artifact |
 | --- | --- | --- |
-| `discover` | Understand the request, inspect the code, choose the scope, and propose an approach. | `exploration.md` |
-| `plan` | Turn the approved approach into acceptance criteria and implementation slices. | `spec.md` and subtask files |
-| `implement` | Execute the approved slices. Feature tasks may run independent subtasks in fresh agent contexts. | code changes and subtask completion records |
-| `verify` | Run tests, review the diff, and check the result against the accepted criteria. | `checks.md` |
+| `intake` | Capture and confirm the request, classify scope, and detect bugfix intent. | `01-intake.md` |
+| `spec` | Define what will change before technical design starts. | `02-spec.md` |
+| `technical-plan` | Decide how the change should be built in this codebase. | `03-technical-plan.md` |
+| `execution-plan` | Turn the approved plan into worker-safe execution slices. | `04-execution-plan.md` and subtask files |
+| `implement` | Execute the approved slices. | code changes and subtask completion records |
+| `verify` | Run tests, review the diff, and check accepted outcomes against real behavior. | `checks.md` |
 | `docs` | Update human-facing docs when the change needs it. | docs changes and a docs section in `checks.md` |
+| `research` | Investigate a question and produce a recommendation with no code changes. | `research.md` |
 
-`discover` and `plan` pause for approval. The rest runs from the approved artifacts.
+Approval gates happen where direction matters:
 
-Hyper uses three task scopes:
-
-- `quick`: discover -> implement -> verify -> done
-- `feature`: discover -> plan -> implement -> verify -> docs -> done
-- `research`: discover -> done
-
-Bug fixes get stricter discovery: Hyper records symptoms, reproduction status, root-cause hypotheses, and falsified leads before implementing.
+- after `intake`
+- after `spec`
+- after `technical-plan`
+- after `execution-plan`
+- after `research`
 
 ## What Hyper Writes
-
-After first use, your project gets a `.hyper/` directory:
 
 ```text
 .hyper/
@@ -148,8 +118,11 @@ After first use, your project gets a `.hyper/` directory:
     T1-add-login-page/
       task.md
       dashboard.md
-      exploration.md
-      spec.md
+      01-intake.md
+      02-spec.md
+      03-technical-plan.md
+      04-execution-plan.md
+      05-execution-plan-review.md
       T1.1-add-login-tests.md
       T1.2-implement-login.md
       checks.md
@@ -165,45 +138,56 @@ After first use, your project gets a `.hyper/` directory:
 The most useful files are:
 
 - `task.md`: current phase and task metadata
-- `dashboard.md`: human-readable task summary
-- `exploration.md`: findings and proposed approach
-- `spec.md`: acceptance criteria and subtask index
+- `dashboard.md`: computed human-readable task summary
+- `01-intake.md`: intake summary and success signal
+- `02-spec.md`: approved statement of what will change
+- `03-technical-plan.md`: approved technical shape
+- `04-execution-plan.md`: worker-facing execution overview
 - `checks.md`: test, review, QA, and docs results
-- `backlog.md`: ideas that are not active tasks yet
-- `rules.md`: project-level rules Hyper should always follow
-- `memory.md`: cross-task decisions and rationale
 
-Add `.hyper/` to `.gitignore` unless you intentionally want to share task history. If you do share parts of it, `rules.md`, `recipes/`, and `team/providers/` are the usual candidates.
-
-When you work from a linked Git worktree, Hyper keeps this `.hyper/` directory in the main project directory instead of creating separate task state inside the linked worktree. Code changes, tests, and diffs still run in the worktree you opened.
+Add `.hyper/` to `.gitignore` unless you intentionally want to share task
+history.
 
 ## Useful Commands
 
-`hyper` is the main entry point.
+User-facing skill names:
 
-The user-facing skill names are `hyper`, `hyper-task`, `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review`, `hyper-recipe`, and `hyper-team`.
+- `hyper`
+- `hyper-task`
+- `hyper-backlog`
+- `hyper-handoff`
+- `hyper-retro`
+- `hyper-code-review`
+- `hyper-recipe`
+- `hyper-team`
 
 | Command | Use it for |
 | --- | --- |
 | `/hyper <request>` | Start structured work. |
-| `/hyper T<N>` | Resume an existing task. |
+| `/hyper T<N>` | Resume a task. |
 | `/hyper-task` | List, create, defer, cancel, or inspect tasks. |
 | `/hyper-backlog` | Add, list, promote, or drop future ideas. |
-| `/hyper-handoff` | Write a handoff when conversation context would otherwise be lost. |
-| `/hyper-retro` | Record a concrete lesson after a task or session. |
+| `/hyper-handoff` | Write a handoff when conversation context would be lost. |
+| `/hyper-retro` | Record lessons after a task or session. |
 | `/hyper-code-review` | Review an arbitrary diff, branch, PR, or staged change. |
 | `/hyper-recipe` | Manage reusable project-local procedures in `.hyper/recipes/`. |
 | `/hyper-team` | Ask another AI agent CLI for a second opinion. |
 
-Internal skills such as `hyper-discover`, `hyper-plan`, `hyper-plan-review`, `hyper-implement`, `hyper-worker`, `hyper-verify`, and `hyper-docs` are invoked by `hyper`; you usually do not call them directly.
+Internal skills such as `hyper-intake`, `hyper-spec`,
+`hyper-technical-plan`, `hyper-execution-plan`,
+`hyper-execution-plan-review`, `hyper-research`, `hyper-implement`,
+`hyper-worker`, `hyper-verify`, and `hyper-docs` are invoked by `hyper`; you
+usually do not call them directly.
 
 ## Working On Hyper
 
 If you are editing this repo rather than using Hyper in another project:
 
-- `AGENTS.md` contains the rules for contributors and agents editing Hyper itself.
-- [`docs/maintaining-hyper.md`](docs/maintaining-hyper.md) describes the maintenance checks and the fragile contracts to watch.
-- `node scripts/validate-hyper.mjs` runs a lightweight structural validation of the skill suite.
+- `AGENTS.md` contains the rules for contributors and agents editing Hyper.
+- [`docs/maintaining-hyper.md`](docs/maintaining-hyper.md) describes the
+  maintenance checks and fragile contracts to watch.
+- `node scripts/validate-hyper.mjs` runs a lightweight structural validation of
+  the skill suite.
 
 ## Design Choices
 
@@ -211,6 +195,6 @@ Hyper stays intentionally small:
 
 - Markdown files are the state.
 - The agent reads and writes those files directly.
-- Approval gates happen where direction matters: after discovery and after planning.
+- Approval gates happen after the artifacts that set direction.
 - Verification is part of the workflow, not an optional afterthought.
-- Small tasks should stay small; Hyper is for work where structure earns its keep.
+- Large work gets structure; tiny work should stay tiny.

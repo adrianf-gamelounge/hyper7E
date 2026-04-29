@@ -1,136 +1,145 @@
 # Hyper — Gate Protocol and Verdict Contract
 
-This file is the **single authority** for how `hyper` and the phase skills coordinate. Every rule about who writes `task.md` `phase:` / `awaiting:`, what a phase skill returns, and what `hyper` does with that return lives here.
+This file is the single authority for how `hyper` and the phase skills
+coordinate.
 
 ## Source of truth
 
 - `task.md` `awaiting` is the top-level gate state.
-- For blocked feature subtasks, the subtask file's `awaiting` is the more specific source of truth; `hyper` propagates it up to `task.md` on the `awaiting-input` verdict returned by `hyper-implement`.
+- For blocked feature subtasks, the subtask file's `awaiting` is the more
+  specific source of truth.
 - A gate is open whenever `awaiting != null`.
 
 ## Ownership split
 
-- `hyper` owns **every mutation of `task.md`'s `phase:` and `awaiting:` fields**. Phase skills never write these two fields. `hyper` also owns the archive move for phase-driven terminal transitions (`done`).
-- `hyper-task` owns `phase: cancelled` (archives the folder) and `phase: deferred` (non-terminal; does not archive) for user-initiated cancellation or deferral. Both paths are out-of-band from the phase workflow.
-- `hyper-code-review` owns the terminal `phase: done` transition and archive move for standalone `scope: code-review` tasks it creates directly. That path is user-facing and out-of-band from the normal `hyper` dispatch loop.
-- Phase skills own their **artifact** (`exploration.md`, `spec.md`, `checks.md`, subtask bodies, doc files) and the phase-specific classification fields on `task.md` (`scope`, `bugfix`). They do not touch `phase` or `awaiting`.
-- `hyper-worker` owns subtask files' `status` and `awaiting`. The subtask file is a phase-internal artifact, not top-level workflow state.
-- `hyper` owns **routing later user replies** back to the correct phase skill.
+- `hyper` owns every mutation of `task.md` `phase:` and `awaiting:`.
+- `hyper-task` owns user-initiated `phase: deferred` and `phase: cancelled`.
+- `hyper-code-review` owns standalone `scope: code-review` task creation,
+  terminal `phase: done`, and archive move.
+- Phase skills own their artifacts and the phase-specific classification fields
+  on `task.md` (`scope`, `bugfix`). They do not write `phase` or `awaiting`.
+- `hyper-worker` owns subtask files' `status` and `awaiting`.
 
 ## Verdict vocabulary
 
-Every phase dispatch ends with the phase skill returning exactly one verdict to `hyper`. The return summary is a short human sentence; the verdict is a structured label.
+Every phase dispatch ends with exactly one verdict:
 
 | Verdict | Meaning | `hyper` does |
 |---------|---------|--------------|
-| `awaiting-approval` | Artifact written; user approval gate required. | Set `task.md` `awaiting: user-approval`. Stop and surface the phase skill's approval summary, which should include a concise chat-readable synopsis of the artifact plus the approve/change prompt. |
-| `awaiting-input` | Open question(s) recorded in the artifact, a surfaced blocked-subtask question, or a fresh-dispatch user-choice prompt (e.g. verify's opt-out gate). | Set `task.md` `awaiting: user-input`. Stop and relay the first unanswered question verbatim from the phase skill's return summary. |
-| `phase-complete` | Phase produced its artifact and is ready to advance. | Clear `awaiting`. Apply the phase-transition table. Apply the checkpoint rule, reading the phase artifact when the prompt depends on the outcome. |
-| `redirect target: <phase>` | Non-linear transition — `plan → discover` on user rewind, or `verify → implement` on blocked `checks.md`. | Clear any stale `awaiting`. Set `phase: <target>`. For `verify → implement`, also set `awaiting: user-input` (verify's blocked findings become the remediation brief). Re-enter Dispatch. |
-
-Phase skills must return exactly one verdict per dispatch. A verdict with no new artifact change is still valid — e.g. when a user reply only adds a single answer to `## Open questions` but leaves other questions unanswered, the phase skill records that answer and returns `awaiting-input` again.
+| `awaiting-approval` | Artifact written; user approval required. | Set `task.md` `awaiting: user-approval` and stop. |
+| `awaiting-input` | Open question(s) remain, or a user-choice prompt is required. | Set `task.md` `awaiting: user-input` and stop. |
+| `phase-complete` | Phase is done and ready to advance. | Clear `awaiting`, apply the transition table, and apply any checkpoint prompt. |
+| `redirect target: <phase>` | Non-linear transition. | Clear stale `awaiting`, set `phase: <target>`, and re-enter dispatch. For `verify -> implement`, also set `awaiting: user-input`. |
 
 ## Phase transition table
 
 `hyper` applies this table when a phase returns `phase-complete`:
 
-| From phase | Task scope | Next phase | Checkpoint before advancing? |
-|------------|------------|------------|------------------------------|
-| `discover` | `quick` | `implement` | no (approval already happened) |
-| `discover` | `feature` | `plan` | no (approval already happened) |
-| `discover` | `research` | `done` | no — `hyper` archives and announces |
-| `plan` | `feature` | `implement` | no (approval already happened) |
-| `implement` | any | `verify` | **yes** — prompt verbatim: `"T<N> implementation complete. Continue to verify?"` |
-| `verify` | `quick` | `done` | no — `hyper` archives and announces |
-| `verify` | `feature` | `docs` | **yes** — if `checks.md` `**Overall:** pass`, prompt verbatim: `"T<N> verify passed. Continue to docs?"`; if `**Overall:** needs-changes`, surface a remediation-aware prompt that names the verify outcome and offers continue-to-docs / send-back-to-implement / stop-and-decide |
-| `docs` | `feature` | `done` | no — `hyper` archives and announces |
-| `review` | `code-review` | `done` | no — `hyper` archives and announces. Only reached on a crash mid-review where a standalone `hyper-code-review` task was left with `phase: review` on disk before it could self-archive. Not used in normal flow. |
+| From phase | Scope / classifier | Next phase | Post-transition checkpoint? |
+|------------|--------------------|------------|-----------------------------|
+| `intake` | `feature`, `bugfix: false` | `spec` | no |
+| `intake` | `feature`, `bugfix: true` | `technical-plan` | no |
+| `intake` | `quick` | `technical-plan` | no |
+| `intake` | `research` | `research` | no |
+| `spec` | `feature` | `technical-plan` | no |
+| `technical-plan` | `feature` | `execution-plan` | no |
+| `technical-plan` | `quick` | `implement` | no |
+| `execution-plan` | `feature` | `implement` | no |
+| `research` | `research` | `done` | no |
+| `implement` | any | `verify` | yes — prompt: `"T<N> implementation complete. Continue to verify?"` |
+| `verify` | `quick` | `done` | no |
+| `verify` | `feature` | `docs` | yes |
+| `docs` | `feature` | `done` | no |
+| `review` | `code-review` | `done` | no |
+
+For `verify -> docs`, use:
+
+- if `checks.md` overall is `pass`: `"T<N> verify passed. Continue to docs?"`
+- if overall is `needs-changes`: surface a remediation-aware prompt that offers
+  continue-to-docs, send-back-to-implement, or stop.
 
 For `redirect`:
 
 | From phase | Verdict | `hyper` sets |
 |------------|---------|--------------|
-| `plan` | `redirect target: discover` | `phase: discover`, `awaiting: null` |
-| `verify` | `redirect target: implement` | `phase: implement`, `awaiting: user-input` (remediation brief lives in `checks.md`) |
-
-The checkpoint rule is uniform about **when** it applies: approval-gated phases (`discover`, `plan`) auto-advance because the user already approved the artifact; agent-completion transitions (`implement → verify`, `verify → docs`) stop and ask before moving on.
-
-The checkpoint wording is **not** uniform. It must describe the actual phase outcome. A clean pass keeps the terse continue prompt. A non-clean but non-blocking result (currently `verify` with `checks.md` `**Overall:** needs-changes`) surfaces remediation as an explicit option instead of defaulting to the same framing used for a clean pass.
+| `execution-plan` | `redirect target: spec` | `phase: spec`, `awaiting: null` |
+| `execution-plan` | `redirect target: technical-plan` | `phase: technical-plan`, `awaiting: null` |
+| `verify` | `redirect target: implement` | `phase: implement`, `awaiting: user-input` |
 
 ## What counts as a reply
 
-When a gate is open (`awaiting != null`), treat the following as substantive replies:
+When a gate is open, treat these as substantive replies:
 
 - approval: `yes`, `approve`, `looks good`, `continue`
 - direct answer to a question
 - change request on the open artifact
 - follow-up question about the current gated task
 
-A blank resume or generic `continue` with no open gate context is not a reply on its own — `hyper` surfaces the gate label and stops.
-
-## Cold-resume sanity checks
-
-`hyper` may pause before dispatching an active task on a cold resume when no gate is open. This is a read-side sanity check, not a gate:
-
-- It uses durable signals only (for example an older `created` date or a present `handoff.md`), never hidden conversation memory.
-- It does **not** write `task.md` `awaiting` or any new frontmatter field.
-- If the task looks stale, the pause points the user to an explicit next action such as `resume T<N> anyway`, `hyper-task defer T<N>`, or `hyper-task cancel T<N>`.
-
 ## Behavior when a gate is open
 
 ### `hyper`
 
-- If exactly one active task has an open gate and the new user message is a substantive reply, clear `task.md` `awaiting` (only when the reply progresses the gate — see below) and re-dispatch the current phase skill. The phase skill produces a new verdict based on the updated artifact.
-- `hyper` clears `awaiting` on re-dispatch only for verdict-producing replies. When the phase skill returns `awaiting-input` or `awaiting-approval` again, `hyper` re-sets the corresponding label. In practice this means the gate is briefly cleared during dispatch and reapplied if the phase still needs the user.
+- If exactly one active task has an open gate and the new user message is a
+  substantive reply, clear `task.md` `awaiting` and re-dispatch the current
+  phase skill.
 - If the message is not a substantive reply, surface the gate label and stop.
-- If multiple active tasks have open gates and the user did not name the task, ask which task the reply belongs to.
+- If multiple active tasks have open gates and the user did not name the task,
+  ask which task the reply belongs to.
 
-### Phase skills (re-entered on a reply)
+### Phase skills
 
-- Record the user's answer or change in the artifact (`exploration.md`, `spec.md`, blocked subtask file, `checks.md`-driven remediation).
-- Do **not** write `phase:` or `awaiting:` on `task.md`. Return a verdict instead.
-- If more open questions remain, return `awaiting-input`. If the user approved, return `phase-complete`. If revisions were requested, apply them and return `awaiting-approval`. If the user asked to rethink the approach from plan, return `redirect target: discover`.
+- Record the user's answer or change in the artifact.
+- Do not write `phase:` or `awaiting:` on `task.md`.
+- Return `awaiting-input`, `awaiting-approval`, `phase-complete`, or
+  `redirect target: <phase>` as appropriate.
 
 ## Question serialization
 
 When the open gate is `user-input`:
 
-- Ask **one question per message**.
-- If the question has multiple plausible answers, recommend one and give a one-line reason grounded in the task, code, or user goal. Short accept / override replies (`yes`, `1A`, `1B`) stay possible.
-- Record the answer in the artifact under the question (the artifact is the durable record).
+- Ask one question per message.
+- Recommend one answer when the question has multiple plausible answers.
+- Record the answer in the artifact under the question.
 - If more unanswered questions remain, return `awaiting-input` again.
-- Once all answered, rename `Open questions` → `Resolved questions` (or delete the section if redundant) and return the next verdict — `awaiting-approval` for discover/plan, or `phase-complete` for implement remediation.
+- Once all are answered, rename `Open questions` to `Resolved questions` or
+  delete the section if redundant.
 
 ## Approval gates
 
-For `discover` and `plan`:
+Approval-gated phases are:
 
-- Write the approval artifact.
-- Return `awaiting-approval` with a concise chat-readable synopsis of the artifact plus the approve/change prompt. `hyper` sets `awaiting: user-approval` and stops.
-- On approval, the phase skill is re-dispatched, applies any final touches, and returns `phase-complete`. `hyper` clears `awaiting` and advances per the transition table (no user checkpoint — the approval was the gate).
+- `intake`
+- `spec`
+- `technical-plan`
+- `execution-plan`
+- `research`
+
+Their contract is:
+
+- write the approval artifact
+- return `awaiting-approval`
+- on approval, re-dispatch and return `phase-complete`
 
 ## Remediation gates
 
 For blocked verify results:
 
-- Verify writes `checks.md` with overall `blocked` and returns `redirect target: implement`. Verify never touches `task.md`.
-- `hyper` sets `phase: implement` and `awaiting: user-input`.
-- `checks.md` is the brief for the next `hyper-implement` dispatch.
-- The next user reply routes back to `hyper-implement`, which runs the remediation pass and returns `phase-complete`. `hyper` then advances back to `verify` (with the usual `implement → verify` checkpoint).
+- `hyper-verify` writes `checks.md` and returns `redirect target: implement`
+- `hyper` sets `phase: implement` and `awaiting: user-input`
+- `checks.md` is the remediation source for the next implement dispatch
 
 ## Subtask-level awaiting propagation
 
-A dispatched worker may set its subtask's `awaiting: user-input` when it hits a clarification blocker. The subtask file is the durable record of both the question and (later) the answer.
-
-- `hyper-implement` detects the blocked subtask, surfaces the first unanswered question in its return summary, and returns `awaiting-input`.
-- `hyper` sets `task.md` `awaiting: user-input` and relays the question verbatim.
-- On the user's reply, `hyper` re-dispatches `hyper-implement`. The orchestrator records the answer in the blocked subtask's `## Open questions`, clears the **subtask's** `awaiting`, and re-dispatches the worker. If questions remain, it returns `awaiting-input` again.
-- The subtask is the source of truth; `task.md`'s `awaiting` is a propagation of the subtask state for routing only. If they diverge, `hyper-implement` re-propagates from the subtask on the next dispatch.
+- `hyper-implement` detects blocked subtasks and returns `awaiting-input`
+- `hyper` sets `task.md` `awaiting: user-input`
+- on the user's reply, `hyper` re-dispatches `hyper-implement`
+- the orchestrator records the answer, clears the subtask's `awaiting`, and
+  resumes dispatch
 
 ## Never do this
 
-- Phase skills never write `task.md` `phase:` or `awaiting:`. Use verdicts.
-- `hyper` never clears a gate on its own without a substantive user reply.
-- Do not batch multiple open questions into one message.
-- Do not maintain a second hidden gate state outside the files.
-- Do not chain phase skills directly. Every transition goes through `hyper` so the transition table, checkpoint rule, and archive call stay centralized.
+- Phase skills never write `task.md` `phase:` or `awaiting:`
+- `hyper` never clears a gate without a substantive user reply
+- Do not batch multiple open questions into one message
+- Do not maintain hidden gate state outside the files
+- Do not chain phase skills directly; transitions always go through `hyper`

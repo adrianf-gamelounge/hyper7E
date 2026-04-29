@@ -25,7 +25,7 @@ _not yet run_
 <!--
 Append-only log of load-bearing choices made during the task.
 Format: `- YYYY-MM-DD — <author> — <decision> (<context>)`
-Authors: discover | plan | implement | verify | docs | user
+Authors: intake | spec | technical-plan | execution-plan | research | implement | verify | docs | user
 The rollup never overwrites this section. Phase skills append when a
 load-bearing choice is settled (approach picked, opt-out chosen,
 fallback selected). The user may append manually at any time. Silence

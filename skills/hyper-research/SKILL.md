@@ -1,0 +1,47 @@
+---
+name: hyper-research
+description: >
+  Runs the research phase of a Hyper task. Investigates the question raised by 01-intake.md, writes research.md with findings and a recommendation, and ends the task without implementation work. Use when a Hyper task is in the 'research' phase. Keywords: hyper, research, recommendation, research.md.
+user-invocable: false
+---
+
+# hyper-research
+
+You are in the **research** phase. Investigate the question and produce a
+recommendation, not an implementation plan.
+
+Resolve the Hyper state root per `../hyper/reference/state-root.md` before
+reading or writing `.hyper/` paths. The data model is in
+`../hyper/reference/data-model.md`. The gate contract is in
+`../hyper/reference/gates.md`.
+
+## Inputs
+
+- `task.md`
+- `01-intake.md`
+- Any existing `research.md`
+
+## Outputs
+
+- `research.md`
+- A verdict to `hyper`
+
+## Flow
+
+1. If an existing `research.md` is present and the user approved it, return
+   `phase-complete`.
+2. If an existing `research.md` is present and the user requested changes,
+   revise the artifact and return `awaiting-approval`.
+3. Re-read `01-intake.md`.
+4. Research the codebase and any relevant external sources the request needs.
+5. Capture findings, alternatives, recommendation, and follow-ups in
+   `research.md` from `templates/research.md`.
+6. Ask one question per message if a user answer is required to finish the
+   recommendation. Return `awaiting-input` while questions remain.
+7. Return `awaiting-approval`.
+
+## Return contract
+
+- `awaiting-input` — unresolved research question remains
+- `awaiting-approval` — `research.md` is ready for approval
+- `phase-complete` — approved research artifact is ready to archive
