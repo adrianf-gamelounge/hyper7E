@@ -294,9 +294,9 @@ Required sections:
 
 Owned by `hyper-iterate`.
 
-Loop files are named `L<N>-<kebab-slug>.md`. These loops are standalone probe
-artifacts, not task folders, and they do not participate in Hyper phase
-routing.
+Loop files are named `L<N>-<kebab-slug>.md`. These loops are standalone
+adaptive-work artifacts, not task folders, and they do not participate in
+Hyper phase routing.
 
 Loop frontmatter fields:
 
@@ -308,8 +308,17 @@ Loop frontmatter fields:
 | `created` | `YYYY-MM-DDTHH:MM:SS` | Loop creation timestamp. |
 | `updated` | `YYYY-MM-DDTHH:MM:SS` | Last cycle or metadata update. |
 
-The canonical file layout, including the cycle entry stub, lives in
-`skills/hyper-iterate/templates/loop.md`.
+Each loop combines:
+
+- **Living state** — goal, constraints, definition of done, current route,
+  current focus, current bar, parts, handoff cues, memory candidates, and
+  final outcome
+- **Evidence history** — bar history, route shifts, decisions, starting point,
+  and cycle log
+
+Loops may cover investigation, implementation, validation, and route
+corrections inside one adaptive lane. The canonical file layout, including the
+cycle entry stub, lives in `skills/hyper-iterate/templates/loop.md`.
 
 ## `handoff.md`
 

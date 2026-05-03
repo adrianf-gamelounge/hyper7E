@@ -28,8 +28,9 @@ structure:
 
 Skip Hyper for tiny, obvious edits.
 
-For tracked exploratory work where the next answer should come from a live
-probe instead of a full phase workflow, use `hyper-iterate`.
+For tracked adaptive work where the destination is known or can be stated but
+the route should evolve through live feedback instead of a full phase workflow,
+use `hyper-iterate`.
 
 ## Install
 
@@ -148,7 +149,7 @@ The most useful files are:
 - `03-technical-plan.md`: approved technical shape
 - `04-execution-plan.md`: worker-facing execution overview
 - `checks.md`: test, review, QA, and docs results
-- `.hyper/loops/`: lightweight probe logs for exploratory work run through `hyper-iterate`
+- `.hyper/loops/`: adaptive work logs that keep route, parts, decisions, evidence, and handoff cues for `hyper-iterate`; long loops can still use bounded delegated slices when the host supports sub-agents
 
 Add `.hyper/` to `.gitignore` unless you intentionally want to share task
 history.
@@ -177,7 +178,7 @@ User-facing skill names:
 | `/hyper-retro` | Record lessons after a task or session. |
 | `/hyper-code-review` | Review an arbitrary diff, branch, PR, or staged change. |
 | `/hyper-recipe` | Manage reusable project-local procedures in `.hyper/recipes/`. |
-| `/hyper-iterate` | Run a lightweight probe loop in `.hyper/loops/` for exploratory work. |
+| `/hyper-iterate` | Run an adaptive OODA-style loop in `.hyper/loops/` for goal-led work that should course-correct while it executes; long loops may use bounded delegated slices while one parent-owned loop stays authoritative. |
 | `/hyper-team` | Ask another AI agent CLI for a second opinion. |
 
 Internal skills such as `hyper-intake`, `hyper-spec`,
