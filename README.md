@@ -28,6 +28,9 @@ structure:
 
 Skip Hyper for tiny, obvious edits.
 
+For tracked exploratory work where the next answer should come from a live
+probe instead of a full phase workflow, use `hyper-iterate`.
+
 ## Install
 
 Clone this repo:
@@ -133,6 +136,7 @@ Approval gates happen where direction matters:
   memory.md
   rules.md
   recipes/
+  loops/
 ```
 
 The most useful files are:
@@ -144,6 +148,7 @@ The most useful files are:
 - `03-technical-plan.md`: approved technical shape
 - `04-execution-plan.md`: worker-facing execution overview
 - `checks.md`: test, review, QA, and docs results
+- `.hyper/loops/`: lightweight probe logs for exploratory work run through `hyper-iterate`
 
 Add `.hyper/` to `.gitignore` unless you intentionally want to share task
 history.
@@ -159,6 +164,7 @@ User-facing skill names:
 - `hyper-retro`
 - `hyper-code-review`
 - `hyper-recipe`
+- `hyper-iterate`
 - `hyper-team`
 
 | Command | Use it for |
@@ -171,6 +177,7 @@ User-facing skill names:
 | `/hyper-retro` | Record lessons after a task or session. |
 | `/hyper-code-review` | Review an arbitrary diff, branch, PR, or staged change. |
 | `/hyper-recipe` | Manage reusable project-local procedures in `.hyper/recipes/`. |
+| `/hyper-iterate` | Run a lightweight probe loop in `.hyper/loops/` for exploratory work. |
 | `/hyper-team` | Ask another AI agent CLI for a second opinion. |
 
 Internal skills such as `hyper-intake`, `hyper-spec`,

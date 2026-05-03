@@ -1,6 +1,6 @@
 # Resolving the Hyper State Root
 
-Before reading or writing any `.hyper/` path, resolve the **Hyper state root** once for the invocation. All task, backlog, memory, recipe, retro, team, and archive paths are relative to that root.
+Before reading or writing any `.hyper/` path, resolve the **Hyper state root** once for the invocation. All task, backlog, memory, recipe, loop, retro, team, and archive paths are relative to that root.
 
 ## Rule
 

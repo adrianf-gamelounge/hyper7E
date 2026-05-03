@@ -32,6 +32,7 @@ worktree. Plain markdown. No database, no CLI, no hidden state.
   backlog.md
   retro.md
   recipes/
+  loops/
 ```
 
 - Task folders are named `T<N>-<kebab-slug>`.
@@ -99,9 +100,9 @@ algorithm lives in `reference/dashboard.md`.
 
 ## Internal vs user-facing skills
 
-Users invoke eight Hyper skills directly: `hyper`, `hyper-task`,
+Users invoke nine Hyper skills directly: `hyper`, `hyper-task`,
 `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review`,
-`hyper-recipe`, and `hyper-team`.
+`hyper-recipe`, `hyper-iterate`, and `hyper-team`.
 
 Internal skills are:
 
@@ -288,6 +289,27 @@ Required sections:
 3. `## review`
 4. `## qa`
 5. `## docs` (feature tasks after docs phase)
+
+## `.hyper/loops/`
+
+Owned by `hyper-iterate`.
+
+Loop files are named `L<N>-<kebab-slug>.md`. These loops are standalone probe
+artifacts, not task folders, and they do not participate in Hyper phase
+routing.
+
+Loop frontmatter fields:
+
+| Field | Values | Meaning |
+|-------|--------|---------|
+| `id` | `L1`, `L2`, ... | Sequential integer loop id. |
+| `title` | short string | Human-readable title used in filenames and headings. |
+| `status` | `active` · `done` | Whether the loop is still running or has reached a stop point. |
+| `created` | `YYYY-MM-DDTHH:MM:SS` | Loop creation timestamp. |
+| `updated` | `YYYY-MM-DDTHH:MM:SS` | Last cycle or metadata update. |
+
+The canonical file layout, including the cycle entry stub, lives in
+`skills/hyper-iterate/templates/loop.md`.
 
 ## `handoff.md`
 

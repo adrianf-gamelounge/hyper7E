@@ -95,6 +95,7 @@ check:
 - `hyper-handoff`
 - `hyper-retro`
 - `hyper-recipe`
+- `hyper-iterate`
 
 ## Repairing example drift
 
