@@ -79,6 +79,12 @@ To resume later:
 /hyper T3
 ```
 
+To resume adaptive work later:
+
+```text
+/hyper-iterate L3
+```
+
 ## Workflow Lanes
 
 Tracked lanes:
@@ -149,7 +155,7 @@ The most useful files are:
 - `03-technical-plan.md`: approved technical shape
 - `04-execution-plan.md`: worker-facing execution overview
 - `checks.md`: test, review, QA, and docs results
-- `.hyper/loops/`: adaptive work logs that keep route, parts, decisions, evidence, and handoff cues for `hyper-iterate`; long loops can still use bounded delegated slices when the host supports sub-agents
+- `.hyper/loops/`: adaptive work logs that keep route, parts, evidence digest, relevant artifacts, decisions, and handoff cues for `hyper-iterate`; long loops can still use bounded delegated slices when the host supports sub-agents
 
 Add `.hyper/` to `.gitignore` unless you intentionally want to share task
 history.

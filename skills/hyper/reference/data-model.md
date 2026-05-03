@@ -311,10 +311,17 @@ Loop frontmatter fields:
 Each loop combines:
 
 - **Living state** — goal, constraints, definition of done, current route,
-  current focus, current bar, parts, handoff cues, memory candidates, and
-  final outcome
+  current focus, current bar, parts, evidence digest, relevant artifacts,
+  handoff cues, memory candidates, and final outcome
 - **Evidence history** — bar history, route shifts, decisions, starting point,
   and cycle log
+
+For long loops, the intended read order is layered:
+
+1. hot state — route, focus, bar, parts, evidence digest, handoff cues
+2. warm state — recent decisions, recent route shifts, relevant artifacts, and
+   recent cycles
+3. cold state — older cycles and large linked artifacts only when needed
 
 Loops may cover investigation, implementation, validation, and route
 corrections inside one adaptive lane. The canonical file layout, including the

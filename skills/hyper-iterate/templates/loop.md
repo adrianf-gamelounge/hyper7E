@@ -35,6 +35,12 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 ## Parts
 - P1 — <first meaningful slice> — doing
 
+## Evidence digest
+- None yet.
+
+## Relevant artifacts
+- None yet.
+
 ## Bar history
 - <YYYY-MM-DDTHH:MM:SS> — Initial bar: <same as current bar>
 
@@ -67,7 +73,9 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 _Add cycles below as work happens._
 
 ## Handoff cues
-- None yet.
+- Next atomic move: <what to do first on resume>
+- Current risk or uncertainty: <what still matters>
+- Dirty or unvalidated state: <none | what has changed but is not yet validated>
 
 ## Memory candidates
 - None yet.

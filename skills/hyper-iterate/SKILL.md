@@ -65,7 +65,8 @@ of content:
 - **Living state** — frontmatter `status` and `updated`, plus `## Goal`,
   `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`,
   `## Current route`, `## Current focus`, `## Current bar`, `## Parts`,
-  `## Handoff cues`, `## Memory candidates`, and `## Outcome`
+  `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`,
+  `## Memory candidates`, and `## Outcome`
 - **Evidence history** — `## Bar history`, `## Route shifts`, `## Decisions`,
   `## Starting point`, and `## Cycles`
 
@@ -127,6 +128,8 @@ Read the loop file before acting. Focus on:
 - `## Current focus`
 - `## Current bar`
 - `## Parts`
+- `## Evidence digest`
+- `## Relevant artifacts`
 - latest `## Bar history` entry when present
 - latest `## Route shifts` and `## Decisions` entries when present
 - `## Handoff cues`
@@ -136,6 +139,34 @@ Read the loop file before acting. Focus on:
 If the loop is already `status: done`, report the outcome and stop. Do not
 reopen done loops. If the user wants to continue from the same learning, create
 a new loop and carry the old loop forward as context in `## Starting point`.
+
+## Resume protocol for long loops
+
+When a loop gets long, rehydrate in layers instead of replaying the full
+history.
+
+1. **Hot state — always read first**
+   - `## Goal`
+   - `## Definition of done`
+   - `## Current route`
+   - `## Current focus`
+   - `## Current bar`
+   - `## Parts`
+   - `## Evidence digest`
+   - `## Handoff cues`
+2. **Warm state — read when the next move still needs context**
+   - latest `## Decisions`
+   - latest `## Route shifts`
+   - `## Relevant artifacts`
+   - the last one to three cycles
+3. **Cold state — read only on demand**
+   - older cycles
+   - long command outputs, logs, screenshots, or child artifacts linked from the loop
+   - `.hyper/memory.md` entries only when the current part clearly overlaps them
+
+Do not reread the whole cycle history by default. Promote durable signal upward:
+turn route-shaping facts into `## Decisions`, still-relevant findings into
+`## Evidence digest`, and restart-critical notes into `## Handoff cues`.
 
 ## Working cycle
 
@@ -147,11 +178,12 @@ For each cycle:
 2. **Orient** — state what matters now: the active hypothesis, the current risk, the route question, or the reason this slice is next.
 3. **Decide** — choose exactly one cycle intent: probe, implement, validate, split a part, reroute, or stop.
 4. **Act** — make the smallest meaningful move that advances the chosen intent. This can be a probe, a code change, a validation pass, a decomposition step, or a route correction.
-5. **Evidence** — capture the exact result: error text, command output, test result, tool response, screenshot note, diff summary, or observed behavior.
+5. **Evidence** — capture the exact result: error text, command output, test result, tool response, screenshot note, diff summary, or observed behavior. If the raw evidence is large, save it to a file, keep the decisive excerpt in the cycle, and add the file path to `## Relevant artifacts`.
 6. **Learning** — say what the evidence changed in your understanding of the goal, route, parts, or risks.
-7. **Update living state** — update `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Handoff cues`, or `## Memory candidates` if the cycle changed them.
-8. **Next** — choose one of: continue, back up, split further, validate, stop, or promote to full Hyper.
-9. Append the cycle to the loop file and update frontmatter `updated`.
+7. **Update living state** — update `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, or `## Memory candidates` if the cycle changed them.
+8. **Checkpoint for restart** — if the loop remains active, refresh `## Handoff cues` so a forced session break would still leave the next atomic move, current risk, and any dirty or unvalidated state visible.
+9. **Next** — choose one of: continue, back up, split further, validate, stop, or promote to full Hyper.
+10. Append the cycle to the loop file and update frontmatter `updated`.
 
 Use the cycle entry shape from `templates/loop.md`.
 
@@ -189,11 +221,35 @@ When delegating, give the child a compact contract derived from the loop:
 - expected validation
 - explicit stop rules and what the child must not decide alone
 
+Require the child to return a compact summary with:
+
+- scope owned
+- files inspected or changed
+- commands run and exact outcomes
+- the strongest evidence or artifact paths
+- unresolved risks, blockers, or confidence limits
+- the recommended next move for the parent
+
 Prefer:
 
 - fresh-context children for recon, research, and adversarial review
 - one writer at a time for implementation
 - parent-side synthesis after every child return before another route change
+
+Default delegation patterns:
+
+- **Recon child** — inspect one part or boundary, identify relevant files,
+  existing patterns, risks, and likely next steps; no edits
+- **Research child** — answer one external question, cite the strongest
+  sources, and summarize the implication for the current route; no edits
+- **Implementation child** — change only one clearly bounded part, preserve the
+  stated route and constraints, run targeted validation, and report changed
+  files plus unresolved issues
+- **Validation child** — run focused checks or long-running commands and return
+  exact results, failures, and confidence; no route changes
+- **Review child** — inspect one diff, part, or recent change for correctness,
+  tests, or maintainability; no edits unless the parent explicitly requests a
+  fix pass
 
 After a child finishes, the parent integrates only the durable result back into
 the loop: update the relevant part, append a cycle entry with the evidence,
@@ -223,6 +279,10 @@ At useful pause points, sort new information into the right bucket:
 
 - `## Handoff cues` — what a new session should know first that is not obvious
   from the rest of the file
+- `## Evidence digest` — older findings that still matter to the route but do
+  not need a full cycle reread
+- `## Relevant artifacts` — durable file paths worth reopening instead of
+  replaying the conversation or rerunning a long command
 - `## Memory candidates` — possible cross-task lessons that may deserve
   promotion later
 - `## Decisions` — route-shaping choices already made
@@ -236,8 +296,9 @@ skill. When the user explicitly asks to preserve a durable lesson beyond this
 loop:
 
 1. read `../hyper/reference/memory.md`
-2. append only the truly cross-task learning to `.hyper/memory.md`
-3. use `.hyper/rules.md` only for standing project rules the user wants to make normative
+2. review `## Memory candidates`
+3. append only the truly cross-task learning to `.hyper/memory.md`
+4. use `.hyper/rules.md` only for standing project rules the user wants to make normative
 
 ## Stop conditions
 
@@ -257,8 +318,10 @@ resume point.
 - Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill.
 - Prefer live system feedback over more reading when reality can answer faster.
 - Use the smallest meaningful move, not necessarily the smallest possible probe.
-- Keep `## Goal`, `## Current route`, and `## Parts` concise enough that a new session can rehydrate quickly.
+- Keep `## Goal`, `## Current route`, `## Parts`, `## Evidence digest`, and `## Handoff cues` concise enough that a new session can rehydrate quickly.
 - Record evidence verbatim where practical. Do not paraphrase away the signal.
+- When evidence is bulky, store the source artifact path plus the decisive excerpt instead of pasting an unbounded dump into the loop.
+- Do not reread or restate the entire loop history when hot state plus warm state already answer the next move.
 - Do not batch multiple unrelated moves into one cycle.
 - Do not reopen a done loop; start a new one if the work continues.
 - Keep memory sparse. Not every local learning deserves promotion beyond the loop.
