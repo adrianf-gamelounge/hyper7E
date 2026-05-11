@@ -14,6 +14,8 @@ const README = path.join(ROOT, "README.md");
 const DATA_MODEL = path.join(ROOT, "skills", "hyper", "reference", "data-model.md");
 const HYPER_ITERATE_SKILL = path.join(ROOT, "skills", "hyper-iterate", "SKILL.md");
 const HYPER_ITERATE_TEMPLATE = path.join(ROOT, "skills", "hyper-iterate", "templates", "loop.md");
+const HYPER_TECHNICAL_PLAN_TEMPLATE = path.join(ROOT, "skills", "hyper-technical-plan", "templates", "03-technical-plan.md");
+const HYPER_TECHNICAL_PLAN_BUGFIX_TEMPLATE = path.join(ROOT, "skills", "hyper-technical-plan", "templates", "03-technical-plan-bugfix.md");
 
 const USER_FACING_HYPER = new Set([
   "hyper",
@@ -212,6 +214,10 @@ function validateReadmeAndDataModel() {
   ensureContains(DATA_MODEL, "`phase: deferred`");
   ensureContains(DATA_MODEL, "## `05-execution-plan-review.md`");
   ensureContains(DATA_MODEL, "## `retro.md`");
+  ensureContains(DATA_MODEL, "**Alternatives considered**");
+
+  ensureContains(HYPER_TECHNICAL_PLAN_TEMPLATE, "## Alternatives considered");
+  ensureContains(HYPER_TECHNICAL_PLAN_BUGFIX_TEMPLATE, "## Alternatives considered");
 }
 
 function validateHyperIterate() {

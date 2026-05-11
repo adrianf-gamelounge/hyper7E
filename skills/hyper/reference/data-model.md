@@ -169,9 +169,10 @@ Generic structure:
 1. **Codebase findings**
 2. **Reuse plan**
 3. **Design decisions**
-4. **Risks / unknowns**
-5. **Implementation strategy**
-6. **Open questions** (optional)
+4. **Alternatives considered**
+5. **Risks / unknowns**
+6. **Implementation strategy**
+7. **Open questions** (optional)
 
 Bugfix structure:
 
@@ -181,8 +182,9 @@ Bugfix structure:
 4. **Acceptance proof**
 5. **Unchanged behavior**
 6. **Proposed fix**
-7. **Risks / unknowns**
-8. **Open questions** (optional)
+7. **Alternatives considered**
+8. **Risks / unknowns**
+9. **Open questions** (optional)
 
 The `repro_status` enum is `deterministic`, `intermittent`, or `no-repro`.
 

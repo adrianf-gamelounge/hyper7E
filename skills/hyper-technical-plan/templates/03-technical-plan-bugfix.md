@@ -24,6 +24,12 @@
 
 <Recommended implementation approach.>
 
+## Alternatives considered
+
+<!-- Alternative *fixes* considered, not alternative root causes. `None — only one shape was plausible.` is a valid value when no alternative was seriously considered. -->
+
+- **<Alternative fix name>** — rejected because <one-sentence reason>. Revive if <signal that would reopen this decision>.
+
 ## Risks / unknowns
 
 - <Risk, tradeoff, or unknown.>

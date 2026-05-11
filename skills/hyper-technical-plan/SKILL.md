@@ -43,8 +43,10 @@ reading or writing `.hyper/` paths. The data model is in
    - decide repro status
    - form the current root-cause hypothesis
    - define acceptance proof and unchanged behavior
+   - capture alternative fixes considered and the signal that would revive each
 6. For non-bugfix work, define codebase findings, reuse plan, design
-   decisions, risks, and implementation strategy.
+   decisions, **alternatives considered (with revival signals)**, risks, and
+   implementation strategy.
 7. Ask one question per message only when the answer would change the
    technical direction. Return `awaiting-input` while questions remain.
 8. Write `03-technical-plan.md` from the matching template:
@@ -58,6 +60,7 @@ reading or writing `.hyper/` paths. The data model is in
 - `feature` tasks should compare plausible approaches and recommend one.
 - `bugfix` tasks do not pass through `spec`.
 - Do not write subtask files here. That belongs to `hyper-execution-plan`.
+- `Alternatives considered` must capture *rejected approaches with revival signals*, not generic considerations. `None — only one shape was plausible.` is a valid value when no alternative was seriously considered.
 
 ## Return contract
 
