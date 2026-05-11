@@ -250,19 +250,19 @@ function validateHyperIterate() {
   }
 
   ensureContains(HYPER_ITERATE_TEMPLATE, "**Intent:** <probe | implement | validate | split | reroute | stop>");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "**Prior belief:** <What I expected before this cycle.");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "**Route impact:** <How this changes the route or parts.");
   ensureContains(HYPER_ITERATE_TEMPLATE, "- P1 — <first meaningful slice> — doing");
   ensureContains(HYPER_ITERATE_TEMPLATE, "- Next atomic move: <what to do first on resume>");
   ensureContains(HYPER_ITERATE_TEMPLATE, "- Dirty or unvalidated state: <none | what has changed but is not yet validated>");
 
   ensureContains(HYPER_ITERATE_SKILL, "## Resume");
-  ensureContains(HYPER_ITERATE_SKILL, "1. **Hot state — always read first**");
-  ensureContains(HYPER_ITERATE_SKILL, "2. **Warm state — read when the next move still needs context**");
-  ensureContains(HYPER_ITERATE_SKILL, "3. **Cold state — read only on demand**");
-  ensureContains(HYPER_ITERATE_SKILL, "<hyper-state-root>/.hyper/loops/L<N>-<slug>/");
-  ensureContains(HYPER_ITERATE_SKILL, "## Delegation inside long loops");
-  ensureContains(HYPER_ITERATE_SKILL, "Default delegation patterns:");
-  ensureContains(HYPER_ITERATE_SKILL, "Require the child to return a compact summary with:");
-  ensureContains(HYPER_ITERATE_SKILL, "only these statuses: `todo`, `doing`, `done`, `blocked`, `dropped`.");
+  ensureContains(HYPER_ITERATE_SKILL, "**Hot** (always read first):");
+  ensureContains(HYPER_ITERATE_SKILL, "**Warm** (when the next move needs more):");
+  ensureContains(HYPER_ITERATE_SKILL, "**Cold** (only on demand):");
+  ensureContains(HYPER_ITERATE_SKILL, ".hyper/loops/L<N>-<slug>/");
+  ensureContains(HYPER_ITERATE_SKILL, "## Delegation");
+  ensureContains(HYPER_ITERATE_SKILL, "Part statuses: `todo | doing | done | blocked | dropped`.");
   ensureContains(HYPER_ITERATE_SKILL, "Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill.");
 
   ensureContains(README, "/hyper-iterate L3");

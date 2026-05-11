@@ -78,14 +78,16 @@ For each cycle:
 
 1. **Observe** — read or run only enough to see the next useful move.
 2. **Orient** — state what matters now: hypothesis, risk, or why this slice is next.
-3. **Decide** — one intent: `probe | implement | validate | split | reroute | stop`.
-4. **Act** — the smallest meaningful move that advances the chosen intent.
-5. **Evidence** — capture the exact result. If raw output is large, save it inside the loop folder, keep the decisive excerpt in the cycle, and link the file from `## Relevant artifacts`.
-6. **Learning** — what the evidence changed about the goal, route, parts, or risks.
-7. **Update living state** — refresh whatever sections the cycle changed.
-8. **Refresh handoff cues** — if the loop stays active, leave the next atomic move and current risk visible.
-9. **Next** — continue, back up, split, validate, stop, or promote to a planned task.
-10. Append the cycle entry and update frontmatter `updated`.
+3. **Prior belief** — name what you expected to be true going into this cycle. `same as cycle N-1` is acceptable when nothing has shifted; the value is in making the belief explicit, not in forcing novelty.
+4. **Decide** — one intent: `probe | implement | validate | split | reroute | stop`.
+5. **Act** — the smallest meaningful move that advances the chosen intent.
+6. **Evidence** — capture the exact result. If raw output is large, save it inside the loop folder, keep the decisive excerpt in the cycle, and link the file from `## Relevant artifacts`.
+7. **Learning** — what the evidence changed about the prior belief, the goal, route, parts, or risks.
+8. **Route impact** — how this cycle changes the route or parts for the next cycle. `no change` is a valid finding and itself a useful signal.
+9. **Update living state** — refresh whatever sections the cycle changed.
+10. **Refresh handoff cues** — if the loop stays active, leave the next atomic move and current risk visible.
+11. **Next** — continue, back up, split, validate, stop, or promote to a planned task.
+12. Append the cycle entry and update frontmatter `updated`.
 
 If the bar or route changes, update the living value AND append a one-line entry to `## Bar history` or `## Route shifts` with timestamp and reason. Use `## Decisions` only for load-bearing choices.
 
@@ -108,6 +110,7 @@ Mark `status: done` and fill `## Outcome` when the definition of done is met, th
 - One cycle = one coherent move. Do not batch unrelated work.
 - Do not reopen done loops.
 - When the work starts needing approvals or formal coordination, recommend switching to a planned workflow.
+- Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill. Use `hyper` for tracked work.
 
 ## Template — `loop.md`
 
@@ -193,9 +196,11 @@ Cycle entry shape:
 
 **Intent:** <probe | implement | validate | split | reroute | stop>
 **Orient:** <What matters now and why this move is next.>
+**Prior belief:** <What I expected before this cycle. `same as cycle N-1` is fine when nothing shifted.>
 **Action:** <Smallest meaningful move taken.>
 **Evidence:** <Exact result.>
-**Learning:** <What changed in our understanding.>
+**Learning:** <What the evidence changed about my prior belief.>
+**Route impact:** <How this changes the route or parts. `no change` is a valid finding.>
 **Next:** <continue | back up | split | validate | stop | promote.>
 -->
 

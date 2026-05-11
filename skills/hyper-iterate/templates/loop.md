@@ -62,11 +62,15 @@ Cycle entry shape — append entries below this comment as `### Cycle N — <YYY
 
   **Orient:** <What matters now and why this move is next.>
 
+  **Prior belief:** <What I expected before this cycle. `same as cycle N-1` is fine when nothing shifted.>
+
   **Action:** <Smallest meaningful move taken.>
 
   **Evidence:** <Exact result.>
 
-  **Learning:** <What changed in our understanding.>
+  **Learning:** <What the evidence changed about my prior belief.>
+
+  **Route impact:** <How this changes the route or parts. `no change` is a valid finding.>
 
   **Next:** <Continue | back up | split further | validate | stop | promote to hyper.>
 -->
