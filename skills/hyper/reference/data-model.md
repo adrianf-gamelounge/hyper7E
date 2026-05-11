@@ -33,6 +33,9 @@ worktree. Plain markdown. No database, no CLI, no hidden state.
   retro.md
   recipes/
   loops/
+    L1-fix-flaky-build/
+      loop.md
+      cycle3-build-log.txt
 ```
 
 - Task folders are named `T<N>-<kebab-slug>`.
@@ -294,9 +297,18 @@ Required sections:
 
 Owned by `hyper-iterate`.
 
-Loop files are named `L<N>-<kebab-slug>.md`. These loops are standalone probe
-artifacts, not task folders, and they do not participate in Hyper phase
-routing.
+Each loop lives in its own folder named `L<N>-<kebab-slug>/`. The folder
+contains:
+
+- `loop.md` — the canonical loop file, written from
+  `skills/hyper-iterate/templates/loop.md`.
+- optional evidence files (logs, command output, screenshots, diffs)
+  referenced from `## Relevant artifacts` in `loop.md`. Subfolders are allowed
+  when grouping helps.
+
+Loop ids are allocated by scanning `loops/` for folders matching `L<N>-*` and
+adding 1; ids are never reused. Loops are standalone adaptive-work artifacts,
+not Hyper task folders, and they do not participate in Hyper phase routing.
 
 Loop frontmatter fields:
 
@@ -308,8 +320,24 @@ Loop frontmatter fields:
 | `created` | `YYYY-MM-DDTHH:MM:SS` | Loop creation timestamp. |
 | `updated` | `YYYY-MM-DDTHH:MM:SS` | Last cycle or metadata update. |
 
-The canonical file layout, including the cycle entry stub, lives in
-`skills/hyper-iterate/templates/loop.md`.
+Each loop combines:
+
+- **Living state** — goal, constraints, definition of done, current route,
+  current focus, current bar, parts, evidence digest, relevant artifacts,
+  handoff cues, memory candidates, and final outcome
+- **Evidence history** — bar history, route shifts, decisions, starting point,
+  and cycle log
+
+For long loops, the intended read order is layered:
+
+1. hot state — route, focus, bar, parts, evidence digest, handoff cues
+2. warm state — recent decisions, recent route shifts, relevant artifacts, and
+   recent cycles
+3. cold state — older cycles and large linked artifacts only when needed
+
+Loops may cover investigation, implementation, validation, and route
+corrections inside one adaptive lane. The canonical file layout, including the
+cycle entry stub, lives in `skills/hyper-iterate/templates/loop.md`.
 
 ## `handoff.md`
 

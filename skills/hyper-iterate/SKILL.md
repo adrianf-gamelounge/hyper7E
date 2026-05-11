@@ -1,154 +1,211 @@
 ---
 name: hyper-iterate
 description: >
-  Runs a lightweight probe-sense-respond loop for exploratory coding work. Creates or resumes loop files under `.hyper/loops/`, records the current bar, and works one small hypothesis-driven cycle at a time instead of forcing a full plan. Use when the user says to replicate first, try something inline, work by trial and error, or learn from live behavior before planning. Keywords: hyper, iterate, probe, loop, exploratory, trial and error, repro, inline.
+  Adaptive OODA-style loop for goal-led work where the destination is known but the route should evolve through contact with reality. Each loop lives in `.hyper/loops/L<N>-<slug>/loop.md` so a fresh session can resume without re-deriving the task. Use when the user wants to work iteratively, course-correct mid-flight, probe before committing, or split a goal into adaptive slices. Keywords: hyper, iterate, loop, ooda, adaptive, probe, course correct.
 ---
 
 # hyper-iterate
 
-Run tracked exploratory work without entering the full Hyper phase workflow.
+Run tracked adaptive work: observe, orient, decide, act, repeat. Use it when the goal is clear but the path is not, and the path should stay flexible while the work unfolds.
 
-Resolve the Hyper state root per `../hyper/reference/state-root.md` before
-reading or writing `.hyper/` paths. Ensure `.hyper/` is bootstrapped per
-`../hyper/reference/bootstrap.md`, then create `<hyper-state-root>/.hyper/loops/`
-if it does not exist.
-
-This skill owns `<hyper-state-root>/.hyper/loops/`. It does not create task
-folders, phase artifacts, backlog entries, or memory entries. When the Hyper
-state root differs from the current working tree, use absolute paths for loop
-artifacts so reads and writes still land in the main project directory.
-
-## What this skill is for
-
-Use this skill when the next useful answer should come from a live probe, not
-from a long plan.
-
-Good fits:
-
-- reproducing a bug on a live system before designing the fix
-- trying a small inline change, retesting, and adjusting
-- improving agent-facing or user-facing behavior where quality must be observed
-- exploratory work where the user explicitly wants trial and error
-- small but important fixes where durable notes help and a full task would be overhead
-
-Bad fits:
-
-- broad multi-slice work with a stable design shape
-- work that already needs execution-plan coordination
-- pure research with no probes or code changes
-
-When the work becomes stable enough that coordination matters more than
-exploration, recommend switching to `hyper` or `hyper-task`. Do not migrate the
-work automatically.
+Bad fits: tiny obvious edits, pure research with no system contact, or work that already needs formal approval gates.
 
 ## Loop artifact
 
-Store one file per loop at `<hyper-state-root>/.hyper/loops/L<N>-<slug>.md`.
+Each loop is a folder at `.hyper/loops/L<N>-<slug>/` containing:
 
-Create new files from `templates/loop.md`.
+- `loop.md` — the canonical state file (template below).
+- optional evidence files (logs, diffs, screenshots) referenced from `## Relevant artifacts`. Use kebab-case names like `cycle3-build-log.txt`.
 
-A loop file is append-only except for:
+The project root is the directory containing `.hyper/`, or the current working directory if `.hyper/` does not exist yet. Create `.hyper/loops/` if missing. Use absolute paths in tool calls when the working directory differs from the project root.
 
-- frontmatter `status` and `updated`
-- `## Current bar`
-- `## Outcome`
+Two kinds of content live in `loop.md`:
 
-Done loops stay done. Extending the work means creating a new loop, not
-rewriting the old one.
+- **Living state** that you overwrite as reality changes — `## Goal`, `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`, `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, `## Memory candidates`, `## Outcome`.
+- **History** that you append to, never rewrite — `## Bar history`, `## Route shifts`, `## Decisions`, `## Starting point`, `## Cycles`.
 
-Everything else is evidence history. Do not rewrite old cycles to make the work
-look cleaner than it was.
+`## Memory candidates` collects possible cross-task lessons worth promoting beyond this loop. Leave it empty until a real one surfaces.
+
+Timestamps use `YYYY-MM-DDTHH:MM:SS`.
 
 ## Routing
 
-Pick exactly one path:
+Pick one:
 
-1. **Resume by path** — if the user supplies an absolute path under `.hyper/loops/`; derive the Hyper state root from that path per `../hyper/reference/state-root.md`, then resume that loop.
-2. **Resume by id** — if the user names `L<N>`.
-3. **Resume by match** — if the user names an existing loop title clearly.
-4. **Resume the only active loop** — if no id is given and exactly one active loop exists.
-5. **Ask** — if multiple active loops exist and the target is ambiguous.
-6. **Create** — otherwise.
+1. **Resume by id or path** — user named `L<N>` or gave a path inside `.hyper/loops/`.
+2. **Resume by title** — user named an existing loop clearly.
+3. **Resume the only active loop** — exactly one loop has frontmatter `status: active`.
+4. **Ask** — multiple active loops and the target is unclear.
+5. **Create** — otherwise.
 
-Active means frontmatter `status: active`.
+Done loops are not reopened. If the user wants to keep going from a done loop, create a new one and reference it in `## Starting point`.
+
+## Clarify before creating
+
+Before writing `loop.md`, make sure you can state the goal, the destination, and at least one near-term stop point. If any of these are unclear from the user's prompt:
+
+1. **Scan the project briefly** — relevant files, recent commits, README, related loops or tasks. Often the missing piece is already on disk.
+2. **Then ask the user.** One question per message. Prefer multiple-choice when a structured-question tool is available; fall back to open-ended only when the choice space is genuinely open.
+3. **Only ask what changes the loop.** Goal, destination, hard constraints, non-negotiables, and the first bar. Skip details that the loop itself will discover through cycles.
+4. Stop asking as soon as you have enough to commit to a useful route. If the user signals "just start", commit to the clearest reading and surface remaining unknowns in `## Handoff cues` or as the first cycle's `Orient`.
+
+When the prompt is already clear (concrete goal + obvious destination), skip straight to Create.
 
 ## Create
 
-1. Scan `<hyper-state-root>/.hyper/loops/*.md` for the highest `L<N>` and allocate the next id.
-2. Derive a short title and kebab-case slug.
-3. Fill `## Goal` from the user's request in one or two tight sentences.
-4. Determine the initial bar:
-   - if the user named a concrete success condition, use it
-   - otherwise write the narrowest useful bar you can justify from the request
-   - ask once only if the bar is still unclear after that
-5. Fill `## Constraints`:
-   - list the user's explicit constraints when present
-   - otherwise write `- None stated.`
-6. Fill `## Starting point` with what is already known before cycle 1.
-   - use concrete facts already established in the request when available
-   - otherwise write `Unknown.`
-7. Write `<hyper-state-root>/.hyper/loops/L<N>-<slug>.md` from `templates/loop.md`.
-8. Announce: `Created L<N> — <title>. Starting probe loop.`
+1. Scan `.hyper/loops/` for `L<N>-*` folders, take the highest `N`, allocate the next.
+2. Pick a short title and kebab-case slug.
+3. Fill the template below from the user's request and any clarifications. When information is missing, use `Not stated yet.` for `## Why`, `- None stated.` for `## Constraints` and `## Non-negotiables`, and `Unknown.` for `## Starting point`. Leave `## Memory candidates` empty.
+4. Initial bar: a concrete near-term stop point. If the user did not name one, write the narrowest useful bar that moves the route forward now.
+5. Initial parts: 2–5 meaningful slices when the work decomposes naturally, or `P1 — Whole goal — doing` when it does not.
+6. Write `loop.md` and announce: `Created L<N> — <title>. Starting adaptive loop.`
 
 ## Resume
 
-Read the loop file before acting. Focus on:
+Read in layers; do not reread the whole file by default.
 
-- `## Goal`
-- `## Current bar`
-- latest `## Bar history` entry
-- `## Constraints`
-- `## Starting point`
-- the last one or two cycles
-- `## Outcome` when filled
+- **Hot** (always read first): Goal, Definition of done, Current route, Current focus, Current bar, Parts, Evidence digest, Handoff cues.
+- **Warm** (when the next move needs more): latest Decisions, Route shifts, Bar history, Relevant artifacts, last 1–3 cycles, Outcome.
+- **Cold** (only on demand): older cycles, raw artifact files.
 
-If the loop is already `status: done`, report the outcome and stop. Do not
-reopen done loops. If the user wants to continue from the same learning, create
-a new loop and carry the old loop forward as context in `## Starting point`.
+Promote durable signal upward as work progresses: route-shaping facts become `## Decisions`, still-relevant findings become `## Evidence digest`, restart-critical notes become `## Handoff cues`.
 
 ## Working cycle
 
-Run one small cycle at a time unless the user explicitly asks for a batch.
+Run one cycle at a time unless the user asks for a batch. Allocate the next cycle number by scanning existing `### Cycle N —` headings.
 
 For each cycle:
 
-1. **Orient** — read only enough code, logs, docs, or prior cycles to choose the next probe.
-2. **Hypothesis** — name what you expect and why.
-3. **Probe** — make the smallest change or run the smallest test that can answer the question.
-4. **Evidence** — capture the exact result: error text, command output, test result, tool response, screenshot note, or observed behavior.
-5. **Learning** — say what the evidence changed in your understanding.
-6. **Next** — choose one of: next probe, back up and rethink, or stop.
-7. Append the cycle to the loop file and update frontmatter `updated`.
+1. **Observe** — read or run only enough to see the next useful move.
+2. **Orient** — state what matters now: hypothesis, risk, or why this slice is next.
+3. **Decide** — one intent: `probe | implement | validate | split | reroute | stop`.
+4. **Act** — the smallest meaningful move that advances the chosen intent.
+5. **Evidence** — capture the exact result. If raw output is large, save it inside the loop folder, keep the decisive excerpt in the cycle, and link the file from `## Relevant artifacts`.
+6. **Learning** — what the evidence changed about the goal, route, parts, or risks.
+7. **Update living state** — refresh whatever sections the cycle changed.
+8. **Refresh handoff cues** — if the loop stays active, leave the next atomic move and current risk visible.
+9. **Next** — continue, back up, split, validate, stop, or promote to a planned task.
+10. Append the cycle entry and update frontmatter `updated`.
 
-Use the cycle entry shape from `templates/loop.md`.
+If the bar or route changes, update the living value AND append a one-line entry to `## Bar history` or `## Route shifts` with timestamp and reason. Use `## Decisions` only for load-bearing choices.
 
-## Bar shifts
+Part statuses: `todo | doing | done | blocked | dropped`.
 
-If the success criterion changes, do both before the next cycle:
+## Delegation
 
-1. update `## Current bar`
-2. append one bullet to `## Bar history` with timestamp and the reason for the shift
+If sub-agents are available, the parent may delegate a bounded slice (recon, research, one-part implementation, focused validation, adversarial review). The parent still owns the loop and every route decision; the child returns a summary, the parent integrates it.
 
-A bar shift is normal. Log it explicitly instead of pretending the old bar was
-never there.
+Do not delegate the whole loop. Do not let children mutate `loop.md` directly. Prefer fresh-context children for recon and review, one writer at a time for implementation.
 
 ## Stop conditions
 
-Mark frontmatter `status: done` and fill `## Outcome` when:
-
-- the current bar is met
-- the user decides the current learning is enough
-- the work should now move into a planned `hyper` task
-
-If the user stops mid-stream without closing the work, leave `status: active`.
-The loop file is the resume point.
+Mark `status: done` and fill `## Outcome` when the definition of done is met, the user closes the scope, or the work should move into a planned task. If the bar is met but the destination is not, raise the bar and continue. If the user stops mid-stream, leave `status: active` and make sure `## Handoff cues` is current.
 
 ## Rules
 
-- Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill.
-- Prefer a live probe over more reading when the running system can answer faster.
-- Keep changes and tests small enough that a bad probe is cheap to revert.
-- Record evidence verbatim where practical. Do not paraphrase away the signal.
-- Do not batch multiple unrelated probes into one cycle.
-- Do not reopen a done loop; start a new one if the work continues.
-- Do not write a long plan unless the user explicitly asks to promote the work out of iterate mode.
+- Smallest meaningful move, not necessarily the smallest possible probe.
+- Record evidence verbatim where practical; do not paraphrase away the signal.
+- One cycle = one coherent move. Do not batch unrelated work.
+- Do not reopen done loops.
+- When the work starts needing approvals or formal coordination, recommend switching to a planned workflow.
+
+## Template — `loop.md`
+
+```markdown
+---
+id: L<N>
+title: <title>
+status: active
+created: <YYYY-MM-DDTHH:MM:SS>
+updated: <YYYY-MM-DDTHH:MM:SS>
+---
+
+# L<N> — <title>
+
+## Goal
+
+<What the user is trying to achieve overall.>
+
+## Why
+
+<Why this work matters, or `Not stated yet.`>
+
+## Constraints
+
+- None stated.
+
+## Non-negotiables
+
+- None stated.
+
+## Definition of done
+
+<What has to be true for this loop to finish well.>
+
+## Current route
+
+<Current route hypothesis. Short and revisable.>
+
+## Current focus
+
+<The slice, boundary, or question being worked right now.>
+
+## Current bar
+
+<What counts as a useful stop point right now.>
+
+## Parts
+
+- P1 — <first meaningful slice> — doing
+
+## Evidence digest
+
+- None yet.
+
+## Relevant artifacts
+
+- None yet.
+
+## Bar history
+
+- <YYYY-MM-DDTHH:MM:SS> — Initial bar: <same as current bar>
+
+## Route shifts
+
+- None yet.
+
+## Decisions
+
+- None yet.
+
+## Starting point
+
+<What is already known before cycle 1, or `Unknown.`>
+
+## Cycles
+
+_No cycles yet._
+
+<!--
+Cycle entry shape:
+
+### Cycle N — <YYYY-MM-DDTHH:MM:SS> — <short title>
+
+**Intent:** <probe | implement | validate | split | reroute | stop>
+**Orient:** <What matters now and why this move is next.>
+**Action:** <Smallest meaningful move taken.>
+**Evidence:** <Exact result.>
+**Learning:** <What changed in our understanding.>
+**Next:** <continue | back up | split | validate | stop | promote.>
+-->
+
+## Handoff cues
+
+- Next atomic move: <what to do first on resume>
+- Current risk or uncertainty: <what still matters>
+- Dirty or unvalidated state: <none | what has changed but is not yet validated>
+
+## Outcome
+
+<Fill when status becomes `done`.>
+```
