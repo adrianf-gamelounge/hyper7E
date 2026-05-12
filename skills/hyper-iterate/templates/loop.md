@@ -91,7 +91,7 @@ Cycles start only after the big plan is approved and the current part plan is ap
 
 Cycle entry shape — append entries below this comment as `### Cycle N — <YYYY-MM-DDTHH:MM:SS> — <short title>`:
 
-  **Intent:** <probe | implement | validate | split | reroute | stop>
+  **Intent:** <probe | implement | validate | split | reroute | reframe | stop>
 
   **Orient:** <What matters now and why this move is next.>
 
