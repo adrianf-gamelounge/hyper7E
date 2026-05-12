@@ -21,7 +21,7 @@ The project root is the directory containing `.hyper/`, or the current working d
 
 Two kinds of content live in `loop.md`:
 
-- **Living state** that you overwrite as reality changes — `## Goal`, `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`, `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, `## Memory candidates`, `## Outcome`.
+- **Living state** that you overwrite as reality changes — `## Goal`, `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`, `## Task understanding`, `## Existing code and findings`, `## Agreed big plan`, `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Part alignment`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, `## Memory candidates`, `## Outcome`.
 - **History** that you append to, never rewrite — `## Bar history`, `## Route shifts`, `## Decisions`, `## Starting point`, `## Cycles`.
 
 `## Memory candidates` collects possible cross-task lessons worth promoting beyond this loop. Leave it empty until a real one surfaces.
@@ -42,35 +42,68 @@ Done loops are not reopened. If the user wants to keep going from a done loop, c
 
 ## Clarify before creating
 
-Before writing `loop.md`, make sure you can state the goal, the destination, and at least one near-term stop point. If any of these are unclear from the user's prompt:
+`hyper-iterate` starts with an interview-style alignment pass. Before any implementation work, do this in order:
 
-1. **Scan the project briefly** — relevant files, recent commits, README, related loops or tasks. Often the missing piece is already on disk.
-2. **Then ask the user.** One question per message. Prefer multiple-choice when a structured-question tool is available; fall back to open-ended only when the choice space is genuinely open.
-3. **Only ask what changes the loop.** Goal, destination, hard constraints, non-negotiables, and the first bar. Skip details that the loop itself will discover through cycles.
-4. Stop asking as soon as you have enough to commit to a useful route. If the user signals "just start", commit to the clearest reading and surface remaining unknowns in `## Handoff cues` or as the first cycle's `Orient`.
+1. **Restate your understanding** of the request from the user or from the Linear issue.
+2. **Scan the project briefly** — relevant files, recent commits, README, related loops or tasks. Often the missing piece is already on disk.
+3. **Report what already exists** in the codebase and what looks missing or unclear.
+4. **Discuss the big plan with the user** and agree how the work will be tackled.
 
-When the prompt is already clear (concrete goal + obvious destination), skip straight to Create.
+Ask one question per message. Prefer multiple-choice when a structured-question tool is available; fall back to open-ended only when the choice space is genuinely open.
+
+Only ask what changes the loop: goal, destination, hard constraints, non-negotiables, big-plan shape, and the first part boundary. Skip details that the loop itself will discover later.
+
+This is a hard gate. Do not implement anything before the big plan is agreed and recorded in `loop.md`.
 
 ## Create
 
 1. Scan `.hyper/loops/` for `L<N>-*` folders, take the highest `N`, allocate the next.
 2. Pick a short title and kebab-case slug.
-3. Fill the template below from the user's request and any clarifications. When information is missing, use `Not stated yet.` for `## Why`, `- None stated.` for `## Constraints` and `## Non-negotiables`, and `Unknown.` for `## Starting point`. Leave `## Memory candidates` empty.
-4. Initial bar: a concrete near-term stop point. If the user did not name one, write the narrowest useful bar that moves the route forward now.
+3. Create `loop.md` immediately. Fill the template below from the user's request and any clarifications. When information is missing, use `Not stated yet.` for `## Why`, `- None stated.` for `## Constraints` and `## Non-negotiables`, `Unknown.` for `## Starting point`, `Not filled yet.` for alignment sections, and `Not agreed yet.` for plan bodies. Leave `## Memory candidates` empty.
+4. Initial bar: the next approval gate. If the user did not name one, default to reaching an approved big plan for the loop.
 5. Initial parts: 2–5 meaningful slices when the work decomposes naturally, or `P1 — Whole goal — doing` when it does not.
 6. Write `loop.md` and announce: `Created L<N> — <title>. Starting adaptive loop.`
+7. Start the interview-style alignment pass in the conversation and in the loop file: fill `## Task understanding`, `## Existing code and findings`, and `## Agreed big plan` before any implementation cycle starts.
 
 ## Resume
 
 Read in layers; do not reread the whole file by default.
 
-- **Hot** (always read first): Goal, Definition of done, Current route, Current focus, Current bar, Parts, Evidence digest, Handoff cues.
+- **Hot** (always read first): Goal, Definition of done, Task understanding, Existing code and findings, Agreed big plan, Current route, Current focus, Current bar, Parts, Part alignment, Evidence digest, Handoff cues.
 - **Warm** (when the next move needs more): latest Decisions, Route shifts, Bar history, Relevant artifacts, last 1–3 cycles, Outcome.
 - **Cold** (only on demand): older cycles, raw artifact files.
 
 Promote durable signal upward as work progresses: route-shaping facts become `## Decisions`, still-relevant findings become `## Evidence digest`, restart-critical notes become `## Handoff cues`.
 
+## Alignment gate
+
+Before the first implementation cycle, `loop.md` must show these top-level sections filled:
+
+- `## Task understanding`
+- `## Existing code and findings`
+- `## Agreed big plan`
+
+`## Agreed big plan` must include:
+
+- `Status: awaiting approval | approved | needs rework`
+- `Approved by user: <timestamp or Not yet.>`
+
+This is a hard gate. No implementation, validation, or code mutation starts until the big plan status is `approved`.
+
+Then repeat the same pattern for each part under `## Part alignment`:
+
+- `### P<N> — <part name>`
+- `#### Understanding`
+- `#### Existing code and findings`
+- `#### Plan`
+- `Status: awaiting approval | approved | needs rework`
+- `Approved by user: <timestamp or Not yet.>`
+
+This is also a hard gate. No work on part `P<N>` starts until that part plan is approved.
+
 ## Working cycle
+
+Cycles start only after the big plan is approved and the current part plan is approved.
 
 Run one cycle at a time unless the user asks for a batch. Allocate the next cycle number by scanning existing `### Cycle N —` headings.
 
@@ -85,13 +118,26 @@ For each cycle:
 7. **Learning** — what the evidence changed about the prior belief, the goal, route, parts, or risks.
 8. **Route impact** — how this cycle changes the route or parts for the next cycle. `no change` is a valid finding and itself a useful signal.
 9. **Update living state** — refresh whatever sections the cycle changed.
-10. **Refresh handoff cues** — if the loop stays active, leave the next atomic move and current risk visible.
-11. **Next** — continue, back up, split, validate, stop, or promote to a planned task.
-12. Append the cycle entry and update frontmatter `updated`.
+10. **If the next move opens a new part or changes a part plan, stop and refresh `## Part alignment` first.** Re-enter implementation only after the user approves that part plan.
+11. **Refresh handoff cues** — if the loop stays active, leave the next atomic move and current risk visible.
+12. **Next** — continue, back up, split, validate, stop, or promote to a planned task.
+13. Append the cycle entry and update frontmatter `updated`.
 
 If the bar or route changes, update the living value AND append a one-line entry to `## Bar history` or `## Route shifts` with timestamp and reason. Use `## Decisions` only for load-bearing choices.
 
 Part statuses: `todo | doing | done | blocked | dropped`.
+
+## Skill reuse
+
+When one of these installed skills is a better fit for the current slice, invoke it and fold the result back into `loop.md`.
+
+- Invoke the `grill-me` skill during alignment when the goal, constraints, route, or part boundary is unclear, contradictory, or high-risk. Use it to pressure-test the big plan or a part plan before approval.
+- Invoke the `diagnose` skill when a cycle is mainly bug reproduction, debugging, or performance investigation.
+- Invoke the `prototype` skill when the next useful move is a throwaway prototype that answers a design, state, or UI question before committing to the route.
+- Invoke the `tdd` skill when a part plan is approved and the implementation is best driven by behavior-first tests in vertical slices.
+- Invoke the `handoff` skill when the user wants to pause or transfer the work. Copy the condensed result into `## Handoff cues` and any other living-state sections it changes.
+
+These skills support the loop. `hyper-iterate` still owns route decisions, approvals, `loop.md`, and stop conditions.
 
 ## Delegation
 
@@ -105,14 +151,19 @@ Mark `status: done` and fill `## Outcome` when the definition of done is met, th
 
 ## Rules
 
+- Start every loop with interview-style alignment: understanding, code scan, findings, agreed plan.
 - Smallest meaningful move, not necessarily the smallest possible probe.
 - Record evidence verbatim where practical; do not paraphrase away the signal.
 - One cycle = one coherent move. Do not batch unrelated work.
+- No implementation before big-plan approval.
+- No part implementation before that part's approval.
 - Do not reopen done loops.
-- When the work starts needing approvals or formal coordination, recommend switching to a planned workflow.
+- When the work starts needing approvals or formal coordination beyond the loop-level and part-level gates, recommend switching to a planned workflow.
 - Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill. Use `hyper` for tracked work.
 
 ## Template — `loop.md`
+
+Use the template exactly. Keep the alignment sections before `## Cycles`. Keep only the current approved view in those sections; write historical changes to `## Route shifts` or `## Decisions`.
 
 ```markdown
 ---
