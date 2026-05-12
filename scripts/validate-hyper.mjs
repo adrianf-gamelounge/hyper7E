@@ -245,7 +245,6 @@ function validateHyperIterate() {
     "## Starting point",
     "## Cycles",
     "## Handoff cues",
-    "## Memory candidates",
     "## Outcome",
   ];
 

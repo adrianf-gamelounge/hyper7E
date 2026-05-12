@@ -21,10 +21,8 @@ The project root is the directory containing `.hyper/`, or the current working d
 
 Two kinds of content live in `loop.md`:
 
-- **Living state** that you overwrite as reality changes — `## Goal`, `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`, `## Task understanding`, `## Existing code and findings`, `## Agreed big plan`, `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Part alignment`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, `## Memory candidates`, `## Outcome`.
+- **Living state** that you overwrite as reality changes — `## Goal`, `## Why`, `## Constraints`, `## Non-negotiables`, `## Definition of done`, `## Task understanding`, `## Existing code and findings`, `## Agreed big plan`, `## Current route`, `## Current focus`, `## Current bar`, `## Parts`, `## Part alignment`, `## Evidence digest`, `## Relevant artifacts`, `## Handoff cues`, `## Outcome`.
 - **History** that you append to, never rewrite — `## Bar history`, `## Route shifts`, `## Decisions`, `## Starting point`, `## Cycles`.
-
-`## Memory candidates` collects possible cross-task lessons worth promoting beyond this loop. Leave it empty until a real one surfaces.
 
 Timestamps use `YYYY-MM-DDTHH:MM:SS`.
 
@@ -59,7 +57,7 @@ This is a hard gate. Do not implement anything before the big plan is agreed and
 
 1. Scan `.hyper/loops/` for `L<N>-*` folders, take the highest `N`, allocate the next.
 2. Pick a short title and kebab-case slug.
-3. Create `loop.md` immediately. Fill the template below from the user's request and any clarifications. When information is missing, use `Not stated yet.` for `## Why`, `- None stated.` for `## Constraints` and `## Non-negotiables`, `Unknown.` for `## Starting point`, `Not filled yet.` for alignment sections, and `Not agreed yet.` for plan bodies. Leave `## Memory candidates` empty.
+3. Create `loop.md` immediately. Fill the template below from the user's request and any clarifications. When information is missing, use `Not stated yet.` for `## Why`, `- None stated.` for `## Constraints` and `## Non-negotiables`, `Unknown.` for `## Starting point`, `Not filled yet.` for alignment sections, and `Not agreed yet.` for plan bodies.
 4. Initial bar: the next approval gate. If the user did not name one, default to reaching an approved big plan for the loop.
 5. Initial parts: 2–5 meaningful slices when the work decomposes naturally, or `P1 — Whole goal — doing` when it does not.
 6. Write `loop.md` and announce: `Created L<N> — <title>. Starting adaptive loop.`

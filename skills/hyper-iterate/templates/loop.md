@@ -115,8 +115,5 @@ _No cycles yet._
 - Current risk or uncertainty: <what still matters>
 - Dirty or unvalidated state: <none | what has changed but is not yet validated>
 
-## Memory candidates
-- None yet.
-
 ## Outcome
 <Fill when status becomes `done`.>
