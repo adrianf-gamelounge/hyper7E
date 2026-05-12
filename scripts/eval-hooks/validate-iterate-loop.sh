@@ -11,10 +11,16 @@ loop_file=$(find .hyper/loops -maxdepth 1 -name 'L*.md' -type f | sort | head -1
 
 grep -q '^status:' "${loop_file}" || { echo "missing status frontmatter" >&2; exit 2; }
 grep -q '^## Goal$' "${loop_file}" || { echo "missing Goal" >&2; exit 2; }
+grep -q '^## Task understanding$' "${loop_file}" || { echo "missing Task understanding" >&2; exit 2; }
+grep -q '^## Existing code and findings$' "${loop_file}" || { echo "missing Existing code and findings" >&2; exit 2; }
+grep -q '^## Agreed big plan$' "${loop_file}" || { echo "missing Agreed big plan" >&2; exit 2; }
+grep -q '^Status: awaiting approval\|Status: approved\|Status: needs rework' "${loop_file}" || { echo "missing plan status" >&2; exit 2; }
+grep -q '^Approved by user:' "${loop_file}" || { echo "missing approval line" >&2; exit 2; }
 grep -q '^## Current route$' "${loop_file}" || { echo "missing Current route" >&2; exit 2; }
 grep -q '^## Current focus$' "${loop_file}" || { echo "missing Current focus" >&2; exit 2; }
 grep -q '^## Current bar$' "${loop_file}" || { echo "missing Current bar" >&2; exit 2; }
 grep -q '^## Parts$' "${loop_file}" || { echo "missing Parts" >&2; exit 2; }
+grep -q '^## Part alignment$' "${loop_file}" || { echo "missing Part alignment" >&2; exit 2; }
 grep -q '^## Evidence digest$' "${loop_file}" || { echo "missing Evidence digest" >&2; exit 2; }
 grep -q '^## Handoff cues$' "${loop_file}" || { echo "missing Handoff cues" >&2; exit 2; }
 

@@ -229,10 +229,14 @@ function validateHyperIterate() {
   const requiredTemplateSections = [
     "## Goal",
     "## Definition of done",
+    "## Task understanding",
+    "## Existing code and findings",
+    "## Agreed big plan",
     "## Current route",
     "## Current focus",
     "## Current bar",
     "## Parts",
+    "## Part alignment",
     "## Evidence digest",
     "## Relevant artifacts",
     "## Bar history",
@@ -260,6 +264,12 @@ function validateHyperIterate() {
     ensureContains(HYPER_ITERATE_TEMPLATE, needle);
   }
 
+  ensureContains(HYPER_ITERATE_TEMPLATE, "Status: awaiting approval");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "Approved by user: Not yet.");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "### P1 — <first meaningful slice>");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "#### Understanding");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "#### Existing code and findings");
+  ensureContains(HYPER_ITERATE_TEMPLATE, "#### Plan");
   ensureContains(HYPER_ITERATE_TEMPLATE, "**Intent:** <probe | implement | validate | split | reroute | stop>");
   ensureContains(HYPER_ITERATE_TEMPLATE, "**Prior belief:** <What I expected before this cycle.");
   ensureContains(HYPER_ITERATE_TEMPLATE, "**Route impact:** <How this changes the route or parts.");
@@ -267,20 +277,26 @@ function validateHyperIterate() {
   ensureContains(HYPER_ITERATE_TEMPLATE, "- Next atomic move: <what to do first on resume>");
   ensureContains(HYPER_ITERATE_TEMPLATE, "- Dirty or unvalidated state: <none | what has changed but is not yet validated>");
 
+  ensureContains(HYPER_ITERATE_SKILL, "## Alignment gate");
   ensureContains(HYPER_ITERATE_SKILL, "## Resume");
   ensureContains(HYPER_ITERATE_SKILL, "**Hot** (always read first):");
   ensureContains(HYPER_ITERATE_SKILL, "**Warm** (when the next move needs more):");
   ensureContains(HYPER_ITERATE_SKILL, "**Cold** (only on demand):");
   ensureContains(HYPER_ITERATE_SKILL, ".hyper/loops/L<N>-<slug>/");
+  ensureContains(HYPER_ITERATE_SKILL, "This is a hard gate. Do not implement anything before the big plan is agreed and recorded in `loop.md`.");
+  ensureContains(HYPER_ITERATE_SKILL, "No part implementation before that part's approval.");
   ensureContains(HYPER_ITERATE_SKILL, "## Delegation");
   ensureContains(HYPER_ITERATE_SKILL, "Part statuses: `todo | doing | done | blocked | dropped`.");
   ensureContains(HYPER_ITERATE_SKILL, "Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill.");
 
   ensureContains(README, "/hyper-iterate L3");
   ensureContains(README, "bounded delegated slices");
+  ensureContains(README, "interview-style alignment pass");
   ensureContains(README, ".hyper/loops/");
 
   ensureContains(DATA_MODEL, "## `.hyper/loops/`");
+  ensureContains(DATA_MODEL, "agreed big plan");
+  ensureContains(DATA_MODEL, "part alignment");
   ensureContains(DATA_MODEL, "evidence digest");
   ensureContains(DATA_MODEL, "relevant artifacts");
 }
