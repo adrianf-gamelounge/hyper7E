@@ -361,22 +361,37 @@ Loop frontmatter fields:
 
 Each loop combines:
 
-- **Living state** — goal, constraints, definition of done, current route,
-  current focus, current bar, parts, evidence digest, relevant artifacts,
-  handoff cues, memory candidates, and final outcome
+- **Living state** — goal, constraints, definition of done, task
+  understanding, existing code and findings, agreed big plan, current route,
+  current focus, current bar, parts, part alignment, evidence digest,
+  relevant artifacts, handoff cues, memory candidates, and final outcome
 - **Evidence history** — bar history, route shifts, decisions, starting point,
   and cycle log
 
 For long loops, the intended read order is layered:
 
-1. hot state — route, focus, bar, parts, evidence digest, handoff cues
+1. hot state — task understanding, existing code and findings, agreed big
+   plan, route, focus, bar, parts, part alignment, evidence digest, handoff
+   cues
 2. warm state — recent decisions, recent route shifts, relevant artifacts, and
    recent cycles
 3. cold state — older cycles and large linked artifacts only when needed
 
+`hyper-iterate` now has a hard approval gate before implementation:
+
+- the loop starts with an interview-style alignment pass
+- `loop.md` is created immediately
+- `## Task understanding`, `## Existing code and findings`, and
+  `## Agreed big plan` must be filled before any implementation cycle starts
+- `## Agreed big plan` carries `Status: awaiting approval | approved | needs rework`
+  and `Approved by user: ...`
+- each part repeats the same pattern under `## Part alignment`
+- no work on a part starts until that part plan is approved
+
 Loops may cover investigation, implementation, validation, and route
 corrections inside one adaptive lane. The canonical file layout, including the
-cycle entry stub, lives in `skills/hyper-iterate/templates/loop.md`.
+alignment gate and cycle entry stub, lives in
+`skills/hyper-iterate/templates/loop.md`.
 
 ## `handoff.md`
 
