@@ -23,6 +23,18 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 ## Definition of done
 <What has to be true for this loop to finish well.>
 
+## Task understanding
+<Your current understanding of what needs to be done. Use `Not filled yet.` when needed.>
+
+## Existing code and findings
+<What already exists in the codebase, what is missing, and what matters for the route. Use `Not filled yet.` when needed.>
+
+## Agreed big plan
+Status: awaiting approval
+Approved by user: Not yet.
+
+<The current agreed big-picture plan. Use `Not agreed yet.` when needed.>
+
 ## Current route
 <The current route hypothesis. Keep it short and revisable.>
 
@@ -34,6 +46,25 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 
 ## Parts
 - P1 — <first meaningful slice> — doing
+
+## Part alignment
+### P1 — <first meaningful slice>
+#### Understanding
+<What this part is meant to achieve. Use `Not filled yet.` when needed.>
+
+#### Existing code and findings
+<What already exists for this part and what matters now. Use `Not filled yet.` when needed.>
+
+#### Plan
+Status: awaiting approval
+Approved by user: Not yet.
+
+<The current agreed plan for this part. Use `Not agreed yet.` when needed.>
+
+<!--
+Repeat the P<N> block above for each part before work on that part starts.
+Each part is a hard gate: no implementation starts until its Plan status is approved.
+-->
 
 ## Evidence digest
 - None yet.
@@ -56,6 +87,8 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 ## Cycles
 
 <!--
+Cycles start only after the big plan is approved and the current part plan is approved.
+
 Cycle entry shape — append entries below this comment as `### Cycle N — <YYYY-MM-DDTHH:MM:SS> — <short title>`:
 
   **Intent:** <probe | implement | validate | split | reroute | stop>
