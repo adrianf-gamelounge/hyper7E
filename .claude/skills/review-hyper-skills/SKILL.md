@@ -25,7 +25,7 @@ Name the mode out loud before touching any file. Each mode owns a distinct scope
 
 ### Mode 1 — contract-drift
 
-**Scope.** Shipped skills under `skills/` only. Judge agreement between a skill's `SKILL.md`, its `reference/*.md`, and its `templates/*`.
+**Scope.** Shipped skills under `skills/` only. Judge agreement between a target skill's `SKILL.md`, its `reference/*.md`, and its `templates/*` when present.
 
 **Authorities.**
 
@@ -36,9 +36,9 @@ Name the mode out loud before touching any file. Each mode owns a distinct scope
 
 `README.md` and `AGENTS.md` are not authorities in this mode.
 
-**Tiebreak rule.** When `templates/` and `SKILL.md` disagree, `templates/` is authoritative for **section names**, the **required field set and field order**, and **enum values** — those must match exactly. Prose around them may vary; equivalent wording at the line level is not drift if those three anchors agree. `reference/` owns filenames, enums, and shared mechanics. `SKILL.md` prose must yield to both.
+**Tiebreak rule.** When `templates/` and `SKILL.md` disagree, `templates/` is authoritative for **section names**, the **required field set and field order**, and **enum values** — those must match exactly. Prose around them may vary; equivalent wording at the line level is not drift if those three anchors agree. `reference/` owns filenames, enums, and shared mechanics. `SKILL.md` prose must yield to both. If the target skill ships no `templates/`, `reference/` is the sole authority and `SKILL.md` prose yields to it alone.
 
-**State-not-change rule.** Current state on disk, not diffs, commits, or PRs. If the user hands you a branch, PR, or commit range, redirect them to a diff-review skill rather than silently pivoting.
+**State-not-change rule.** In Mode 1, current state on disk, not diffs, commits, or PRs. If the user hands you a branch, PR, or commit range for Mode 1 work, redirect them to a diff-review skill rather than silently pivoting. Mode 2 has its own Local-diff audit sub-mode (see below) that does work against the local working-tree diff — that sub-mode is the documented exception to this rule and is not silent pivoting.
 
 **Cross-dispatch non-determinism.** Two fresh sub-agent dispatches of this skill against the same tree can surface different findings — the audit reads files deterministically but what a fresh sub-agent decides is notable depends on its framing. Treat one pass as a sample, not a verdict. When two independent passes on the same tree disagree, treat the **union of `load-bearing` findings as canonical**, the **union of `drift` findings as advisory**, and **discard `nit`-only disagreements**.
 
