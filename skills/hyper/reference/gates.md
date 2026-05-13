@@ -54,7 +54,11 @@ Every phase dispatch ends with exactly one verdict:
 | `verify` | `quick` | `done` | no |
 | `verify` | `feature` | `docs` | yes |
 | `docs` | `feature` | `done` | no |
-| `review` | `code-review` | `done` | no |
+
+The standalone `scope: code-review` path is not in this table: per the
+ownership split above, `hyper-code-review` owns terminal `phase: done` and the
+archive move directly, so `hyper` never applies a transition for that scope.
+See `hyper-code-review/SKILL.md` §Return contract.
 
 For `verify -> docs`, use:
 
@@ -145,8 +149,11 @@ For blocked implement results from plan conflicts:
 - `hyper-implement` detects blocked subtasks and returns `awaiting-input`
 - `hyper` sets `task.md` `awaiting: user-input`
 - on the user's reply, `hyper` re-dispatches `hyper-implement`
-- the orchestrator records the answer, clears the subtask's `awaiting`, and
-  resumes dispatch
+- `hyper-implement` records the user's answer in the subtask's `## Open
+  questions` and re-dispatches `hyper-worker`
+- the worker clears its own `awaiting` on resumption per its Flow step 2;
+  `hyper-implement` does not write subtask `awaiting` outside the
+  `## Invalidated subtasks` reset path (see ownership split above)
 
 For plan-conflict subtasks:
 
