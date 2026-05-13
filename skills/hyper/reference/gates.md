@@ -151,7 +151,7 @@ For blocked implement results from plan conflicts:
 - on the user's reply, `hyper` re-dispatches `hyper-implement`
 - `hyper-implement` records the user's answer in the subtask's `## Open
   questions` and re-dispatches `hyper-worker`
-- the worker clears its own `awaiting` on resumption per its return contract;
+- the worker clears its own `awaiting` on resumption per its Flow step 2;
   `hyper-implement` does not write subtask `awaiting` outside the
   `## Invalidated subtasks` reset path (see ownership split above)
 

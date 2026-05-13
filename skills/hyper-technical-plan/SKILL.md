@@ -43,11 +43,11 @@ reading or writing `.hyper/` paths. The data model is in
       task folder. Sub-branch by whether the revision has already been
       written:
       - If `03-technical-plan.md` already contains a `## Invalidated
-        subtasks` section AND `task.md` `awaiting` was just cleared by
-        `hyper` (this dispatch is the post-approval re-dispatch), jump to
+        subtasks` section (the revision was written on a prior dispatch;
+        this dispatch is the post-approval re-dispatch — `hyper` always
+        clears `awaiting` before re-dispatching a phase skill), jump to
         step 2g.
-      - Otherwise (no revision yet, or revision not yet approved), continue
-        to step 2.
+      - Otherwise (revision not yet written), continue to step 2.
 
 2. **Conflict-triggered re-entry path (writes the revision):**
 

@@ -265,9 +265,7 @@ role: none
 
 ## Open questions
 
-- <Optional worker blocker. Delete this section if there are none. See
-  `hyper-worker/SKILL.md` §"Mid-work blockers" for when a worker writes
-  here.>
+- <Optional worker blocker. Delete this section if there are none.>
 
 ## Completion
 
