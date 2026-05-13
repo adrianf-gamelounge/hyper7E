@@ -252,20 +252,25 @@ role: none
 # T1.3 — Wire login endpoint
 
 ## What
-<Specific change.>
+
+<Specific change this worker owns.>
 
 ## Why
-<Which 04-execution-plan goal or acceptance outcome this supports.>
+
+<Which accepted outcome or execution-plan goal this supports.>
 
 ## Done when
-<One or more testable criteria.>
+
+- <Testable completion criterion.>
 
 ## Open questions
-<Optional worker blocker. Delete this section when there are none. See
-`hyper-worker/SKILL.md` §"Mid-work blockers" for when a worker writes
-here.>
+
+- <Optional worker blocker. Delete this section if there are none. See
+  `hyper-worker/SKILL.md` §"Mid-work blockers" for when a worker writes
+  here.>
 
 ## Completion
+
 <Worker writes this before setting `status: done`.>
 ```
 
@@ -288,11 +293,11 @@ Written by `hyper-execution-plan-review` during the `execution-plan` phase.
 
 Required sections:
 
-1. **Verdict** — `pass`, `needs-changes`, or `blocked`
-2. **Findings**
-3. **Coverage**
-4. **Ownership**
-5. **Required changes**
+1. `**Verdict:** <pass|needs-changes|blocked>`
+2. `## Findings`
+3. `## Coverage`
+4. `## Ownership`
+5. `## Required changes`
 
 The review is not a separate task phase. It validates `04-execution-plan.md`
 and subtask files before the user approves implementation.

@@ -40,9 +40,16 @@ reading or writing `.hyper/` paths. The data model is in
       continue to step 3.
 
    b. **Conflict-triggered re-entry** — `plan-conflict.md` is present in the
-      task folder. Continue to step 2.
+      task folder. Sub-branch by whether the revision has already been
+      written:
+      - If `03-technical-plan.md` already contains a `## Invalidated
+        subtasks` section AND `task.md` `awaiting` was just cleared by
+        `hyper` (this dispatch is the post-approval re-dispatch), jump to
+        step 2g.
+      - Otherwise (no revision yet, or revision not yet approved), continue
+        to step 2.
 
-2. **Conflict-triggered re-entry path:**
+2. **Conflict-triggered re-entry path (writes the revision):**
 
    a. Read `plan-conflict.md` end to end. Each `## Conflicts` entry names a
       `revival_signal` (or `none`) and the broken assumption with evidence.
