@@ -106,7 +106,7 @@ algorithm lives in `reference/dashboard.md`.
 
 Users invoke nine Hyper skills directly: `hyper`, `hyper-task`,
 `hyper-backlog`, `hyper-handoff`, `hyper-retro`, `hyper-code-review`,
-`hyper-recipe`, `hyper-iterate`, and `hyper-team`.
+`hyper-recipe`, `hyper-loops`, and `hyper-team`.
 
 Internal skills are:
 
@@ -334,13 +334,13 @@ by the file's own id). This section appears only when the subtask's
 
 ## `.hyper/loops/`
 
-Owned by `hyper-iterate`.
+Owned by `hyper-loops`.
 
 Each loop lives in its own folder named `L<N>-<kebab-slug>/`. The folder
 contains:
 
 - `loop.md` — the canonical loop file, written from
-  `skills/hyper-iterate/templates/loop.md`.
+  `skills/hyper-loops/templates/loop.md`.
 - optional evidence files (logs, command output, screenshots, diffs)
   referenced from `## Relevant artifacts` in `loop.md`. Subfolders are allowed
   when grouping helps.
@@ -377,7 +377,7 @@ For long loops, the intended read order is layered:
    recent cycles
 3. cold state — older cycles and large linked artifacts only when needed
 
-`hyper-iterate` now has a hard approval gate before implementation:
+`hyper-loops` now has a hard approval gate before implementation:
 
 - the loop starts with an interview-style alignment pass
 - `loop.md` is created immediately
@@ -391,7 +391,7 @@ For long loops, the intended read order is layered:
 Loops may cover investigation, implementation, validation, and route
 corrections inside one adaptive lane. The canonical file layout, including the
 alignment gate and cycle entry stub, lives in
-`skills/hyper-iterate/templates/loop.md`.
+`skills/hyper-loops/templates/loop.md`.
 
 ## `handoff.md`
 
