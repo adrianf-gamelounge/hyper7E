@@ -108,7 +108,10 @@ When a gate is open, treat these as substantive replies:
 When the open gate is `user-input`:
 
 - Ask one question per message.
-- Recommend one answer when the question has multiple plausible answers.
+- When the question has two or more variants, mark exactly one as
+  `[RECOMMENDED — <one-line reason>]`. The reason cites concrete signal (file,
+  finding, prior decision, constraint from the spec). If no variant is
+  defensibly better, say so and ask the user to pick — do not invent a reason.
 - Record the answer in the artifact under the question.
 - If more unanswered questions remain, return `awaiting-input` again.
 - Once all are answered, rename `Open questions` to `Resolved questions` or
@@ -129,6 +132,12 @@ Their contract is:
 - write the approval artifact
 - return `awaiting-approval`
 - on approval, re-dispatch and return `phase-complete`
+
+When asking for approval, state the recommended action and a one-line reason
+in the form `[RECOMMENDED — <reason>]`. The reason cites concrete signal from
+the artifact (a tradeoff resolved, a constraint honored, a risk dropped). If
+the artifact presents alternatives, mark exactly one of them recommended by
+the same rule in "Question serialization" above.
 
 ## Remediation gates
 

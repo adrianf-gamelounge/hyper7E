@@ -132,7 +132,7 @@ Alignment is an interview pass before any implementation. Walk these steps in or
 4. **Capture the non-code alignment fields** — fill `## Why`, `## Constraints`, `## Non-negotiables`, and `## Definition of done` from what is already known or from the clarifications you gather here.
 5. **Discuss the loop plan with the user** and agree how the work will be tackled.
 
-Ask one question per message. Prefer multiple-choice when a structured-question tool is available; fall back to open-ended only when the choice space is genuinely open.
+Ask one question per message. Prefer multiple-choice when a structured-question tool is available; fall back to open-ended only when the choice space is genuinely open. When the question has two or more variants, mark exactly one as `[RECOMMENDED — <one-line reason>]`. The reason cites concrete signal (file on disk, existing decision, constraint, observed risk). If no variant is defensibly better, say so and ask the user to pick — do not invent a reason.
 
 Only ask what changes the loop: goal, destination, hard constraints, non-negotiables, loop-plan shape, and the first part boundary. Skip details the loop will discover later.
 
@@ -152,7 +152,7 @@ A loop plan is **non-trivial** when any of the following holds: it touches more 
 1. Write the agreed loop plan into `## Loop plan`. Status remains `awaiting approval`; `Approved by user: Not yet.`.
 2. Write the initial `## Current route` from the agreed route hypothesis, the initial `## Current focus` from the active part plus next concrete move, and `## Handoff cues` `Next atomic move` from the first cycle's intended move.
 3. Post a concise loop-plan summary in chat — goal and destination, approach, parts, key decisions, open risks.
-4. Ask explicitly for approval.
+4. Ask explicitly for approval. State the recommended action and a one-line reason in the form `[RECOMMENDED — <reason>]`, where the reason cites concrete signal from the loop plan (a tradeoff resolved, a constraint honored, a risk dropped). The same rule applies to every part-plan approval ask.
 5. On explicit approval only: set `Status: approved` and `Approved by user: <timestamp>`. Plan status uses `awaiting approval | approved | needs rework`.
 
 The plan only exists in the agent's head until the file is written and the user has seen the chat-rendered summary.
