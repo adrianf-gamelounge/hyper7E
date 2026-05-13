@@ -189,14 +189,13 @@ Bugfix structure:
 
 The `repro_status` enum is `deterministic`, `intermittent`, or `no-repro`.
 
-`## Invalidated subtasks` is a conditionally-present section appended by
-`hyper-technical-plan` on conflict-triggered re-entry only (the
-`implement -> technical-plan` redirect path). It lists subtask ids whose
-previously-`done` state is invalidated by the revised plan; `hyper-implement`
-reads it on re-entry and resets those subtasks. Legal body: a bullet list of
-subtask ids, or the single word `None.` when the revision invalidates no
-prior `done` subtask. The section is absent on the initial pass and on
-revisions that do not invalidate any prior work.
+`## Invalidated subtasks` is a section appended by `hyper-technical-plan` on
+the conflict-triggered re-entry path only (the `implement -> technical-plan`
+redirect). It lists subtask ids whose previously-`done` state is invalidated
+by the revised plan; `hyper-implement` reads it on re-entry and resets those
+subtasks. The section is absent on the initial pass and present on every
+conflict-triggered re-entry, with `None.` as the body when the revision
+invalidates no prior `done` subtask.
 
 Feature-scope tasks approve `03-technical-plan.md` before moving to
 `04-execution-plan.md`. Quick tasks approve it before moving to `implement`.
@@ -382,7 +381,7 @@ For long loops, the intended read order is layered:
    recent cycles
 3. cold state — older cycles and large linked artifacts only when needed
 
-`hyper-loops` now has a hard approval gate before implementation:
+`hyper-loops` has a hard approval gate before implementation:
 
 - the loop starts with an interview-style alignment pass
 - `loop.md` is created immediately

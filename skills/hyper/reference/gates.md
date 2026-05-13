@@ -54,7 +54,11 @@ Every phase dispatch ends with exactly one verdict:
 | `verify` | `quick` | `done` | no |
 | `verify` | `feature` | `docs` | yes |
 | `docs` | `feature` | `done` | no |
-| `review` | `code-review` | `done` | no |
+
+The standalone `scope: code-review` path is not in this table: per the
+ownership split above, `hyper-code-review` owns terminal `phase: done` and the
+archive move directly, so `hyper` never applies a transition for that scope.
+See `hyper-code-review/SKILL.md` §Return contract.
 
 For `verify -> docs`, use:
 
