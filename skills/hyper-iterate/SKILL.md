@@ -1,16 +1,16 @@
 ---
-name: hyper-loops
+name: hyper-iterate
 description: Runs adaptive loops for work where the route must evolve through contact with reality, and the goal may need probing before it is ready to commit. Each loop persists so sessions can resume without losing context. Use when the user wants to iterate, course-correct mid-flight, probe before committing, or break a goal into adaptive slices. Keywords: hyper, iterate, loop, ooda, adaptive, probe, course correct.
 argument-hint: "[L<N>|new|<title>|.hyper/loops/... ]"
 ---
 
-# Hyper Loops
+# Hyper Iterate
 
 Run tracked adaptive work: observe, orient, decide, act, repeat. Use it for iterative or exploratory work — when the path should stay flexible, when the goal is known enough to start but still needs probing before commitment, or when contact with reality is likely to shift the route.
 
 ## When to Use
 
-Reach for hyper-loops when any of these match:
+Reach for hyper-iterate when any of these match:
 
 - The goal is known enough to start, but the path is not, and the path should stay flexible.
 - The goal itself is still forming and needs probing before it can be committed.
