@@ -2,17 +2,20 @@
 id: L<N>
 title: <title>
 status: active
+# Legal values: active | done
 created: <YYYY-MM-DDTHH:MM:SS>
 updated: <YYYY-MM-DDTHH:MM:SS>
 ---
 
 # L<N> — <title>
 
+<!-- Pre-cycle alignment surface: Goal, Why, Constraints, Non-negotiables, Definition of done, Task understanding, Existing code and findings, Loop plan, Current route, Current focus, Current bar, the current doing part under Parts, and the current doing part block under Part alignment -->
+
 ## Goal
-<What the user is trying to achieve overall.>
+Not stated yet.
 
 ## Why
-<Why this work matters. Use `Not stated yet.` when needed.>
+Not stated yet.
 
 ## Constraints
 - None stated.
@@ -21,80 +24,105 @@ updated: <YYYY-MM-DDTHH:MM:SS>
 - None stated.
 
 ## Definition of done
-<What has to be true for this loop to finish well.>
+Not filled yet.
 
 ## Task understanding
-<Your current understanding of what needs to be done. Use `Not filled yet.` when needed.>
+Not filled yet.
 
 ## Existing code and findings
-<What already exists in the codebase, what is missing, and what matters for the route. Use `Not filled yet.` when needed.>
+Not filled yet.
 
 ## Loop plan
-Grilled at: Not yet.
-External review: n/a
+Pressure-tested at: Not yet.
+<!-- Legal values: Not yet. | <YYYY-MM-DDTHH:MM:SS> -->
+External review: Not yet.
+<!-- Legal values: Not yet. | completed by a cross-model-review skill | skipped by user | n/a — trivial loop plan | n/a — no cross-model-review skill installed -->
 Status: awaiting approval
+<!-- Legal values: awaiting approval = waiting for user response | approved = explicit approve received | needs rework = user rejected current plan -->
 Approved by user: Not yet.
+<!-- Legal values: Not yet. | <YYYY-MM-DDTHH:MM:SS> -->
 
-<The current agreed loop plan — goal, approach, parts, key decisions, open risks. Use `Not agreed yet.` when needed.>
+- Goal and destination: Not agreed yet.
+- Approach: Not agreed yet.
+- Parts and order: Not agreed yet.
+- Key decisions: Not agreed yet.
+- Open risks: Not agreed yet.
 
 ## Current route
-<The current route hypothesis. Keep it short and revisable.>
+Not filled yet.
+<!-- Shape: one short route hypothesis for the current path -->
 
 ## Current focus
-<The slice, boundary, or question being worked right now.>
+Not filled yet.
+<!-- Shape: active part + next concrete move -->
 
 ## Current bar
-<What counts as a useful stop point right now.>
+Not filled yet.
+<!-- Shape: the current stop condition or gate -->
 
 ## Parts
-- P1 — <first meaningful slice> — doing
+<!-- Expand to 2–5 parts when the work decomposes naturally; otherwise use `P1 — Whole goal — doing`. -->
+<!-- Legal part statuses: todo | doing | done -->
+- P1 — Whole goal — doing
 
 ## Part alignment
-### P1 — <first meaningful slice>
+### P1 — Whole goal
 #### Understanding
-<What this part is meant to achieve. Use `Not filled yet.` when needed.>
+Not filled yet.
 
 #### Existing code and findings
-<What already exists for this part and what matters now. Use `Not filled yet.` when needed.>
+Not filled yet.
 
 #### Part plan
-Part grill: Not yet.
+Part pressure test: Not yet.
+<!-- Legal values: Not yet. | completed at <YYYY-MM-DDTHH:MM:SS> | covered by loop pressure test <YYYY-MM-DDTHH:MM:SS> -->
 Status: awaiting approval
+<!-- Same legal values as the loop-plan status field above -->
 Approved by user: Not yet.
+<!-- Same legal values as the loop-plan approval field above -->
 
-<The current agreed plan for this part. Use `Not agreed yet.` when needed.>
+- Goal: Not agreed yet.
+- Approach: Not agreed yet.
+- Dependencies and risks: Not agreed yet.
 
 <!--
-Repeat the P<N> block above for each part before work on that part starts.
-Each part is a hard gate: no implementation starts until its Status is `approved`.
+Repeat the P<N> block above for each part.
 -->
 
 ## Evidence digest
+<!-- Replace `- None yet.` with the first real entry. -->
 - None yet.
 
 ## Relevant artifacts
+<!-- Replace `- None yet.` with the first real entry. -->
 - None yet.
 
 ## Bar history
+<!-- Entry shape: - <YYYY-MM-DDTHH:MM:SS> — <bar change and reason> -->
 - <YYYY-MM-DDTHH:MM:SS> — Initial bar: <same as current bar>
 
 ## Route shifts
+<!-- Entry shape: - <YYYY-MM-DDTHH:MM:SS> — <route change and reason> -->
+<!-- Replace `- None yet.` with the first real entry. -->
 - None yet.
 
 ## Decisions
+<!-- Replace `- None yet.` with the first real entry. -->
 - None yet.
 
 ## Starting point
-<What is already known before the first cycle. Use `Unknown.` when needed. If this loop continues learning from an earlier done loop, reference it here.>
+Unknown.
+<!-- Replace `Unknown.` with the one-time starting snapshot written at create time. -->
 
 ## Cycles
 
 <!--
-Cycles start only after the loop plan is approved and the current part plan is approved.
-
 Cycle entry shape — append entries below this comment as `### Cycle N — <YYYY-MM-DDTHH:MM:SS> — <short title>`:
 
   **Intent:** <probe | implement | validate | split | reroute | reframe | stop>
+  Meanings: probe = answer a design or reality question before commitment; implement = production change on an approved part; validate = check current work or route without closing; split = create new parts and re-enter alignment; reroute = same goal, different route; reframe = goal changed; stop = pause, block, or close.
+
+  **Observe:** <What you read, ran, or inspected to see the next useful move.>
 
   **Orient:** <What matters now and why this move is next.>
 
@@ -108,31 +136,29 @@ Cycle entry shape — append entries below this comment as `### Cycle N — <YYY
 
   **Route impact:** <How this changes the route or parts. `no change` is a valid finding.>
 
-  **Next:** <Continue | back up | split further | validate | stop>
+  **Next:** <continue | back up | split | validate | pause | close>
+  Meanings: continue = another cycle on the current route; back up = return to an earlier phase or assumption; split = create new parts; validate = next cycle uses the validate intent; pause = stop with the loop still active; close = hand off into Phase 4.
 -->
 
 _No cycles yet._
+<!-- Replace this line with the first real cycle entry. -->
 
 ## Handoff cues
-- Next atomic move: <what to do first on resume>
-- Current risk or uncertainty: <what still matters>
-- Dirty or unvalidated state: <none | what has changed but is not yet validated>
+- Next atomic move: Unknown.
+- Current risk or uncertainty: Unknown.
+- Dirty or unvalidated state: none
 
 ## Verified outcomes
 <!--
-Append one entry per verify-gate pass before `status: done`.
-The loop cannot close until the most recent entry is `Result: pass`,
-unless the user explicitly closes without verify.
-
 Entry shape:
 
   ### Verify N — <YYYY-MM-DDTHH:MM:SS>
 
   **Tests:** <command> → <exit code, decisive excerpt — link full log under Relevant artifacts if large>
 
-  **Code review:** </code-review verdict — pass | needs-changes | blocked — and top findings>
+  **Code review:** <code-review skill verdict — pass | needs-changes | blocked — and top findings>
 
-  **Docs:** </technical-docs output summary, or `n/a — no user-facing surface change`>
+  **Docs:** <docs skill output summary, or `n/a — no user-facing surface change`>
 
   **Definition of done:**
   - <DoD line 1> — met | not met | n/a — <evidence>
@@ -143,7 +169,12 @@ Entry shape:
   **Next:** <stop and close | remediation cycle to fix <what>>
 -->
 
-_No verify pass yet._
+_No verify runs yet._
+<!-- Replace this line with the first real verify entry. -->
 
 ## Outcome
-<Fill when status becomes `done`. Reference the passing verify entry. If closed by user without verify, write `Closed by user without verify gate` plus the reason and unfinished items.>
+Close summary: Not finished yet.
+Verify link: None yet.
+<!-- Legal values: None yet. | Verify N | n/a -->
+Close-without-verify reason (only when Verify link: n/a): n/a
+Unfinished items (only when Verify link: n/a): n/a
