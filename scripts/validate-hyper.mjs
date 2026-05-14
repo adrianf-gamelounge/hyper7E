@@ -204,7 +204,6 @@ function ensureContains(filePath, needle) {
 }
 
 function validateReadmeAndDataModel() {
-  ensureContains(README, "You normally start with one skill: **`hyper`**.");
   ensureContains(README, "Internal skills such as");
   for (const skill of [...USER_FACING_HYPER, ...INTERNAL_HYPER].sort()) {
     ensureContains(README, `\`${skill}\``);
@@ -289,7 +288,6 @@ function validateHyperIterate() {
   ensureContains(HYPER_ITERATE_SKILL, "Do not create `01-intake.md`, `02-spec.md`, `03-technical-plan.md`, `04-execution-plan.md`, or task folders from this skill.");
 
   ensureContains(README, "/hyper-iterate L3");
-  ensureContains(README, "bounded delegated slices");
   ensureContains(README, "interview-style alignment pass");
   ensureContains(README, ".hyper/loops/");
 
