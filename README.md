@@ -257,6 +257,7 @@ loop history.
 User-facing skill names:
 
 - `hyper`
+- `hyper-help`
 - `hyper-iterate`
 - `hyper-task`
 - `hyper-backlog`
@@ -264,7 +265,6 @@ User-facing skill names:
 - `hyper-retro`
 - `hyper-code-review`
 - `hyper-recipe`
-- `hyper-iterate`
 - `hyper-jira`
 - `hyper-team`
 - `hyper-sync`
@@ -274,6 +274,7 @@ User-facing skill names:
 | --- | --- |
 | `/hyper <request>` | Start structured work. |
 | `/hyper T<N>` | Resume a task. |
+| `/hyper help` or `/hyper-help` | Show all available commands and usage reference. |
 | `/hyper-task` | List, create, defer, cancel, or inspect tasks; manage epics. |
 | `/hyper-backlog` | Add, list, promote, or drop future ideas. |
 | `/hyper-handoff` | Write a handoff when conversation context would be lost. |
